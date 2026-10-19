@@ -103,6 +103,27 @@ async function open(b, pre, shot) {
   ok(pf.gate, 'approval waits for proof check');
   ok(pf.queue >= 1 && pf.badge && pf.card, 'operator confirms papers and badge shows');
   ok(pf.land && pf.landDoc, 'landowner lookup request saved');
+  // 4) 해외 제목
+  const it = await p.evaluate(async () => {
+    const r = {};
+    $('#aCat').value = '천마'; $('#aGrow').value = '재배 (인증 없음)'; $('#aTitle').value = '천마 1kg'; $('#aWeight').value = '1kg'; $('#aRegion').value = '강원 인제'; $('#aStart').value = '50000'; $('#aBuyNow').value = '';
+    aPhoto = 'data:image/png;base64,AAAA'; aProof = ''; $('#aOath').checked = true; aucUI();
+    r.trHidden = $('#aTr').hidden;
+    $('#aTitleEn').value = 'Gastrodia that cures cancer'; $('#aTitleZh').value = '';
+    const n0 = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'auctions').length;
+    await $('#aucForm').onsubmit({ preventDefault() {} });
+    r.blocked = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'auctions').length === n0;
+    $('#aTitleEn').value = 'Gastrodia tuber 1 kg'; $('#aTitleZh').value = '天麻 1公斤'; aPhoto = 'data:image/png;base64,AAAA'; $('#aOath').checked = true;
+    await $('#aucForm').onsubmit({ preventDefault() {} });
+    const au = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'auctions').pop();
+    r.saved = au[3].titleEn === 'Gastrodia tuber 1 kg' && au[3].titleZh === '天麻 1公斤';
+    r.cleared = $('#aTitleEn').value === '';
+    return r;
+  });
+  console.log(JSON.stringify(it));
+  ok(it.trHidden, 'no AI translate button on the public site');
+  ok(it.blocked, 'health claim in English title blocked');
+  ok(it.saved && it.cleared, 'foreign titles saved');
   ok(errs.length === 0, 'no console errors (signed in) ' + errs.slice(0, 3).join(' | '));
   await ctx.close(); await b.close();
   console.log(fails ? fails + ' FAILED' : 'ALL PASS'); process.exit(fails ? 1 : 0);

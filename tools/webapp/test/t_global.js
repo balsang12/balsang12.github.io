@@ -6,7 +6,7 @@ const D=(beta)=>`window.__D=${JSON.stringify({
  settings:{site:{beta}},sellers:{s1:{shopName:"지리산 박씨네"}},
  auctions:{
   a1:{title:"지리산 자연산 산삼 1뿌리",cat:"산삼",item:"산삼",grow:"자연산 (산에서 채취)",weight:"1뿌리 18g",form:"생물",region:"경남 산청",date:"2026-10-01",permit:"사유림 소유자 동의서",start:1000000,buyNow:0,status:"진행중",endsAt:now+2*864e5,sellerId:"s1",proofOk:true,photo:"",createdAt:now},
-  a2:{title:"천마 1kg",cat:"천마",item:"천마",grow:"재배",weight:"1kg",form:"생물",region:"강원 인제",permit:"본인 소유 임야·재배",start:50000,status:"진행중",endsAt:now+3600e3,sellerId:"s1",createdAt:now},
+  a2:{title:"천마 1kg",titleEn:"Gastrodia tuber 1 kg",titleZh:"天麻 1公斤",cat:"천마",item:"천마",grow:"재배",weight:"1kg",form:"생물",region:"강원 인제",permit:"본인 소유 임야·재배",start:50000,status:"진행중",endsAt:now+3600e3,sellerId:"s1",createdAt:now},
   a3:{title:"마감된 산양삼",cat:"산양삼",item:"산양삼",grow:"재배",weight:"10뿌리",region:"전남 화순",permit:"본인 소유 임야·재배",start:200000,status:"진행중",endsAt:now-864e5,sellerId:"s1",createdAt:now}},
  bids:{b1:{auctionId:"a1",bidderId:"x",amount:1000000,t:now-1000},b2:{auctionId:"a3",bidderId:"x",amount:250000,t:now-2*864e5}}})};`;
 (async()=>{const b=await chromium.launch();
@@ -21,6 +21,7 @@ ok((await p.locator('#h1').innerText()).includes('Wild mountain ginseng'),'engli
 ok(await p.locator('#list .card').count()===2,'two open auctions');
 ok((await p.locator('#list .card').first().innerText()).includes('Harvest papers checked'),'proof badge first');
 ok(await p.locator('#done .card').count()===1,'closed auction shown');
+ok((await p.locator('#list').innerText()).includes('Gastrodia tuber 1 kg'),'seller english title shown');
 ok(await p.locator('#beta').isVisible(),'beta notice');
 await p.click('[data-lang="zh-Hant"]');await p.waitForTimeout(200);
 ok((await p.locator('#list .card').first().innerText()).includes('野山參'),'traditional chinese item');

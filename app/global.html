@@ -231,6 +231,7 @@ function fxCode(){if(window.NM_LANG==="en")return "USD";if(window.NM_LANG==="zh-
 function approx(n){const c=fxCode(),r=((S.site.fx||{})[c])||FX_DEFAULT[c],v=n/r;const sym={USD:"US$",HKD:"HK$",TWD:"NT$",CNY:"¥"}[c];
   return `${t("approx")} ${sym}${(v>=100?Math.round(v):Math.round(v*10)/10).toLocaleString("en-US")}`}
 function itemName(a){const k=ITEMS[a.item]?a.item:ITEMS[a.cat]?a.cat:"기타 귀한 임산물";return ITEMS[k][LI()]}
+function ftitle(a){return String((window.NM_LANG==="en"?a.titleEn:a.titleZh)||"").trim()}
 function region(r){r=String(r||"");const p=PROV.find(x=>r.startsWith(x[0]));return p?p[1+LI()]:""}
 function weight(w){return String(w||"").replace(/뿌리/g,window.NM_LANG==="en"?" root(s) ":"支 ").replace(/개/g,window.NM_LANG==="en"?" pcs ":"個 ").replace(/근/g,window.NM_LANG==="en"?" geun (600 g) ":"斤(600g) ").replace(/\s+/g," ").trim()}
 function permit(p){return PERMITS[p]?PERMITS[p][LI()]:""}
@@ -268,7 +269,7 @@ $("#filters").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;S.fi
 function chips(a){return [a.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:"",String(a.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:`<span class="chip">${esc(kind(a)==="forest"?t("farmChip"):t("farmG"))}</span>`,a.cert?`<span class="chip gold">${esc(t("certChip"))}</span>`:"",a.appraise?`<span class="chip gold">${esc(t("apprChip"))}</span>`:""].join("")}
 function card(a){const x=auc(a),open=a.status==="진행중"&&!x.ended;
   return `<button type="button" class="card" data-aid="${esc(a.id)}"><div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}" loading="lazy">`:""}<div class="tl">${chips(a)}</div><span class="clock">${open?esc(leftTxt(x.end-Date.now())):esc(t("ended"))}</span></div>
-   <div class="cbody"><h3>${esc(itemName(a))}</h3><div class="ko" lang="ko">${esc(a.title)}</div>
+   <div class="cbody"><h3>${esc(ftitle(a)||itemName(a))}</h3>${ftitle(a)?`<div class="meta">${esc(itemName(a))}</div>`:""}<div class="ko" lang="ko">${esc(a.title)}</div>
    <div class="meta">${[region(a.region),weight(a.weight)].filter(Boolean).map(esc).join(" · ")}</div>
    <div><span class="meta">${esc(open?(x.top?t("live"):t("start")):(x.top?t("sold"):t("unsold")))}</span><div class="price num">${won(x.cur)} <span class="approx">${esc(approx(x.cur))}</span></div></div>
    <div class="meta">${esc(t("bids")(x.valid.length))}</div></div></button>`}
@@ -289,7 +290,8 @@ function openA(id){const a=S.auctions.find(x=>x.id===id);if(!a)return;S.open=id;
   d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button>
    <div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}">`:""}</div>
    <div style="display:flex;gap:4px;flex-wrap:wrap">${chips(a)}</div>
-   <h2 style="font-size:24px">${esc(itemName(a))}</h2>
+   <h2 style="font-size:24px">${esc(ftitle(a)||itemName(a))}</h2>
+   <dl><dt>${esc(t("item"))}</dt><dd>${esc(itemName(a))}</dd></dl>
    <dl>
     <dt>${esc(t("grow"))}</dt><dd>${esc(String(a.grow||"").startsWith("자연산")?t("wildG"):t("farmG"))}</dd>
     ${a.weight?`<dt>${esc(t("weight"))}</dt><dd>${esc(weight(a.weight))} <span class="ko" lang="ko">(${esc(a.weight)})</span></dd>`:""}
