@@ -2,5 +2,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://balsang12.github.io/sitemap.xml
-Sitemap: https://balsang12.github.io/nongmani-yakcho/sitemap.xml
+Sitemap: https://nongmani.com/sitemap.xml
+Sitemap: https://nongmani.com/nongmani-yakcho/sitemap.xml
