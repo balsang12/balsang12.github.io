@@ -1,0 +1,3 @@
+-- v58: proofs (채취 근거 서류 사진)와 landreqs(산주 찾기)는 본인과 운영자만 읽는 inbox.
+-- nm_kind / nm_actor 에 'proofs','landreqs' 추가 (마이그레이션 proofs_landreqs_kinds)
+-- proofOk 배지는 운영자만 바꿀 수 있음 (마이그레이션 proof_badge_admin_only, 트리거 docs_proof_guard)
