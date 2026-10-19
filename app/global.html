@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Korean Wild Ginseng Auction · Nongmani</title>
+<meta name="description" content="Bid on wild mountain ginseng and rare forest herbs dug by Korean simmani. Harvest papers checked by the operator.">
+<link rel="canonical" href="https://nongmani.com/app/global.html">
+<link rel="alternate" hreflang="ko" href="https://nongmani.com/app/">
+<link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
+<link rel="alternate" hreflang="zh-Hant" href="https://nongmani.com/app/global.html?lang=zh-Hant">
+<link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
+<link rel="icon" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2B5B41">
+<meta property="og:title" content="Korean Wild Ginseng Auction · Nongmani">
+<meta property="og:description" content="Wild mountain ginseng from Korean simmani, with harvest papers checked.">
+<meta property="og:image" content="https://nongmani.com/seller/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6F1; --surface:#FFFFFF; --sunk:#E8EDE3; --line:#D3DCCD;
+  --ink:#15201A; --muted:#566659;
+  --pine:#2B5B41; --pine-ink:#FFFFFF; --pine-soft:#DAE9DE;
+  --gold:#8A5B0B; --gold-ink:#FFFFFF; --gold-soft:#F4E7CC;
+  --berry:#A3324A; --berry-soft:#F6E0E5;
+  --display:"Gowun Batang","Noto Serif TC","Songti SC",Georgia,serif;
+  --body:"Noto Sans KR","PingFang TC","Microsoft JhengHei","PingFang SC",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111712; --surface:#19221B; --sunk:#222D24; --line:#334036;
+  --ink:#E5ECE4; --muted:#9AAA9D;
+  --pine:#7BBA94; --pine-ink:#0D1910; --pine-soft:#213628;
+  --gold:#E2B45E; --gold-ink:#1F1503; --gold-soft:#352A16;
+  --berry:#E57F95; --berry-soft:#3A2128; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111712; --surface:#19221B; --sunk:#222D24; --line:#334036;
+  --ink:#E5ECE4; --muted:#9AAA9D;
+  --pine:#7BBA94; --pine-ink:#0D1910; --pine-soft:#213628;
+  --gold:#E2B45E; --gold-ink:#1F1503; --gold-soft:#352A16;
+  --berry:#E57F95; --berry-soft:#3A2128; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.3;text-wrap:balance}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px}
+header{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:baseline;gap:8px;text-decoration:none;margin-right:auto}
+.logo b{font-family:var(--display);font-size:22px;color:var(--pine)}
+.logo b i{font-style:normal;color:var(--gold)}
+.logo small{font-size:12px;color:var(--muted)}
+.langs{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.langs button{border:0;background:none;padding:6px 12px;font-size:14px;cursor:pointer;min-height:36px}
+.langs button[aria-pressed="true"]{background:var(--pine);color:var(--pine-ink);font-weight:700}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 16px;cursor:pointer;min-height:44px;font-weight:700}
+.btn.pri{background:var(--pine);border-color:var(--pine);color:var(--pine-ink)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.btn.sm{padding:6px 12px;min-height:36px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hero{padding:28px 0 8px;display:grid;gap:10px}
+.hero h1{font-size:clamp(26px,5vw,38px);color:var(--pine)}
+.hero p{margin:0;color:var(--muted);max-width:62ch}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:14px 0 4px;padding:0;list-style:none;counter-reset:s}
+.steps li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;counter-increment:s;display:grid;gap:2px}
+.steps li::before{content:counter(s);font-family:var(--display);font-weight:700;color:var(--gold);font-size:20px}
+.steps b{font-size:15px}.steps span{font-size:14px;color:var(--muted)}
+.notice{background:var(--gold-soft);border-radius:12px;padding:12px 14px;font-size:15px;margin:12px 0}
+.notice.err{background:var(--berry-soft)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 12px}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--pine-soft);color:var(--pine);white-space:nowrap}
+.chip.solid{background:var(--pine);color:var(--pine-ink)}
+.chip.gold{background:var(--gold-soft);color:var(--gold)}
+.filter{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;cursor:pointer;min-height:40px}
+.filter[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-align:left;padding:0;cursor:pointer;display:flex;flex-direction:column}
+.card:hover{border-color:var(--pine)}
+.thumb{position:relative;aspect-ratio:4/3;background:var(--sunk)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .tl{position:absolute;left:8px;top:8px;display:flex;gap:4px;flex-wrap:wrap}
+.thumb .clock{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.65);color:#fff;border-radius:8px;padding:2px 8px;font-size:13px}
+.cbody{padding:12px 14px;display:grid;gap:4px}
+.cbody h3{font-size:18px}
+.ko{font-size:13px;color:var(--muted)}
+.meta{font-size:14px;color:var(--muted)}
+.price{font-size:20px;font-weight:700}
+.approx{font-size:13px;color:var(--muted);font-weight:400}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:16px;padding:28px;text-align:center;color:var(--muted)}
+dialog{border:0;border-radius:18px;padding:0;max-width:640px;width:calc(100% - 24px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,20,14,.55)}
+.dlg{display:grid;gap:12px;padding:18px}
+.dlg .thumb{border-radius:12px;overflow:hidden}
+.x{justify-self:end;border:0;background:none;font-size:26px;line-height:1;cursor:pointer;min-width:44px;min-height:44px;margin:-8px -8px -8px 0}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:0;font-size:15px}
+dt{color:var(--muted)}dd{margin:0}
+.bidrow{display:flex;gap:8px;flex-wrap:wrap}
+.bidrow input{flex:1;min-width:160px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);min-height:44px}
+.hist{font-size:14px;display:grid;gap:2px;max-height:160px;overflow:auto}
+.hist div{display:flex;justify-content:space-between;gap:10px}
+.hist .me{font-weight:700;color:var(--pine)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;max-width:calc(100% - 32px);z-index:99}
+#toast[hidden]{display:none}
+footer{margin-top:40px;border-top:1px solid var(--line);padding:18px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--pine)}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="logo" href="./" aria-label="Nongmani"><b>농<i>마니</i></b><small id="tagline"></small></a>
+  <div class="langs" role="group" aria-label="Language">
+    <button type="button" data-lang="en">EN</button><button type="button" data-lang="zh-Hant">繁</button><button type="button" data-lang="zh-Hans">简</button>
+  </div>
+  <span id="who"></span>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <h1 id="h1"></h1>
+    <p id="lead"></p>
+    <ol class="steps" id="steps"></ol>
+  </section>
+  <div class="notice" id="beta" hidden></div>
+  <div class="notice err" id="conn" hidden></div>
+  <div class="bar" id="filters" role="group"></div>
+  <div class="grid" id="list" aria-live="polite"></div>
+  <h2 id="hDone" style="font-size:20px;margin:28px 0 10px" hidden></h2>
+  <div class="grid" id="done"></div>
+</main>
+<footer><div class="wrap" id="foot"></div></footer>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" hidden></div>
+
+<script>
+/* language: ?lang= > saved > browser */
+(function(){
+  var q=new URLSearchParams(location.search).get("lang"),saved=null;try{saved=localStorage.getItem("nm_lang")}catch(e){}
+  var nav=(navigator.language||"en").toLowerCase();
+  var guess=/^zh-(cn|sg|hans)/.test(nav)||nav==="zh"?"zh-Hans":/^zh/.test(nav)?"zh-Hant":"en";
+  window.NM_LANG=["en","zh-Hant","zh-Hans"].includes(q)?q:["en","zh-Hant","zh-Hans"].includes(saved)?saved:guess;
+})();
+</script>
+<script src="vendor/supabase.js"></script>
+<script src="nm-claude.js"></script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- words ---------- */
+const TX={
+ en:{tag:"Korean wild ginseng auction",h1:"Wild mountain ginseng, straight from the Korean simmani who dug it",
+  lead:"Simmani are Korea's traditional wild-ginseng hunters. Each root is listed by the person who found it, with photos, weight and where it grew. Roots marked “Harvest papers checked” come with a permit or landowner consent that our team has reviewed.",
+  steps:[["Bid","Sign in with your email and place a bid in Korean won."],["Win","When the auction closes, we contact the winner within 24 hours."],["Pay & collect in Korea","Pay, then collect in Seoul or have it delivered to your hotel in Korea. Overseas shipping is not available yet."]],
+  beta:"Pre-launch: bidding opens soon. Tap “Notify me” on any auction and we will email you when it opens.",
+  conn:"We could not connect. Please check your internet and reload.",
+  all:"All",wild:"Wild ginseng",forest:"Forest-grown ginseng",other:"Other rare herbs",
+  none:"No auctions are open right now. New auctions close every Saturday evening (Korea time).",
+  closed:"Recently closed",live:"Current bid",start:"Starting bid",sold:"Sold for",unsold:"Not sold",ended:"Closed",
+  left:(d,h,m)=>d?`${d}d ${h}h left`:h?`${h}h ${m}m left`:`${m}m left`,bids:n=>n===1?"1 bid":`${n} bids`,
+  signIn:"Sign in",signOut:"Sign out",
+  proof:"Harvest papers checked",wildChip:"Wild-dug",farmChip:"Forest-grown",certChip:"Inspection certificate",apprChip:"Appraised",
+  item:"Item",grow:"How it grew",weight:"Weight",form:"Condition",region:"Found in",dug:"Dug on",basis:"Harvest basis",seller:"Seller",title:"Seller’s title (Korean)",desc:"Seller’s notes (Korean)",
+  fresh:"Fresh",dried:"Dried",wildG:"Wild, dug in the mountains",farmG:"Cultivated",
+  minBid:v=>`Minimum next bid: ${v}`,bidBtn:"Place bid",confirm:v=>`Confirm bid of ${v}`,notify:"Notify me when bidding opens",notified:"We will let you know.",
+  needLogin:"Sign in to bid. We only need your email.",tooLow:v=>`Bids start at ${v}.`,already:"This auction has closed.",bidOk:v=>`Your bid of ${v} is in.`,top:"You are the highest bidder.",
+  fail:"Could not save. Please try again.",history:"Bid history",noBids:"No bids yet. Be the first.",you:"you",bidder:"Bidder",buyNow:v=>`Buy now at ${v}`,
+  approx:"approx.",note:"Prices are in Korean won (KRW). Converted amounts are rough guides only.",
+  foot:'Nongmani (농부와 심마니) · Korean marketplace for wild herbs · <a href="./">한국어</a> · Trademark application No. 40-2026-0219569',
+  ko:"Korean listing",law:"Health claims are not allowed on Nongmani. Listings describe size, shape and where the root was found."},
+ "zh-Hant":{tag:"韓國野山參拍賣",h1:"韓國採參人親手採挖的野山參",
+  lead:"「심마니」是韓國傳統的野山參採挖人。每支參都由發現它的人親自上架，附上照片、重量與生長地。標有「採挖文件已審核」的商品，附有經我們審核的採集許可或山主同意書。",
+  steps:[["出價","以電子郵件登入，用韓元出價。"],["得標","拍賣結束後，我們會在 24 小時內聯繫得標者。"],["在韓國付款取貨","付款後可在首爾取貨，或送到您在韓國的飯店。目前尚無海外配送。"]],
+  beta:"預先開放中：出價功能即將上線。點擊任一拍賣的「開放時通知我」，上線時我們會寄信通知您。",
+  conn:"無法連線，請檢查網路後重新整理。",
+  all:"全部",wild:"野山參",forest:"山養參（林下參）",other:"其他珍稀林產",
+  none:"目前沒有進行中的拍賣。新拍賣每週六晚間（韓國時間）結束。",
+  closed:"最近結束",live:"目前出價",start:"起標價",sold:"成交價",unsold:"流標",ended:"已結束",
+  left:(d,h,m)=>d?`剩 ${d} 天 ${h} 小時`:h?`剩 ${h} 小時 ${m} 分`:`剩 ${m} 分`,bids:n=>`${n} 次出價`,
+  signIn:"登入",signOut:"登出",
+  proof:"採挖文件已審核",wildChip:"野生採挖",farmChip:"林下栽培",certChip:"品質檢驗合格",apprChip:"附鑑定書",
+  item:"品項",grow:"生長方式",weight:"重量",form:"狀態",region:"產地",dug:"採挖日",basis:"採挖依據",seller:"賣家",title:"賣家標題（韓文）",desc:"賣家說明（韓文）",
+  fresh:"鮮品",dried:"乾品",wildG:"野生，山中採挖",farmG:"栽培",
+  minBid:v=>`下一口最低出價：${v}`,bidBtn:"出價",confirm:v=>`確認出價 ${v}`,notify:"開放時通知我",notified:"上線時會通知您。",
+  needLogin:"登入後即可出價，只需電子郵件。",tooLow:v=>`最低出價為 ${v}。`,already:"此拍賣已結束。",bidOk:v=>`已出價 ${v}。`,top:"您目前是最高出價者。",
+  fail:"儲存失敗，請再試一次。",history:"出價紀錄",noBids:"尚無出價，歡迎搶先出價。",you:"您",bidder:"出價者",buyNow:v=>`直購價 ${v}`,
+  approx:"約",note:"價格以韓元（KRW）計，換算金額僅供參考。",
+  foot:'農마니（농부와 심마니）· 韓國野生草藥交易平台 · <a href="./">한국어</a> · 商標申請 第40-2026-0219569號',
+  ko:"韓文原文",law:"本平台不允許標示療效，商品只描述大小、形狀與產地。"},
+ "zh-Hans":{tag:"韩国野山参拍卖",h1:"韩国采参人亲手采挖的野山参",
+  lead:"“심마니”是韩国传统的野山参采挖人。每支参都由发现它的人亲自上架，附上照片、重量与生长地。标有“采挖文件已审核”的商品，附有经我们审核的采集许可或山主同意书。",
+  steps:[["出价","用电子邮箱登录，以韩元出价。"],["中标","拍卖结束后，我们会在 24 小时内联系中标者。"],["在韩国付款取货","付款后可在首尔取货，或送到您在韩国的酒店。暂不提供海外配送。"]],
+  beta:"预先开放中：出价功能即将上线。点击任一拍卖的“开放时通知我”，上线时我们会发邮件通知您。",
+  conn:"无法连接，请检查网络后刷新。",
+  all:"全部",wild:"野山参",forest:"山养参（林下参）",other:"其他珍稀林产",
+  none:"目前没有进行中的拍卖。新拍卖每周六晚间（韩国时间）结束。",
+  closed:"最近结束",live:"当前出价",start:"起拍价",sold:"成交价",unsold:"流拍",ended:"已结束",
+  left:(d,h,m)=>d?`剩 ${d} 天 ${h} 小时`:h?`剩 ${h} 小时 ${m} 分`:`剩 ${m} 分`,bids:n=>`${n} 次出价`,
+  signIn:"登录",signOut:"退出",
+  proof:"采挖文件已审核",wildChip:"野生采挖",farmChip:"林下栽培",certChip:"质量检验合格",apprChip:"附鉴定书",
+  item:"品类",grow:"生长方式",weight:"重量",form:"状态",region:"产地",dug:"采挖日",basis:"采挖依据",seller:"卖家",title:"卖家标题（韩文）",desc:"卖家说明（韩文）",
+  fresh:"鲜品",dried:"干品",wildG:"野生，山中采挖",farmG:"栽培",
+  minBid:v=>`下一口最低出价：${v}`,bidBtn:"出价",confirm:v=>`确认出价 ${v}`,notify:"开放时通知我",notified:"上线时会通知您。",
+  needLogin:"登录后即可出价，只需电子邮箱。",tooLow:v=>`最低出价为 ${v}。`,already:"此拍卖已结束。",bidOk:v=>`已出价 ${v}。`,top:"您目前是最高出价者。",
+  fail:"保存失败，请重试。",history:"出价记录",noBids:"暂无出价，欢迎抢先出价。",you:"您",bidder:"出价者",buyNow:v=>`一口价 ${v}`,
+  approx:"约",note:"价格以韩元（KRW）计，换算金额仅供参考。",
+  foot:'农마니（농부와 심마니）· 韩国野生草药交易平台 · <a href="./">한국어</a> · 商标申请 第40-2026-0219569号',
+  ko:"韩文原文",law:"本平台不允许标示疗效，商品只描述大小、形状与产地。"}
+};
+/* item names: Korean category → [en, 繁, 简] */
+const ITEMS={"산삼":["Wild mountain ginseng","野山參","野山参"],"산양삼":["Forest-grown ginseng (sanyangsam)","山養參（林下參）","山养参（林下参）"],"장뇌삼":["Forest-grown ginseng (jangnoesam)","長腦參（林下參）","长脑参（林下参）"],
+ "잔대":["Ladybell root","沙參","沙参"],"더덕":["Deodeok (bonnet bellflower root)","羊乳（四葉參）","羊乳（四叶参）"],"도라지":["Balloon flower root","桔梗","桔梗"],"천마":["Gastrodia tuber (cheonma)","天麻","天麻"],
+ "하수오":["Fo-ti root","何首烏","何首乌"],"만삼":["Codonopsis root","黨參","党参"],"칡":["Kudzu root","葛根","葛根"],"지치":["Gromwell root","紫草","紫草"],"송이":["Pine mushroom (matsutake)","松茸","松茸"],
+ "능이":["Neungi mushroom","香茸（虎掌菌）","香茸（虎掌菌）"],"꽃송이버섯":["Cauliflower mushroom","繡球菌","绣球菌"],"석이":["Rock tripe","石耳","石耳"],"상황":["Sanghwang mushroom (Phellinus)","桑黃","桑黄"],
+ "영지":["Reishi mushroom","靈芝","灵芝"],"복령":["Poria","茯苓","茯苓"],"겨우살이":["Mistletoe","槲寄生","槲寄生"],"기타 귀한 임산물":["Rare forest product","珍稀林產","珍稀林产"]};
+const PERMITS={"국유림 임산물 채취 허가":["National-forest harvest permit","國有林採集許可","国有林采集许可"],"사유림 소유자 동의서":["Landowner’s written consent","私有林山主同意書","私有林山主同意书"],
+ "본인 소유 임야·재배":["Seller’s own forest land","賣家自有林地","卖家自有林地"],"국유림 보호협약(마을 양여)":["Village forest-care agreement","國有林保護協約","国有林保护协约"],"산 임차 계약":["Forest lease contract","山林租賃契約","山林租赁合同"]};
+const PROV=[["서울","Seoul","首爾","首尔"],["부산","Busan","釜山","釜山"],["대구","Daegu","大邱","大邱"],["인천","Incheon","仁川","仁川"],["광주","Gwangju","光州","光州"],["대전","Daejeon","大田","大田"],["울산","Ulsan","蔚山","蔚山"],["세종","Sejong","世宗","世宗"],
+ ["경기","Gyeonggi","京畿","京畿"],["강원","Gangwon","江原","江原"],["충북","North Chungcheong","忠清北道","忠清北道"],["충남","South Chungcheong","忠清南道","忠清南道"],["전북","North Jeolla","全羅北道","全罗北道"],["전남","South Jeolla","全羅南道","全罗南道"],
+ ["경북","North Gyeongsang","慶尚北道","庆尚北道"],["경남","South Gyeongsang","慶尚南道","庆尚南道"],["제주","Jeju","濟州","济州"],["충청북","North Chungcheong","忠清北道","忠清北道"],["충청남","South Chungcheong","忠清南道","忠清南道"],["전라북","North Jeolla","全羅北道","全罗北道"],["전라남","South Jeolla","全羅南道","全罗南道"],["경상북","North Gyeongsang","慶尚北道","庆尚北道"],["경상남","South Gyeongsang","慶尚南道","庆尚南道"]];
+const FX_DEFAULT={USD:1400,HKD:180,TWD:44,CNY:195};
+const LI=()=>({en:0,"zh-Hant":1,"zh-Hans":2}[window.NM_LANG]);
+const t=k=>TX[window.NM_LANG][k];
+const S={auctions:[],bids:[],bidMap:{},sellers:{},site:{},uid:null,db:null,filter:"all",alerts:[]};
+const EXT=3*60*1000;
+function inc(p){return p<100000?1000:p<1000000?5000:p<10000000?10000:50000}
+const won=n=>"₩"+Math.round(n).toLocaleString("en-US");
+function fxCode(){if(window.NM_LANG==="en")return "USD";if(window.NM_LANG==="zh-Hans")return "CNY";return /hk|mo/i.test(navigator.language||"")?"HKD":"TWD"}
+function approx(n){const c=fxCode(),r=((S.site.fx||{})[c])||FX_DEFAULT[c],v=n/r;const sym={USD:"US$",HKD:"HK$",TWD:"NT$",CNY:"¥"}[c];
+  return `${t("approx")} ${sym}${(v>=100?Math.round(v):Math.round(v*10)/10).toLocaleString("en-US")}`}
+function itemName(a){const k=ITEMS[a.item]?a.item:ITEMS[a.cat]?a.cat:"기타 귀한 임산물";return ITEMS[k][LI()]}
+function region(r){r=String(r||"");const p=PROV.find(x=>r.startsWith(x[0]));return p?p[1+LI()]:""}
+function weight(w){return String(w||"").replace(/뿌리/g,window.NM_LANG==="en"?" root(s) ":"支 ").replace(/개/g,window.NM_LANG==="en"?" pcs ":"個 ").replace(/근/g,window.NM_LANG==="en"?" geun (600 g) ":"斤(600g) ").replace(/\s+/g," ").trim()}
+function permit(p){return PERMITS[p]?PERMITS[p][LI()]:""}
+/* same rules as the Korean app: bids are replayed in time order; a late bid extends the close by 3 minutes */
+function auc(a){
+  const raw=(S.bidMap[a.id]||[]).slice().sort((x,y)=>x.t-y.t||x.amount-y.amount);
+  let end=a.endsAt||0;const valid=[];
+  if(a.status==="진행중"){for(const b of raw){if(b.t>=end)break;const min=valid.length?valid[valid.length-1].amount+inc(valid[valid.length-1].amount):a.start;if(b.amount<min)continue;valid.push(b);
+    if(a.buyNow&&b.amount>=a.buyNow){end=b.t;break}if(end-b.t<EXT)end=b.t+EXT}}
+  const top=valid[valid.length-1]||null,ended=Date.now()>=end;
+  const letters={};let n=0;valid.forEach(b=>{if(!(b.bidderId in letters))letters[b.bidderId]=String.fromCharCode(65+(n++%26))});
+  return {valid,top,end,ended,cur:top?top.amount:a.start,minNext:top?top.amount+inc(top.amount):a.start,letters}}
+function leftTxt(ms){ms=Math.max(0,ms);const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.max(1,Math.floor(ms%36e5/6e4));return t("left")(d,h,m)}
+function kind(a){const k=a.item||a.cat;return k==="산삼"?"wild":(k==="산양삼"||k==="장뇌삼")?"forest":"other"}
+const BETA=()=>(S.site||{}).beta!==false;
+let toastT=0;function toast(m){const e=$("#toast");e.textContent=m;e.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>e.hidden=true,3500)}
+
+/* ---------- static text ---------- */
+function paintStatic(){
+  document.documentElement.lang=window.NM_LANG==="en"?"en":window.NM_LANG;
+  document.title=window.NM_LANG==="en"?"Korean Wild Ginseng Auction · Nongmani":t("tag")+" · 農마니";
+  $("#tagline").textContent=t("tag");$("#h1").textContent=t("h1");$("#lead").textContent=t("lead");
+  $("#steps").innerHTML=t("steps").map(([b,s])=>`<li><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join("");
+  $("#foot").innerHTML=t("foot")+"<br>"+esc(t("note"))+" "+esc(t("law"));
+  document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===window.NM_LANG));
+  $("#filters").innerHTML=["all","wild","forest","other"].map(k=>`<button type="button" class="filter" data-f="${k}" aria-pressed="${S.filter===k}">${esc(t(k))}</button>`).join("");
+  paintWho();render()}
+function paintWho(){$("#who").innerHTML=S.uid?`<button type="button" class="btn sm" id="out">${esc(t("signOut"))}</button>`:`<button type="button" class="btn sm pri" id="in">${esc(t("signIn"))}</button>`;
+  $("#in")&&($("#in").onclick=()=>nmAuth.open(t("needLogin")));$("#out")&&($("#out").onclick=()=>nmAuth.signOut())}
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{window.NM_LANG=b.dataset.lang;try{localStorage.setItem("nm_lang",window.NM_LANG)}catch(e){}
+  const u=new URL(location.href);u.searchParams.set("lang",window.NM_LANG);history.replaceState(null,"",u);paintStatic();if($("#dlg").open)openA(S.open)});
+$("#filters").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;S.filter=b.dataset.f;paintStatic()};
+
+/* ---------- list ---------- */
+function chips(a){return [a.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:"",String(a.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:`<span class="chip">${esc(kind(a)==="forest"?t("farmChip"):t("farmG"))}</span>`,a.cert?`<span class="chip gold">${esc(t("certChip"))}</span>`:"",a.appraise?`<span class="chip gold">${esc(t("apprChip"))}</span>`:""].join("")}
+function card(a){const x=auc(a),open=a.status==="진행중"&&!x.ended;
+  return `<button type="button" class="card" data-aid="${esc(a.id)}"><div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}" loading="lazy">`:""}<div class="tl">${chips(a)}</div><span class="clock">${open?esc(leftTxt(x.end-Date.now())):esc(t("ended"))}</span></div>
+   <div class="cbody"><h3>${esc(itemName(a))}</h3><div class="ko" lang="ko">${esc(a.title)}</div>
+   <div class="meta">${[region(a.region),weight(a.weight)].filter(Boolean).map(esc).join(" · ")}</div>
+   <div><span class="meta">${esc(open?(x.top?t("live"):t("start")):(x.top?t("sold"):t("unsold")))}</span><div class="price num">${won(x.cur)} <span class="approx">${esc(approx(x.cur))}</span></div></div>
+   <div class="meta">${esc(t("bids")(x.valid.length))}</div></div></button>`}
+function render(){
+  const live=S.auctions.filter(a=>a.status==="진행중"&&!a.demo).filter(a=>S.filter==="all"||kind(a)===S.filter);
+  const open=live.filter(a=>!auc(a).ended).sort((a,b)=>(!!b.proofOk)-(!!a.proofOk)||auc(a).end-auc(b).end);
+  const done=live.filter(a=>auc(a).ended&&Date.now()-auc(a).end<14*864e5).sort((a,b)=>auc(b).end-auc(a).end).slice(0,8);
+  $("#list").innerHTML=open.length?open.map(card).join(""):`<div class="empty">${esc(t("none"))}</div>`;
+  $("#hDone").hidden=!done.length;$("#hDone").textContent=t("closed");$("#done").innerHTML=done.map(card).join("");
+  $("#beta").hidden=!BETA();$("#beta").textContent=t("beta")}
+document.addEventListener("click",e=>{const c=e.target.closest("[data-aid]");if(c)openA(c.dataset.aid)});
+setInterval(()=>{render();if($("#dlg").open)paintBoard()},30000);
+$("#dlg").onclick=e=>{if(e.target===$("#dlg"))$("#dlg").close()};
+
+/* ---------- one auction ---------- */
+let armed=null;
+function openA(id){const a=S.auctions.find(x=>x.id===id);if(!a)return;S.open=id;armed=null;const d=$("#dlg");
+  d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button>
+   <div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}">`:""}</div>
+   <div style="display:flex;gap:4px;flex-wrap:wrap">${chips(a)}</div>
+   <h2 style="font-size:24px">${esc(itemName(a))}</h2>
+   <dl>
+    <dt>${esc(t("grow"))}</dt><dd>${esc(String(a.grow||"").startsWith("자연산")?t("wildG"):t("farmG"))}</dd>
+    ${a.weight?`<dt>${esc(t("weight"))}</dt><dd>${esc(weight(a.weight))} <span class="ko" lang="ko">(${esc(a.weight)})</span></dd>`:""}
+    ${a.form?`<dt>${esc(t("form"))}</dt><dd>${esc(a.form==="건조"?t("dried"):t("fresh"))}</dd>`:""}
+    <dt>${esc(t("region"))}</dt><dd>${esc(region(a.region))} <span class="ko" lang="ko">(${esc(a.region)})</span></dd>
+    ${a.date?`<dt>${esc(t("dug"))}</dt><dd class="num">${esc(a.date)}</dd>`:""}
+    ${permit(a.permit)?`<dt>${esc(t("basis"))}</dt><dd>${esc(permit(a.permit))}${a.proofOk?` · ✓ ${esc(t("proof"))}`:""}</dd>`:""}
+    <dt>${esc(t("title"))}</dt><dd lang="ko">${esc(a.title)}</dd>
+    ${a.desc?`<dt>${esc(t("desc"))}</dt><dd lang="ko" style="white-space:pre-wrap">${esc(a.desc)}</dd>`:""}
+    <dt>${esc(t("seller"))}</dt><dd lang="ko">${esc((S.sellers[a.sellerId]||{}).shopName||"-")}</dd>
+   </dl>
+   <div id="board"></div></div>`;
+  $("#dx").onclick=()=>d.close();
+  if(!d.open)d.showModal();paintBoard()}
+function paintBoard(){const a=S.auctions.find(x=>x.id===S.open);if(!a)return;const x=auc(a),open=a.status==="진행중"&&!x.ended,b=$("#board");if(!b)return;
+  const hist=x.valid.slice().reverse().map(v=>`<div class="${v.bidderId===S.uid?"me":""}"><span>${esc(t("bidder"))} ${x.letters[v.bidderId]}${v.bidderId===S.uid?` (${esc(t("you"))})`:""}</span><span class="num">${won(v.amount)}</span></div>`).join("");
+  const keep=b.querySelector("#bidIn")?.value;
+  b.innerHTML=`<div style="display:grid;gap:8px;background:var(--sunk);border-radius:14px;padding:14px">
+   <div class="meta">${esc(open?(x.top?t("live"):t("start")):(x.top?t("sold"):t("unsold")))} · ${esc(open?leftTxt(x.end-Date.now()):t("ended"))}</div>
+   <div class="price num">${won(x.cur)} <span class="approx">${esc(approx(x.cur))}</span></div>
+   ${a.buyNow&&open?`<div class="meta">${esc(t("buyNow")(won(a.buyNow)))} <span class="approx">${esc(approx(a.buyNow))}</span></div>`:""}
+   ${open?(BETA()?`<button type="button" class="btn gold" id="notify">${esc(t("notify"))}</button>`:
+     `<div class="meta">${esc(t("minBid")(won(x.minNext)))}${x.top&&x.top.bidderId===S.uid?" · "+esc(t("top")):""}</div>
+      <div class="bidrow"><input id="bidIn" type="number" inputmode="numeric" min="${x.minNext}" step="${inc(x.cur)}" value="${esc(keep||x.minNext)}" aria-label="KRW"><button type="button" class="btn gold" id="bidBtn">${esc(t("bidBtn"))}</button></div>`):""}
+   <div><b style="font-size:15px">${esc(t("history"))}</b><div class="hist">${hist||`<span class="meta">${esc(t("noBids"))}</span>`}</div></div></div>`;
+  const nb=$("#notify");if(nb)nb.onclick=notify;
+  const bb=$("#bidBtn");if(bb){const inp=$("#bidIn");inp.oninput=()=>{armed=null;bb.textContent=t("bidBtn")};bb.onclick=()=>bid(a.id)}}
+async function notify(){if(!S.uid){nmAuth.open(t("needLogin"));return}const a=S.auctions.find(x=>x.id===S.open);const key=String(a.item||a.cat||"").slice(0,30);
+  if(S.alerts.some(x=>x.uid===S.uid&&x.key===key&&x.kind==="auction")){toast(t("notified"));return}
+  try{await S.db.collection("alerts").add({key,kind:"auction",uid:S.uid,beta:true,lang:window.NM_LANG,createdAt:Date.now()});S.alerts.push({uid:S.uid,key,kind:"auction"});toast(t("notified"))}catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}}
+async function bid(id){if(!S.uid){nmAuth.open(t("needLogin"));return}
+  const a=S.auctions.find(q=>q.id===id),x=auc(a),v=Math.round(+$("#bidIn").value),bb=$("#bidBtn");
+  if(x.ended){toast(t("already"));return}
+  if(!(v>=x.minNext)){toast(t("tooLow")(won(x.minNext)));return}
+  if(armed!==v){armed=v;bb.textContent=t("confirm")(won(v));return}
+  armed=null;bb.disabled=true;
+  try{await S.db.collection("bids").add({auctionId:id,bidderId:S.uid,amount:v,t:Date.now(),lang:window.NM_LANG});toast(t("bidOk")(won(v)))}
+  catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}finally{bb.disabled=false}}
+
+/* ---------- data ---------- */
+(async()=>{
+  paintStatic();
+  const use=n=>Promise.resolve(window.claude?.use?.(n)??null).catch(()=>null);
+  const user=await use("user"),db=await use("db");
+  if(!db){$("#conn").hidden=false;$("#conn").textContent=t("conn");return}
+  S.db=db;if(user){const me=await user.me();S.uid=me.id||null}paintWho();
+  const sub=(c,f)=>db.collection(c).limit(1000).onSnapshot(s=>{f(s.docs.map(d=>({id:d.id,...d.data()})));render();if($("#dlg").open)paintBoard()},()=>{});
+  sub("auctions",v=>S.auctions=v);
+  sub("bids",v=>{S.bids=v;S.bidMap={};v.forEach(b=>(S.bidMap[b.auctionId]=S.bidMap[b.auctionId]||[]).push(b))});
+  sub("sellers",v=>{S.sellers=Object.fromEntries(v.filter(x=>!x.id.startsWith("_")).map(x=>[x.id,x]))});
+  sub("settings",v=>{S.site=(v.find(x=>x.id==="site")||{})});
+  if(S.uid)sub("alerts",v=>S.alerts=v);
+})();
+</script>
+</body>
+</html>

@@ -19,6 +19,9 @@ def patch(old, new, label):
 
 HEAD = """<meta name="description" content="심마니가 산에서 캔 약초, 농부가 밭에서 키운 산나물을 직접 사고파는 장터. 귀한 산삼·송이는 경매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
+<link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
+<link rel="alternate" hreflang="zh-Hant" href="https://nongmani.com/app/global.html?lang=zh-Hant">
+<link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2B5B41">
 <link rel="icon" href="icon.svg">
@@ -58,7 +61,7 @@ patch("const hh=await mgrHash(raw),shop=Object.keys(S.sellers).find(u=>S.sellers
       "manager link")
 
 FOOT = """<footer style="max-width:1100px;margin:32px auto 0;padding:18px 16px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.7">
-농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a><br>
+농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hant" style="color:var(--pine)" lang="zh-Hant">繁體中文</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">简体中文</a><br>
 시범 운영 중입니다. 사업자 정보는 등록 후 표시됩니다.
 </footer>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
@@ -67,7 +70,7 @@ patch("</body></html>", FOOT, "footer")
 
 out.mkdir(parents=True, exist_ok=True)
 (out / "index.html").write_text(s, encoding="utf-8")
-for f in ["nm-claude.js", "manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png"]:
+for f in ["nm-claude.js", "global.html", "manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png"]:
     p = here / "app" / f
     if p.exists() and p.resolve() != (out / f).resolve():
         shutil.copy(p, out / f)

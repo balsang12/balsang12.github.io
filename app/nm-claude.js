@@ -14,6 +14,14 @@
   window.nmSupabase = sb;
 
   var sessionReady = sb.auth.getSession().then(function (r) { return r.data.session || null; }).catch(function () { return null; });
+  var RET_KEY = "nm_return";
+  sessionReady.then(function (s) {
+    var ret = null; try { ret = JSON.parse(localStorage.getItem(RET_KEY) || "null"); } catch (e) {}
+    if (!s || !ret) return;
+    try { localStorage.removeItem(RET_KEY); } catch (e) {}
+    var here = location.origin + location.pathname;
+    if (Date.now() - ret.t < 3600000 && ret.url.indexOf(location.origin + "/") === 0 && ret.url.split(/[?#]/)[0] !== here) location.replace(ret.url);
+  });
   var who = null; // {id, admin, name, avatar}
   var whoReady = sessionReady.then(function (s) {
     if (!s) return null;
@@ -224,40 +232,60 @@
     ".nmauth .nm-kakao{background:#FEE500;color:#191600;border:0;font-weight:700}.nmauth .nm-mail{background:var(--pine,#2B5B41);color:var(--pine-ink,#fff);border:0;font-weight:700}" +
     ".nmauth input{border:1px solid var(--line,#D3DCCD);background:var(--bg,#F4F6F1);color:inherit}.nmauth .nm-close{background:none;border:0;color:var(--muted,#566659);min-height:40px}" +
     ".nmauth .nm-or{text-align:center;font-size:13px;color:var(--muted,#566659)}.nmauth .nm-msg:empty{display:none}.nmauth .nm-msg{font-size:14px;color:var(--pine,#2B5B41)}.nmauth .nm-msg.nm-err{color:var(--berry,#A3324A)}";
-  var el = null;
+  var T = {
+    ko: { h: "농마니 로그인", p: "로그인하면 주문·입찰·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.", kakao: "카카오로 시작하기", or: "또는 이메일로 받은 링크로 로그인", lbl: "이메일 주소", ph: "예: hong@naver.com", send: "로그인 링크 받기", close: "닫기",
+      goKakao: "카카오로 이동합니다…", noKakao: "카카오 로그인을 준비 중입니다. 이메일로 로그인해 주세요.", badMail: "이메일 주소를 다시 확인해 주세요.", sending: "보내는 중…",
+      rate: "잠시 뒤 다시 시도해 주세요. 메일을 너무 자주 요청했습니다.", fail: "메일을 보내지 못했습니다. 주소를 확인해 주세요.", sent: function (m) { return m + " 으로 로그인 링크를 보냈습니다. 메일함에서 링크를 누르면 로그인됩니다. (스팸함도 확인해 주세요)"; } },
+    en: { h: "Sign in to Nongmani", p: "Sign in to bid. New here? An account is created automatically.", kakao: "Continue with Kakao", or: "or get a sign-in link by email", lbl: "Email address", ph: "you@example.com", send: "Email me a sign-in link", close: "Close",
+      goKakao: "Opening Kakao…", noKakao: "Kakao sign-in is not ready yet. Please use email.", badMail: "Please check the email address.", sending: "Sending…",
+      rate: "Too many requests. Please try again in a minute.", fail: "We could not send the email. Please check the address.", sent: function (m) { return "We sent a sign-in link to " + m + ". Open it to sign in (check spam too)."; } },
+    "zh-Hant": { h: "登入農마니", p: "登入後即可出價。首次使用會自動建立帳號。", kakao: "使用 Kakao 登入", or: "或以電子郵件接收登入連結", lbl: "電子郵件", ph: "you@example.com", send: "寄送登入連結", close: "關閉",
+      goKakao: "正在前往 Kakao…", noKakao: "Kakao 登入尚未開放，請使用電子郵件。", badMail: "請確認電子郵件地址。", sending: "寄送中…",
+      rate: "請求過於頻繁，請稍後再試。", fail: "郵件寄送失敗，請確認地址。", sent: function (m) { return "登入連結已寄至 " + m + "，請點擊郵件中的連結登入（也請查看垃圾郵件）。"; } },
+    "zh-Hans": { h: "登录农마니", p: "登录后即可出价。首次使用会自动创建账号。", kakao: "使用 Kakao 登录", or: "或通过电子邮件接收登录链接", lbl: "电子邮箱", ph: "you@example.com", send: "发送登录链接", close: "关闭",
+      goKakao: "正在前往 Kakao…", noKakao: "Kakao 登录尚未开放，请使用电子邮箱。", badMail: "请确认电子邮箱地址。", sending: "发送中…",
+      rate: "请求过于频繁，请稍后再试。", fail: "邮件发送失败，请确认地址。", sent: function (m) { return "登录链接已发送至 " + m + "，请点击邮件中的链接登录（也请查看垃圾邮件）。"; } }
+  };
+  function L() { return T[window.NM_LANG] || T.ko; }
+  function remember() { try { localStorage.setItem(RET_KEY, JSON.stringify({ url: location.href.split("#")[0], t: Date.now() })); } catch (e) {} }
+  var el = null, elLang = null;
   function build() {
+    if (el && elLang !== (window.NM_LANG || "ko")) { el.remove(); el = null; }
     if (el) return el;
-    var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+    if (!document.getElementById("nmAuthCss")) { var st = document.createElement("style"); st.id = "nmAuthCss"; st.textContent = css; document.head.appendChild(st); }
+    var t = L(); elLang = window.NM_LANG || "ko";
     el = document.createElement("div"); el.className = "nmauth"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-labelledby", "nmAuthH");
-    el.innerHTML = '<div class="box"><h2 id="nmAuthH">농마니 로그인</h2><p>로그인하면 주문·입찰·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.</p>' +
-      '<button type="button" class="nm-kakao" id="nmKakao">카카오로 시작하기</button>' +
-      '<div class="nm-or">또는 이메일로 받은 링크로 로그인</div>' +
-      '<form id="nmMailForm" style="display:flex;flex-direction:column;gap:8px"><label for="nmMail" style="font-size:14px;color:var(--muted,#566659)">이메일 주소</label><input id="nmMail" type="email" autocomplete="email" inputmode="email" placeholder="예: hong@naver.com" required><button class="nm-mail" type="submit">로그인 링크 받기</button></form>' +
-      '<div class="nm-msg" id="nmMsg" role="status"></div><button type="button" class="nm-close" id="nmClose">닫기</button></div>';
+    el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' +
+      '<button type="button" class="nm-kakao" id="nmKakao"></button>' +
+      '<div class="nm-or" id="nmOr"></div>' +
+      '<form id="nmMailForm" style="display:flex;flex-direction:column;gap:8px"><label for="nmMail" id="nmMailL" style="font-size:14px;color:var(--muted,#566659)"></label><input id="nmMail" type="email" autocomplete="email" inputmode="email" required><button class="nm-mail" type="submit" id="nmSend"></button></form>' +
+      '<div class="nm-msg" id="nmMsg" role="status"></div><button type="button" class="nm-close" id="nmClose"></button></div>';
+    [["#nmAuthH", t.h], ["#nmAuthP", t.p], ["#nmKakao", t.kakao], ["#nmOr", t.or], ["#nmMailL", t.lbl], ["#nmSend", t.send], ["#nmClose", t.close]].forEach(function (x) { el.querySelector(x[0]).textContent = x[1]; });
+    el.querySelector("#nmMail").placeholder = t.ph;
     document.body.appendChild(el);
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
     el.querySelector("#nmKakao").onclick = function () {
-      say("카카오로 이동합니다…");
+      say(t.goKakao); remember();
       sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: APP_URL } }).then(function (r) {
-        if (r.error) say("카카오 로그인을 준비 중입니다. 이메일로 로그인해 주세요.", true);
+        if (r.error) say(t.noKakao, true);
       });
     };
     el.querySelector("#nmMailForm").onsubmit = function (e) {
       e.preventDefault();
       var m = el.querySelector("#nmMail").value.trim();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { say("이메일 주소를 다시 확인해 주세요.", true); return; }
-      say("보내는 중…");
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { say(t.badMail, true); return; }
+      say(t.sending); remember();
       sb.auth.signInWithOtp({ email: m, options: { emailRedirectTo: APP_URL } }).then(function (r) {
-        if (r.error) say(/rate/i.test(r.error.message) ? "잠시 뒤 다시 시도해 주세요. 메일을 너무 자주 요청했습니다." : "메일을 보내지 못했습니다. 주소를 확인해 주세요.", true);
-        else say(m + " 으로 로그인 링크를 보냈습니다. 메일함에서 링크를 누르면 로그인됩니다. (스팸함도 확인해 주세요)");
+        if (r.error) say(/rate/i.test(r.error.message) ? t.rate : t.fail, true);
+        else say(t.sent(m));
       });
     };
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !el.hidden) close(); });
+    if (!build.keyed) { build.keyed = true; document.addEventListener("keydown", function (e) { if (e.key === "Escape" && el && !el.hidden) close(); }); }
     return el;
   }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
-  function open(reason) { build(); el.hidden = false; say(reason || ""); setTimeout(function () { el.querySelector("#nmKakao").focus(); }, 30); }
+  function open(reason) { build(); document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || ""); setTimeout(function () { el.querySelector("#nmKakao").focus(); }, 30); }
   function close() { if (el) el.hidden = true; }
 
   window.nmAuth = Object.freeze({
