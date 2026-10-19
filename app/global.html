@@ -104,6 +104,13 @@ dt{color:var(--muted)}dd{margin:0}
 .hist .me{font-weight:700;color:var(--pine)}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;max-width:calc(100% - 32px);z-index:99}
 #toast[hidden]{display:none}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 0;overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;min-height:44px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--pine);border-bottom-color:var(--pine)}
+.qty{display:flex;align-items:center;gap:10px}.qty button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:20px;cursor:pointer}
+.field{display:grid;gap:4px;font-size:14px}.field input{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);min-height:44px}
+.ord{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:4px}
+.warn{background:var(--berry-soft);border-radius:12px;padding:10px 12px;font-size:14px}
 footer{margin-top:40px;border-top:1px solid var(--line);padding:18px 0 40px;font-size:13px;color:var(--muted)}
 footer a{color:var(--pine)}
 </style>
@@ -120,14 +127,23 @@ footer a{color:var(--pine)}
   <section class="hero">
     <h1 id="h1"></h1>
     <p id="lead"></p>
-    <ol class="steps" id="steps"></ol>
   </section>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
   <div class="notice" id="beta" hidden></div>
   <div class="notice err" id="conn" hidden></div>
-  <div class="bar" id="filters" role="group"></div>
-  <div class="grid" id="list" aria-live="polite"></div>
-  <h2 id="hDone" style="font-size:20px;margin:28px 0 10px" hidden></h2>
-  <div class="grid" id="done"></div>
+  <section id="secAuc">
+    <ol class="steps" id="steps"></ol>
+    <div class="bar" id="filters" role="group"></div>
+    <div class="grid" id="list" aria-live="polite"></div>
+    <h2 id="hDone" style="font-size:20px;margin:28px 0 10px" hidden></h2>
+    <div class="grid" id="done"></div>
+  </section>
+  <section id="secMkt" hidden>
+    <div class="notice" id="mktNote" style="background:var(--pine-soft)"></div>
+    <div class="bar" id="mfilters" role="group"></div>
+    <div class="grid" id="mlist" aria-live="polite"></div>
+  </section>
+  <section id="secOrd" hidden><div id="olist" style="display:grid;gap:10px;margin-top:14px"></div></section>
 </main>
 <footer><div class="wrap" id="foot"></div></footer>
 <dialog id="dlg"></dialog>
@@ -144,6 +160,7 @@ footer a{color:var(--pine)}
 </script>
 <script src="vendor/supabase.js"></script>
 <script src="nm-claude.js"></script>
+<script src="herb-i18n.js"></script>
 <script>
 "use strict";
 const $=s=>document.querySelector(s);
@@ -151,7 +168,18 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 
 /* ---------- words ---------- */
 const TX={
- en:{tag:"Korean wild ginseng auction",h1:"Wild mountain ginseng, straight from the Korean simmani who dug it",
+ en:{
+  tabAuc:"Auctions",tabMkt:"Market",tabOrd:"My orders",
+  mktNote:"Fresh and dried wild herbs from Korean farmers and simmani. Delivered anywhere in Korea. Overseas shipping is not available yet.",
+  cats:{"전체":"All","뿌리 약초":"Roots","산나물":"Mountain greens","말린 약초·차":"Dried herbs & tea","열매":"Fruits & berries","버섯":"Mushrooms","가공품":"Processed foods"},
+  per:u=>`per ${u}`,ship:"Delivery in Korea",stock:"In stock",soldOut:"Sold out",qty:"Quantity",total:"Total",buy:"Order",notifyMkt:"Notify me when ordering opens",
+  memo:"Delivery note",memoPh:"Recipient name and requests (no full address here)",ordered:"Ordered. See “My orders”.",noStock:"Not enough stock left.",
+  origin:"Origin",originV:r=>`Korea (${r})`,growL:"How it was produced",ingr:"Ingredients (Korean)",vol:"Contents",shelf:"Best before",
+  growV:{"자연산 (산에서 채취)":"Wild-harvested","재배 (인증 없음)":"Cultivated","무농약 인증 재배":"Certified pesticide-free","유기농 인증 재배":"Certified organic"},
+  noMkt:"No products in this category right now.",noOrd:"You have no orders yet.",signToSee:"Sign in to see your orders.",
+  st:{"결제완료":"Paid · seller preparing","발송완료":"Shipped","수령확인":"Received","정산완료":"Completed","취소":"Cancelled","환불":"Refunded","분쟁":"Under review"},
+  recv:"I received it",recvOk:"Thanks! The seller will be paid.",track:"Tracking",careT:"Before eating",
+  tag:"Korean wild herbs · auction & market",h1:"Wild mountain ginseng, straight from the Korean simmani who dug it",
   lead:"Simmani are Korea's traditional wild-ginseng hunters. Each root is listed by the person who found it, with photos, weight and where it grew. Roots marked “Harvest papers checked” come with a permit or landowner consent that our team has reviewed.",
   steps:[["Bid","Sign in with your email and place a bid in Korean won."],["Win","When the auction closes, we contact the winner within 24 hours."],["Pay & collect in Korea","Pay, then collect in Seoul or have it delivered to your hotel in Korea. Overseas shipping is not available yet."]],
   beta:"Pre-launch: bidding opens soon. Tap “Notify me” on any auction and we will email you when it opens.",
@@ -170,7 +198,18 @@ const TX={
   approx:"approx.",note:"Prices are in Korean won (KRW). Converted amounts are rough guides only.",
   foot:'Nongmani (농부와 심마니) · Korean marketplace for wild herbs · <a href="./">한국어</a> · Trademark application No. 40-2026-0219569',
   ko:"Korean listing",law:"Health claims are not allowed on Nongmani. Listings describe size, shape and where the root was found."},
- "zh-Hant":{tag:"韓國野山參拍賣",h1:"韓國採參人親手採挖的野山參",
+ "zh-Hant":{
+  tabAuc:"拍賣",tabMkt:"商店",tabOrd:"我的訂單",
+  mktNote:"韓國農民與採參人提供的新鮮及乾燥野生草本。可配送至韓國全境，目前尚無海外配送。",
+  cats:{"전체":"全部","뿌리 약초":"根類","산나물":"山野菜","말린 약초·차":"乾燥草本與茶","열매":"果實","버섯":"菇類","가공품":"加工食品"},
+  per:u=>`每 ${u}`,ship:"韓國境內運費",stock:"有庫存",soldOut:"已售完",qty:"數量",total:"合計",buy:"下單",notifyMkt:"開放時通知我",
+  memo:"配送備註",memoPh:"收件人姓名與需求（請勿填寫完整地址）",ordered:"已下單，請在「我的訂單」查看。",noStock:"庫存不足。",
+  origin:"產地",originV:r=>`韓國（${r}）`,growL:"生產方式",ingr:"原料（韓文）",vol:"內容量",shelf:"賞味期限",
+  growV:{"자연산 (산에서 채취)":"野生採集","재배 (인증 없음)":"栽培","무농약 인증 재배":"無農藥認證栽培","유기농 인증 재배":"有機認證栽培"},
+  noMkt:"此分類目前沒有商品。",noOrd:"您還沒有訂單。",signToSee:"登入後可查看訂單。",
+  st:{"결제완료":"已付款・賣家準備中","발송완료":"已出貨","수령확인":"已收貨","정산완료":"已完成","취소":"已取消","환불":"已退款","분쟁":"處理中"},
+  recv:"我已收到",recvOk:"謝謝！款項將撥給賣家。",track:"物流單號",careT:"食用前",
+  tag:"韓國野生草本・拍賣與商店",h1:"韓國採參人親手採挖的野山參",
   lead:"「심마니」是韓國傳統的野山參採挖人。每支參都由發現它的人親自上架，附上照片、重量與生長地。標有「採挖文件已審核」的商品，附有經我們審核的採集許可或山主同意書。",
   steps:[["出價","以電子郵件登入，用韓元出價。"],["得標","拍賣結束後，我們會在 24 小時內聯繫得標者。"],["在韓國付款取貨","付款後可在首爾取貨，或送到您在韓國的飯店。目前尚無海外配送。"]],
   beta:"預先開放中：出價功能即將上線。點擊任一拍賣的「開放時通知我」，上線時我們會寄信通知您。",
@@ -189,7 +228,18 @@ const TX={
   approx:"約",note:"價格以韓元（KRW）計，換算金額僅供參考。",
   foot:'農마니（농부와 심마니）· 韓國野生草藥交易平台 · <a href="./">한국어</a> · 商標申請 第40-2026-0219569號',
   ko:"韓文原文",law:"本平台不允許標示療效，商品只描述大小、形狀與產地。"},
- "zh-Hans":{tag:"韩国野山参拍卖",h1:"韩国采参人亲手采挖的野山参",
+ "zh-Hans":{
+  tabAuc:"拍卖",tabMkt:"商店",tabOrd:"我的订单",
+  mktNote:"韩国农民与采参人提供的新鲜及干燥野生草本。可配送至韩国全境，暂不提供海外配送。",
+  cats:{"전체":"全部","뿌리 약초":"根类","산나물":"山野菜","말린 약초·차":"干燥草本与茶","열매":"果实","버섯":"菌菇","가공품":"加工食品"},
+  per:u=>`每 ${u}`,ship:"韩国境内运费",stock:"有库存",soldOut:"已售完",qty:"数量",total:"合计",buy:"下单",notifyMkt:"开放时通知我",
+  memo:"配送备注",memoPh:"收件人姓名与需求（请勿填写完整地址）",ordered:"已下单，请在“我的订单”查看。",noStock:"库存不足。",
+  origin:"产地",originV:r=>`韩国（${r}）`,growL:"生产方式",ingr:"原料（韩文）",vol:"净含量",shelf:"保质期",
+  growV:{"자연산 (산에서 채취)":"野生采集","재배 (인증 없음)":"栽培","무농약 인증 재배":"无农药认证栽培","유기농 인증 재배":"有机认证栽培"},
+  noMkt:"此分类目前没有商品。",noOrd:"您还没有订单。",signToSee:"登录后可查看订单。",
+  st:{"결제완료":"已付款・卖家准备中","발송완료":"已发货","수령확인":"已收货","정산완료":"已完成","취소":"已取消","환불":"已退款","분쟁":"处理中"},
+  recv:"我已收到",recvOk:"谢谢！款项将结算给卖家。",track:"物流单号",careT:"食用前",
+  tag:"韩国野生草本・拍卖与商店",h1:"韩国采参人亲手采挖的野山参",
   lead:"“심마니”是韩国传统的野山参采挖人。每支参都由发现它的人亲自上架，附上照片、重量与生长地。标有“采挖文件已审核”的商品，附有经我们审核的采集许可或山主同意书。",
   steps:[["出价","用电子邮箱登录，以韩元出价。"],["中标","拍卖结束后，我们会在 24 小时内联系中标者。"],["在韩国付款取货","付款后可在首尔取货，或送到您在韩国的酒店。暂不提供海外配送。"]],
   beta:"预先开放中：出价功能即将上线。点击任一拍卖的“开放时通知我”，上线时我们会发邮件通知您。",
@@ -223,7 +273,22 @@ const PROV=[["서울","Seoul","首爾","首尔"],["부산","Busan","釜山","釜
 const FX_DEFAULT={USD:1400,HKD:180,TWD:44,CNY:195};
 const LI=()=>({en:0,"zh-Hant":1,"zh-Hans":2}[window.NM_LANG]);
 const t=k=>TX[window.NM_LANG][k];
-const S={auctions:[],bids:[],bidMap:{},sellers:{},site:{},uid:null,db:null,filter:"all",alerts:[]};
+const S={auctions:[],bids:[],bidMap:{},sellers:{},site:{},uid:null,db:null,filter:"all",alerts:[],products:[],orders:[],mcat:"전체",tab:"auc"};
+try{const h=location.hash.slice(1);if(["auc","mkt","ord"].includes(h))S.tab=h}catch(e){}
+const CATMAP={"뿌리·줄기":"뿌리 약초","약초":"말린 약초·차","잎·꽃·차":"말린 약초·차"},mcat=c=>CATMAP[c]||c;
+const UNITS={"근(600g)":["geun (600 g)","斤（600克）","斤（600克）"],"1병":["bottle","瓶","瓶"],"1봉":["bag","袋","袋"],"1박스":["box","盒","盒"],"1세트":["set","組","组"]};
+const unitT=u=>UNITS[u]?UNITS[u][LI()]:u;
+/* preparation notes for buyers (lookalike notes stay with the operator) */
+const CARE={"고사리":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。"],"고비":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。"],
+ "두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。"],"엄나무순":["Blanch before eating.","請汆燙後食用。","请焯水后食用。"],"땅두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。"],
+ "원추리":["Eat only young leaves, well blanched.","只食用嫩葉，並充分汆燙。","只食用嫩叶，并充分焯水。"],"산수유":["Remove the seeds; eat the flesh only.","請去籽，只食用果肉。","请去籽，只食用果肉。"],
+ "개복숭아":["Do not use the seeds.","請勿使用果核。","请勿使用果核。"],"매실":["Remove the seeds from syrups after aging; do not eat unripe seeds.","醃漬一段時間後請撈出果核，勿食未熟果核。","腌渍一段时间后请捞出果核，勿食未熟果核。"],
+ "은행":["Do not eat many at once.","一次請勿多食。","一次请勿多食。"],"얼레지":["Blanch before eating; large amounts can upset the stomach.","請汆燙後食用，多食可能腹瀉。","请焯水后食用，多食可能腹泻。"],
+ "수영":["High in oxalic acid; eat in moderation.","草酸含量高，請適量食用。","草酸含量高，请适量食用。"],"소리쟁이":["Young leaves only, blanched.","只食用嫩葉，汆燙後食用。","只食用嫩叶，焯水后食用。"],
+ "아주까리":["Seeds are highly toxic. Leaves only, boiled and dried.","種子有劇毒，只食用煮過曬乾的葉子。","种子有剧毒，只食用煮过晒干的叶子。"],"토란":["Cook before eating.","請煮熟後食用。","请煮熟后食用。"],
+ "살구":["Do not eat the kernels raw.","果仁請勿生食。","果仁请勿生食。"],"뽕나무버섯":["Do not eat raw.","請勿生食。","请勿生食。"]};
+function herbT(k){const d=window.NM_HERB_I18N||{};return d[k]?d[k][LI()]:ITEMS[k]?ITEMS[k][LI()]:""}
+function pname(p){const f=String((window.NM_LANG==="en"?p.nameEn:p.nameZh)||"").trim();return f||herbT(p.item)||p.name}
 const EXT=3*60*1000;
 function inc(p){return p<100000?1000:p<1000000?5000:p<10000000?10000:50000}
 const won=n=>"₩"+Math.round(n).toLocaleString("en-US");
@@ -258,11 +323,17 @@ function paintStatic(){
   $("#foot").innerHTML=t("foot")+"<br>"+esc(t("note"))+" "+esc(t("law"));
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===window.NM_LANG));
   $("#filters").innerHTML=["all","wild","forest","other"].map(k=>`<button type="button" class="filter" data-f="${k}" aria-pressed="${S.filter===k}">${esc(t(k))}</button>`).join("");
+  $("#tabs").innerHTML=[["auc","tabAuc"],["mkt","tabMkt"],["ord","tabOrd"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${esc(t(l))}</button>`).join("");
+  $("#mktNote").textContent=t("mktNote");
+  $("#mfilters").innerHTML=Object.keys(t("cats")).map(k=>`<button type="button" class="filter" data-mc="${esc(k)}" aria-pressed="${S.mcat===k}">${esc(t("cats")[k])}</button>`).join("");
+  ["auc","mkt","ord"].forEach(k=>$("#sec"+{auc:"Auc",mkt:"Mkt",ord:"Ord"}[k]).hidden=S.tab!==k);
   paintWho();render()}
+$("#tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;history.replaceState(null,"","#"+S.tab);paintStatic()};
+$("#mfilters").onclick=e=>{const b=e.target.closest("[data-mc]");if(!b)return;S.mcat=b.dataset.mc;paintStatic()};
 function paintWho(){$("#who").innerHTML=S.uid?`<button type="button" class="btn sm" id="out">${esc(t("signOut"))}</button>`:`<button type="button" class="btn sm pri" id="in">${esc(t("signIn"))}</button>`;
   $("#in")&&($("#in").onclick=()=>nmAuth.open(t("needLogin")));$("#out")&&($("#out").onclick=()=>nmAuth.signOut())}
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{window.NM_LANG=b.dataset.lang;try{localStorage.setItem("nm_lang",window.NM_LANG)}catch(e){}
-  const u=new URL(location.href);u.searchParams.set("lang",window.NM_LANG);history.replaceState(null,"",u);paintStatic();if($("#dlg").open)openA(S.open)});
+  const u=new URL(location.href);u.searchParams.set("lang",window.NM_LANG);history.replaceState(null,"",u);paintStatic();if($("#dlg").open)(S.dlgKind==="p"?openP:openA)(S.open)});
 $("#filters").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;S.filter=b.dataset.f;paintStatic()};
 
 /* ---------- list ---------- */
@@ -279,14 +350,64 @@ function render(){
   const done=live.filter(a=>auc(a).ended&&Date.now()-auc(a).end<14*864e5).sort((a,b)=>auc(b).end-auc(a).end).slice(0,8);
   $("#list").innerHTML=open.length?open.map(card).join(""):`<div class="empty">${esc(t("none"))}</div>`;
   $("#hDone").hidden=!done.length;$("#hDone").textContent=t("closed");$("#done").innerHTML=done.map(card).join("");
-  $("#beta").hidden=!BETA();$("#beta").textContent=t("beta")}
-document.addEventListener("click",e=>{const c=e.target.closest("[data-aid]");if(c)openA(c.dataset.aid)});
-setInterval(()=>{render();if($("#dlg").open)paintBoard()},30000);
+  $("#beta").hidden=!BETA();$("#beta").textContent=t("beta");renderMkt();renderOrd()}
+/* ---------- market ---------- */
+function pcard(p){return `<button type="button" class="card" data-pid="${esc(p.id)}"><div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}" loading="lazy">`:""}<div class="tl">${String(p.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:""}${p.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:""}</div>${p.stock>0?"":`<span class="clock">${esc(t("soldOut"))}</span>`}</div>
+  <div class="cbody"><h3>${esc(pname(p))}</h3><div class="ko" lang="ko">${esc(p.name)}</div><div class="meta">${esc(region(p.region))}${p.form?" · "+esc(p.form==="건조"?t("dried"):p.form==="생물"?t("fresh"):p.form):""}</div>
+  <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div></div></button>`}
+function renderMkt(){const ps=S.products.filter(p=>p.status==="판매중"&&!p.demo).filter(p=>S.mcat==="전체"||mcat(p.cat)===S.mcat).sort((a,b)=>(b.stock>0)-(a.stock>0)||(!!b.proofOk)-(!!a.proofOk)||b.createdAt-a.createdAt);
+  $("#mlist").innerHTML=ps.length?ps.map(pcard).join(""):`<div class="empty">${esc(t("noMkt"))}</div>`}
+function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;S.dlgKind="p";const d=$("#dlg"),ship=p.form==="생물"?5000:3500;let qty=1;
+  const care=CARE[p.item],gv=t("growV")[p.grow];
+  d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button>
+   <div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}">`:""}</div>
+   <h2 style="font-size:24px">${esc(pname(p))}</h2><div class="ko" lang="ko">${esc(p.name)}</div>
+   <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div>
+   ${care?`<div class="warn"><b>${esc(t("careT"))}:</b> ${esc(care[LI()])}</div>`:""}
+   <dl>
+    ${herbT(p.item)?`<dt>${esc(t("item"))}</dt><dd>${esc(herbT(p.item))}</dd>`:""}
+    <dt>${esc(t("origin"))}</dt><dd>${esc(t("originV")(region(p.region)||"-"))} <span class="ko" lang="ko">(${esc(p.region)})</span></dd>
+    ${p.form?`<dt>${esc(t("form"))}</dt><dd>${esc(p.form==="건조"?t("dried"):p.form==="생물"?t("fresh"):p.form)}</dd>`:""}
+    ${gv?`<dt>${esc(t("growL"))}</dt><dd>${esc(gv)}</dd>`:""}
+    ${p.proc?`<dt>${esc(t("ingr"))}</dt><dd lang="ko">${esc(p.proc.ingr)}</dd><dt>${esc(t("vol"))}</dt><dd>${esc(p.proc.vol)}</dd><dt>${esc(t("shelf"))}</dt><dd>${esc(p.proc.shelf)}</dd>`:""}
+    <dt>${esc(t("ship"))}</dt><dd class="num">${won(ship)}</dd>
+    <dt>${esc(t("seller"))}</dt><dd lang="ko">${esc((S.sellers[p.sellerId]||{}).shopName||"-")}</dd>
+    ${p.desc?`<dt>${esc(t("desc"))}</dt><dd lang="ko" style="white-space:pre-wrap">${esc(p.desc)}</dd>`:""}
+   </dl>
+   ${p.stock>0&&p.sellerId!==S.uid?`<div style="display:grid;gap:10px;background:var(--sunk);border-radius:14px;padding:14px">
+     <div class="qty"><span>${esc(t("qty"))}</span><button type="button" id="qm" aria-label="−">−</button><b class="num" id="qv">1</b><button type="button" id="qp" aria-label="+">+</button><span class="meta">× ${esc(unitT(p.unit))}</span></div>
+     ${BETA()?"":`<label class="field">${esc(t("memo"))}<input id="oMemo" maxlength="300" placeholder="${esc(t("memoPh"))}"></label>`}
+     <button type="button" class="btn ${BETA()?"gold":"pri"}" id="buy"></button></div>`:p.stock>0?"":`<div class="notice">${esc(t("soldOut"))}</div>`}
+  </div>`;
+  $("#dx").onclick=()=>d.close();
+  const b=$("#buy");if(b){const upd=()=>{$("#qv").textContent=qty;b.textContent=BETA()?t("notifyMkt"):`${t("buy")} · ${t("total")} ${won(p.price*qty+ship)}`};upd();
+    $("#qm").onclick=()=>{if(qty>1){qty--;upd()}};$("#qp").onclick=()=>{if(qty<p.stock){qty++;upd()}};
+    b.onclick=async()=>{if(!S.uid){nmAuth.open(t("needLogin"));return}
+      if(BETA()){await notifyKey(String(p.item||p.name).slice(0,30),"market");return}
+      b.disabled=true;
+      try{const fresh=(await S.db.doc("products/"+p.id).get()).data();if(!fresh||fresh.stock<qty){toast(t("noStock"));return}
+        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:p.price*qty+ship,buyerId:S.uid,sellerId:p.sellerId,memo:($("#oMemo")?.value||"").slice(0,300),lang:window.NM_LANG,status:"결제완료",createdAt:Date.now()});
+        await S.db.doc("products/"+p.id).update({stock:fresh.stock-qty});
+        toast(t("ordered"));d.close();S.tab="ord";history.replaceState(null,"","#ord");paintStatic()}
+      catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}finally{b.disabled=false}}}
+  if(!d.open)d.showModal()}
+/* ---------- my orders ---------- */
+function renderOrd(){const el=$("#olist");if(!S.uid){el.innerHTML=`<div class="empty">${esc(t("signToSee"))} <button type="button" class="btn sm pri" onclick="nmAuth.open()">${esc(t("signIn"))}</button></div>`;return}
+  const os=S.orders.filter(o=>o.buyerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
+  const won_=S.auctions.map(a=>({a,x:auc(a)})).filter(o=>o.x.ended&&o.x.top&&o.x.top.bidderId===S.uid);
+  if(!os.length&&!won_.length){el.innerHTML=`<div class="empty">${esc(t("noOrd"))}</div>`;return}
+  el.innerHTML=won_.map(({a,x})=>`<div class="ord"><b>${esc(ftitle(a)||itemName(a))}</b><span class="ko" lang="ko">${esc(a.title)}</span><span class="num">${won(x.top.amount)} · ${esc(a.deal?(t("st")[a.deal]||a.deal):t("sold"))}</span></div>`).join("")+
+   os.map(o=>{const p=S.products.find(x=>x.id===o.productId)||{item:"",name:o.productName};return `<div class="ord"><b>${esc(pname({...p,name:o.productName}))}</b><span class="ko" lang="ko">${esc(o.productName)}</span>
+    <span class="num">${o.qty} × ${esc(unitT(o.unit))} · ${won(o.total)}</span><span class="meta">${esc(t("st")[o.status]||o.status)}${o.tracking?` · ${esc(t("track"))} ${esc(o.courier||"")} ${esc(o.tracking)}`:""}</span>
+    ${o.status==="발송완료"?`<div><button type="button" class="btn sm pri" data-recv="${esc(o.id)}">${esc(t("recv"))}</button></div>`:""}</div>`}).join("");
+  el.querySelectorAll("[data-recv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await S.db.doc("orders/"+b.dataset.recv).update({status:"수령확인",receivedAt:Date.now()});toast(t("recvOk"))}catch(e){toast(t("fail"));b.disabled=false}})}
+document.addEventListener("click",e=>{const c=e.target.closest("[data-aid]");if(c){openA(c.dataset.aid);return}const q=e.target.closest("[data-pid]");if(q)openP(q.dataset.pid)});
+setInterval(()=>{render();if($("#dlg").open&&S.dlgKind!=="p")paintBoard()},30000);
 $("#dlg").onclick=e=>{if(e.target===$("#dlg"))$("#dlg").close()};
 
 /* ---------- one auction ---------- */
 let armed=null;
-function openA(id){const a=S.auctions.find(x=>x.id===id);if(!a)return;S.open=id;armed=null;const d=$("#dlg");
+function openA(id){const a=S.auctions.find(x=>x.id===id);if(!a)return;S.open=id;S.dlgKind="a";armed=null;const d=$("#dlg");
   d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button>
    <div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}">`:""}</div>
    <div style="display:flex;gap:4px;flex-wrap:wrap">${chips(a)}</div>
@@ -319,9 +440,10 @@ function paintBoard(){const a=S.auctions.find(x=>x.id===S.open);if(!a)return;con
    <div><b style="font-size:15px">${esc(t("history"))}</b><div class="hist">${hist||`<span class="meta">${esc(t("noBids"))}</span>`}</div></div></div>`;
   const nb=$("#notify");if(nb)nb.onclick=notify;
   const bb=$("#bidBtn");if(bb){const inp=$("#bidIn");inp.oninput=()=>{armed=null;bb.textContent=t("bidBtn")};bb.onclick=()=>bid(a.id)}}
-async function notify(){if(!S.uid){nmAuth.open(t("needLogin"));return}const a=S.auctions.find(x=>x.id===S.open);const key=String(a.item||a.cat||"").slice(0,30);
-  if(S.alerts.some(x=>x.uid===S.uid&&x.key===key&&x.kind==="auction")){toast(t("notified"));return}
-  try{await S.db.collection("alerts").add({key,kind:"auction",uid:S.uid,beta:true,lang:window.NM_LANG,createdAt:Date.now()});S.alerts.push({uid:S.uid,key,kind:"auction"});toast(t("notified"))}catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}}
+async function notify(){const a=S.auctions.find(x=>x.id===S.open);await notifyKey(String(a.item||a.cat||"").slice(0,30),"auction")}
+async function notifyKey(key,kind){if(!S.uid){nmAuth.open(t("needLogin"));return}
+  if(S.alerts.some(x=>x.uid===S.uid&&x.key===key&&x.kind===kind)){toast(t("notified"));return}
+  try{await S.db.collection("alerts").add({key,kind,uid:S.uid,beta:true,lang:window.NM_LANG,createdAt:Date.now()});S.alerts.push({uid:S.uid,key,kind});toast(t("notified"))}catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}}
 async function bid(id){if(!S.uid){nmAuth.open(t("needLogin"));return}
   const a=S.auctions.find(q=>q.id===id),x=auc(a),v=Math.round(+$("#bidIn").value),bb=$("#bidBtn");
   if(x.ended){toast(t("already"));return}
@@ -338,12 +460,13 @@ async function bid(id){if(!S.uid){nmAuth.open(t("needLogin"));return}
   const user=await use("user"),db=await use("db");
   if(!db){$("#conn").hidden=false;$("#conn").textContent=t("conn");return}
   S.db=db;if(user){const me=await user.me();S.uid=me.id||null}paintWho();
-  const sub=(c,f)=>db.collection(c).limit(1000).onSnapshot(s=>{f(s.docs.map(d=>({id:d.id,...d.data()})));render();if($("#dlg").open)paintBoard()},()=>{});
+  const sub=(c,f)=>db.collection(c).limit(1000).onSnapshot(s=>{f(s.docs.map(d=>({id:d.id,...d.data()})));render();if($("#dlg").open&&S.dlgKind!=="p")paintBoard()},()=>{});
   sub("auctions",v=>S.auctions=v);
   sub("bids",v=>{S.bids=v;S.bidMap={};v.forEach(b=>(S.bidMap[b.auctionId]=S.bidMap[b.auctionId]||[]).push(b))});
   sub("sellers",v=>{S.sellers=Object.fromEntries(v.filter(x=>!x.id.startsWith("_")).map(x=>[x.id,x]))});
   sub("settings",v=>{S.site=(v.find(x=>x.id==="site")||{})});
-  if(S.uid)sub("alerts",v=>S.alerts=v);
+  sub("products",v=>S.products=v);
+  if(S.uid){sub("alerts",v=>S.alerts=v);sub("orders",v=>S.orders=v)}
 })();
 </script>
 </body>

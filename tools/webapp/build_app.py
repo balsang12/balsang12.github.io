@@ -33,6 +33,8 @@ HEAD = """<meta name="description" content="심마니가 산에서 캔 약초, �
 """
 patch("</head><body>", HEAD + "</head><body>\n<script src=\"vendor/supabase.js\"></script>\n<script src=\"nm-claude.js\"></script>", "head+scripts")
 
+patch('<div class="logo"><b>', '<div class="logo" translate="no"><b>', "logo no-translate")
+
 # signed-out visitors can browse; writing opens the sign-in sheet instead of a dead button
 patch('function applyWrite(){document.querySelectorAll(".needWrite").forEach(b=>{b.disabled=!S.canWrite||!S.uid;b.title=b.disabled?"로그인과 참여 권한이 필요합니다":""})}',
       'function applyWrite(){document.querySelectorAll(".needWrite").forEach(b=>{b.disabled=!!S.uid&&!S.canWrite;b.title=b.disabled?"이 계정은 이 작업을 할 수 없습니다":""})}',
@@ -64,13 +66,19 @@ FOOT = """<footer style="max-width:1100px;margin:32px auto 0;padding:18px 16px 4
 농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hant" style="color:var(--pine)" lang="zh-Hant">繁體中文</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">简体中文</a><br>
 시범 운영 중입니다. 사업자 정보는 등록 후 표시됩니다.
 </footer>
+<div id="nmIntl" hidden style="position:fixed;left:12px;right:12px;bottom:84px;z-index:50;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;gap:10px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:15px" translate="no">
+<span style="flex:1" id="nmIntlT"></span><a id="nmIntlA" style="background:var(--gold);color:var(--gold-ink);border-radius:10px;padding:8px 12px;font-weight:700;text-decoration:none;white-space:nowrap"></a><button type="button" id="nmIntlX" aria-label="Close" style="background:none;border:0;color:inherit;font-size:22px;min-width:40px;min-height:40px;cursor:pointer">×</button></div>
+<script>(function(){var l=(navigator.language||"ko").toLowerCase();if(/^ko/.test(l))return;try{if(localStorage.getItem("nm_intl_x"))return}catch(e){}
+var g=/^zh-(cn|sg|hans)/.test(l)||l==="zh"?"zh-Hans":/^zh/.test(l)?"zh-Hant":"en",T={en:["Shopping from abroad? See Nongmani in English.","English"],"zh-Hant":["想用中文瀏覽？","中文版"],"zh-Hans":["想用中文浏览？","中文版"]}[g];
+var e=document.getElementById("nmIntl");document.getElementById("nmIntlT").textContent=T[0];var a=document.getElementById("nmIntlA");a.textContent=T[1];a.href="global.html?lang="+g;e.hidden=false;e.style.display="flex";
+document.getElementById("nmIntlX").onclick=function(){e.hidden=true;e.style.display="none";try{localStorage.setItem("nm_intl_x","1")}catch(x){}}})();</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body></html>"""
 patch("</body></html>", FOOT, "footer")
 
 out.mkdir(parents=True, exist_ok=True)
 (out / "index.html").write_text(s, encoding="utf-8")
-for f in ["nm-claude.js", "global.html", "manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png"]:
+for f in ["nm-claude.js", "global.html", "herb-i18n.js", "manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png"]:
     p = here / "app" / f
     if p.exists() and p.resolve() != (out / f).resolve():
         shutil.copy(p, out / f)

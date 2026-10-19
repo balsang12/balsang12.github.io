@@ -23,6 +23,7 @@ async function open(b, pre, shot) {
   // 1) signed out: browse, then any write asks to sign in
   let { p, errs, ctx } = await open(b, 'window.__SESSION=null;', 'shot_anon.png');
   ok(await p.locator('#connBanner').isVisible(), 'signed-out banner shows');
+  ok(await p.locator('#nmIntl').isVisible() && (await p.locator('#nmIntlA').getAttribute('href')) === 'global.html?lang=en', 'foreign visitor sees English link');
   ok((await p.locator('#connBanner').innerText()).includes('로그인'), 'banner offers sign-in');
   ok(await p.locator('#who button', { hasText: '로그인' }).count() === 1, 'header sign-in button');
   const nProd = await p.evaluate(() => S.products.length);

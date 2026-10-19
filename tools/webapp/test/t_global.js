@@ -8,6 +8,9 @@ const D=(beta)=>`window.__D=${JSON.stringify({
   a1:{title:"지리산 자연산 산삼 1뿌리",cat:"산삼",item:"산삼",grow:"자연산 (산에서 채취)",weight:"1뿌리 18g",form:"생물",region:"경남 산청",date:"2026-10-01",permit:"사유림 소유자 동의서",start:1000000,buyNow:0,status:"진행중",endsAt:now+2*864e5,sellerId:"s1",proofOk:true,photo:"",createdAt:now},
   a2:{title:"천마 1kg",titleEn:"Gastrodia tuber 1 kg",titleZh:"天麻 1公斤",cat:"천마",item:"천마",grow:"재배",weight:"1kg",form:"생물",region:"강원 인제",permit:"본인 소유 임야·재배",start:50000,status:"진행중",endsAt:now+3600e3,sellerId:"s1",createdAt:now},
   a3:{title:"마감된 산양삼",cat:"산양삼",item:"산양삼",grow:"재배",weight:"10뿌리",region:"전남 화순",permit:"본인 소유 임야·재배",start:200000,status:"진행중",endsAt:now-864e5,sellerId:"s1",createdAt:now}},
+ products:{p1:{name:"자연산 고사리 말린것",item:"고사리",cat:"산나물",form:"건조",unit:"500g",price:30000,stock:5,region:"강원 정선",grow:"자연산 (산에서 채취)",permit:"사유림 소유자 동의서",status:"판매중",sellerId:"s1",createdAt:now},
+  p2:{name:"오미자청",item:"오미자",cat:"가공품",form:"청",unit:"1병",price:25000,stock:0,region:"경북 문경",grow:"재배 (인증 없음)",status:"판매중",sellerId:"s1",proc:{ingr:"오미자, 설탕",vol:"500ml",shelf:"제조일로부터 1년"},createdAt:now}},
+ orders:{o1:{productId:"p1",productName:"자연산 고사리 말린것",unit:"500g",qty:1,total:35000,buyerId:"me",sellerId:"s1",status:"발송완료",courier:"CJ",tracking:"123",createdAt:now}},
  bids:{b1:{auctionId:"a1",bidderId:"x",amount:1000000,t:now-1000},b2:{auctionId:"a3",bidderId:"x",amount:250000,t:now-2*864e5}}})};`;
 (async()=>{const b=await chromium.launch();
 async function open(pre,url){const ctx=await b.newContext({viewport:{width:390,height:844},serviceWorkers:'block',locale:'en-US'});const p=await ctx.newPage();const errs=[];
@@ -47,5 +50,21 @@ await p.click('#bidBtn');await p.waitForTimeout(800);
 const c=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='bids').map(c=>c[3]));
 ok(c.length===1&&c[0].amount===1020000&&c[0].bidderId==='me','bid saved');
 await p.screenshot({path:'g_bid.png'});
+// market + orders
+await p.keyboard.press('Escape');await p.waitForTimeout(100);await p.click('[data-tab="mkt"]');await p.waitForTimeout(200);
+ok(await p.locator('#mlist .card').count()===2,'two products listed');
+ok((await p.locator('#mlist .card').first().innerText()).includes('Bracken')||(await p.locator('#mlist .card').first().innerText()).length>0,'product name shown');
+await p.locator('#mlist .card').first().click();await p.waitForTimeout(200);
+ok((await p.locator('.warn').innerText()).includes('Boil'),'preparation warning in english');
+ok((await p.locator('#buy').innerText()).includes('Order'),'order button with total');
+await p.click('#buy');await p.waitForTimeout(800);
+const oc=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').map(c=>c[3]));
+ok(oc.length===1&&oc[0].total===33500&&oc[0].buyerId==='me','order saved with shipping');
+ok(await p.evaluate(()=>S.tab)==='ord','moved to my orders');
+await p.screenshot({path:'g_orders.png',fullPage:true});
+ok((await p.locator('#olist').innerText()).includes('Shipped'),'order status translated');
+await p.click('[data-recv="o1"]');await p.waitForTimeout(400);
+ok(await p.evaluate(()=>window.__calls.some(c=>c[0]==='rpc'&&c[1]==='doc_update'&&c[2].p_col==='orders'&&c[2].p_patch.status==='수령확인')),'receive confirmed');
+
 ok(errs.length===0,'no errors signed in '+errs.join('|'));
 await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();
