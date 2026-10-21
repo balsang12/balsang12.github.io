@@ -8,7 +8,6 @@
 <link rel="canonical" href="https://nongmani.com/app/global.html">
 <link rel="alternate" hreflang="ko" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
-<link rel="alternate" hreflang="zh-Hant" href="https://nongmani.com/app/global.html?lang=zh-Hant">
 <link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
 <link rel="icon" href="icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
@@ -119,7 +118,7 @@ footer a{color:var(--pine)}
 <header><div class="wrap nav">
   <a class="logo" href="./" aria-label="Nongmani"><b>농<i>마니</i></b><small id="tagline"></small></a>
   <div class="langs" role="group" aria-label="Language">
-    <button type="button" data-lang="en">EN</button><button type="button" data-lang="zh-Hant">繁</button><button type="button" data-lang="zh-Hans">简</button>
+    <button type="button" data-lang="en">EN</button><button type="button" data-lang="zh-Hans">中文</button>
   </div>
   <span id="who"></span>
 </div></header>
@@ -154,8 +153,8 @@ footer a{color:var(--pine)}
 (function(){
   var q=new URLSearchParams(location.search).get("lang"),saved=null;try{saved=localStorage.getItem("nm_lang")}catch(e){}
   var nav=(navigator.language||"en").toLowerCase();
-  var guess=/^zh-(cn|sg|hans)/.test(nav)||nav==="zh"?"zh-Hans":/^zh/.test(nav)?"zh-Hant":"en";
-  window.NM_LANG=["en","zh-Hant","zh-Hans"].includes(q)?q:["en","zh-Hant","zh-Hans"].includes(saved)?saved:guess;
+  var guess=/^zh/.test(nav)?"zh-Hans":"en";if(q==="zh-Hant")q="zh-Hans";if(saved==="zh-Hant")saved="zh-Hans";
+  window.NM_LANG=["en","zh-Hans"].includes(q)?q:["en","zh-Hans"].includes(saved)?saved:guess;
 })();
 </script>
 <script src="vendor/supabase.js"></script>

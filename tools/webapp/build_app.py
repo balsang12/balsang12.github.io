@@ -20,7 +20,6 @@ def patch(old, new, label):
 HEAD = """<meta name="description" content="심마니가 산에서 캔 약초, 농부가 밭에서 키운 산나물을 직접 사고파는 장터. 귀한 산삼·송이는 경매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
-<link rel="alternate" hreflang="zh-Hant" href="https://nongmani.com/app/global.html?lang=zh-Hant">
 <link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2B5B41">
@@ -68,13 +67,13 @@ patch("const hh=await mgrHash(raw),shop=Object.keys(S.sellers).find(u=>S.sellers
       "manager link")
 
 FOOT = """<footer style="max-width:1100px;margin:32px auto 0;padding:18px 16px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.7">
-농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hant" style="color:var(--pine)" lang="zh-Hant">繁體中文</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">简体中文</a><br>
+농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">中文</a><br>
 시범 운영 중입니다. 사업자 정보는 등록 후 표시됩니다.
 </footer>
 <div id="nmIntl" hidden style="position:fixed;left:12px;right:12px;bottom:84px;z-index:50;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;gap:10px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:15px" translate="no">
 <span style="flex:1" id="nmIntlT"></span><a id="nmIntlA" style="background:var(--gold);color:var(--gold-ink);border-radius:10px;padding:8px 12px;font-weight:700;text-decoration:none;white-space:nowrap"></a><button type="button" id="nmIntlX" aria-label="Close" style="background:none;border:0;color:inherit;font-size:22px;min-width:40px;min-height:40px;cursor:pointer">×</button></div>
 <script>(function(){var l=(navigator.language||"ko").toLowerCase();if(/^ko/.test(l))return;try{if(localStorage.getItem("nm_intl_x"))return}catch(e){}
-var g=/^zh-(cn|sg|hans)/.test(l)||l==="zh"?"zh-Hans":/^zh/.test(l)?"zh-Hant":"en",T={en:["Shopping from abroad? See Nongmani in English.","English"],"zh-Hant":["想用中文瀏覽？","中文版"],"zh-Hans":["想用中文浏览？","中文版"]}[g];
+var g=/^zh/.test(l)?"zh-Hans":"en",T={en:["Shopping from abroad? See Nongmani in English.","English"],"zh-Hant":["想用中文瀏覽？","中文版"],"zh-Hans":["想用中文浏览？","中文版"]}[g];
 var e=document.getElementById("nmIntl");document.getElementById("nmIntlT").textContent=T[0];var a=document.getElementById("nmIntlA");a.textContent=T[1];a.href="global.html?lang="+g;e.hidden=false;e.style.display="flex";
 document.getElementById("nmIntlX").onclick=function(){e.hidden=true;e.style.display="none";try{localStorage.setItem("nm_intl_x","1")}catch(x){}}})();</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>

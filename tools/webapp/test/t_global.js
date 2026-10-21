@@ -26,9 +26,7 @@ ok((await p.locator('#list .card').first().innerText()).includes('Harvest papers
 ok(await p.locator('#done .card').count()===1,'closed auction shown');
 ok((await p.locator('#list').innerText()).includes('Gastrodia tuber 1 kg'),'seller english title shown');
 ok(await p.locator('#beta').isVisible(),'beta notice');
-await p.click('[data-lang="zh-Hant"]');await p.waitForTimeout(200);
-ok((await p.locator('#list .card').first().innerText()).includes('野山參'),'traditional chinese item');
-ok((await p.locator('#list .card').first().innerText()).includes('慶尚南道'),'province translated');
+ok(await p.locator('[data-lang="zh-Hant"]').count()===0,'no traditional chinese option');
 await p.click('[data-lang="zh-Hans"]');await p.waitForTimeout(200);
 ok((await p.locator('#list .card').first().innerText()).includes('野山参')&&(await p.locator('#list .card').first().innerText()).includes('¥'),'simplified + CNY');
 await p.locator('#list .card').first().click();await p.waitForTimeout(200);
