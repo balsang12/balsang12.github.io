@@ -8,6 +8,7 @@
 <link rel="canonical" href="https://nongmani.com/app/global.html">
 <link rel="alternate" hreflang="ko" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
+<link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
 <link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
 <link rel="icon" href="icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
@@ -25,7 +26,7 @@
   --gold:#8A5B0B; --gold-ink:#FFFFFF; --gold-soft:#F4E7CC;
   --berry:#A3324A; --berry-soft:#F6E0E5;
   --display:"Gowun Batang","Noto Serif TC","Songti SC",Georgia,serif;
-  --body:"Noto Sans KR","PingFang TC","Microsoft JhengHei","PingFang SC",system-ui,sans-serif;
+  --body:"Noto Sans KR","PingFang SC","Hiragino Sans","Yu Gothic","Microsoft YaHei",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111712; --surface:#19221B; --sunk:#222D24; --line:#334036;
@@ -118,7 +119,7 @@ footer a{color:var(--pine)}
 <header><div class="wrap nav">
   <a class="logo" href="./" aria-label="Nongmani"><b>농<i>마니</i></b><small id="tagline"></small></a>
   <div class="langs" role="group" aria-label="Language">
-    <button type="button" data-lang="en">EN</button><button type="button" data-lang="zh-Hans">中文</button>
+    <button type="button" data-lang="en">EN</button><button type="button" data-lang="zh-Hans">中文</button><button type="button" data-lang="ja">日本語</button>
   </div>
   <span id="who"></span>
 </div></header>
@@ -153,13 +154,14 @@ footer a{color:var(--pine)}
 (function(){
   var q=new URLSearchParams(location.search).get("lang"),saved=null;try{saved=localStorage.getItem("nm_lang")}catch(e){}
   var nav=(navigator.language||"en").toLowerCase();
-  var guess=/^zh/.test(nav)?"zh-Hans":"en";if(q==="zh-Hant")q="zh-Hans";if(saved==="zh-Hant")saved="zh-Hans";
-  window.NM_LANG=["en","zh-Hans"].includes(q)?q:["en","zh-Hans"].includes(saved)?saved:guess;
+  var guess=/^zh/.test(nav)?"zh-Hans":/^ja/.test(nav)?"ja":"en";if(q==="zh-Hant")q="zh-Hans";if(saved==="zh-Hant")saved="zh-Hans";
+  window.NM_LANG=["en","zh-Hans","ja"].includes(q)?q:["en","zh-Hans","ja"].includes(saved)?saved:guess;
 })();
 </script>
 <script src="vendor/supabase.js"></script>
 <script src="nm-claude.js"></script>
 <script src="herb-i18n.js"></script>
+<script src="herb-i18n-ja.js"></script>
 <script>
 "use strict";
 const $=s=>document.querySelector(s);
@@ -197,6 +199,36 @@ const TX={
   approx:"approx.",note:"Prices are in Korean won (KRW). Converted amounts are rough guides only.",
   foot:'Nongmani (농부와 심마니) · Korean marketplace for wild herbs · <a href="./">한국어</a> · Trademark application No. 40-2026-0219569',
   ko:"Korean listing",law:"Health claims are not allowed on Nongmani. Listings describe size, shape and where the root was found."},
+ ja:{
+  tabAuc:"オークション",tabMkt:"マーケット",tabOrd:"注文履歴",
+  mktNote:"韓国の農家とシンマニ（天然山参の採取人）が届ける生・乾燥の山野草。韓国国内ならどこへでも配送します。海外発送はまだ行っていません。",
+  cats:{"전체":"すべて","뿌리 약초":"根もの","산나물":"山菜","말린 약초·차":"乾燥ハーブ・お茶","열매":"木の実・果実","버섯":"きのこ","가공품":"加工食品"},
+  per:u=>`${u}あたり`,ship:"韓国国内送料",stock:"在庫あり",soldOut:"売り切れ",qty:"数量",total:"合計",buy:"注文する",notifyMkt:"注文開始時に知らせる",
+  memo:"配送メモ",memoPh:"受取人のお名前とご要望（住所はここに書かないでください）",ordered:"ご注文を承りました。「注文履歴」でご確認ください。",noStock:"在庫が足りません。",
+  origin:"原産地",originV:r=>`韓国（${r}）`,growL:"生産方法",ingr:"原材料（韓国語）",vol:"内容量",shelf:"賞味期限",
+  growV:{"자연산 (산에서 채취)":"天然採取","재배 (인증 없음)":"栽培","무농약 인증 재배":"無農薬認証栽培","유기농 인증 재배":"有機認証栽培"},
+  noMkt:"このカテゴリーには現在商品がありません。",noOrd:"まだ注文はありません。",signToSee:"ログインすると注文履歴を確認できます。",
+  st:{"결제완료":"お支払い済み・発送準備中","발송완료":"発送済み","수령확인":"受け取り済み","정산완료":"完了","취소":"キャンセル","환불":"返金済み","분쟁":"確認中"},
+  recv:"受け取りました",recvOk:"ありがとうございます。出品者へ代金が支払われます。",track:"追跡番号",careT:"お召し上がりの前に",
+  tag:"韓国の山野草・オークションとマーケット",h1:"韓国のシンマニが自ら掘り出した天然山参",
+  lead:"シンマニは、山に入って天然の山参を探す韓国の伝統的な採取人です。一本一本、見つけた本人が写真・重さ・採れた場所を添えて出品します。「採取書類確認済み」の表示がある品は、採取許可証または山林所有者の同意書を運営チームが確認しています。",
+  steps:[["入札","メールアドレスでログインし、韓国ウォンで入札します。"],["落札","オークション終了後、24時間以内に落札者へご連絡します。"],["韓国で支払い・受け取り","お支払い後、ソウルで受け取るか、韓国内のホテルへお届けします。海外発送はまだ行っていません。"]],
+  beta:"プレオープン中：入札はまもなく開始します。各オークションの「開始時に知らせる」を押すと、開始時にメールでお知らせします。",
+  conn:"接続できませんでした。インターネット接続を確認して再読み込みしてください。",
+  all:"すべて",wild:"天然山参",forest:"山養参（林間栽培）",other:"その他の希少な山の幸",
+  none:"現在開催中のオークションはありません。新しいオークションは毎週土曜日の夜（韓国時間）に終了します。",
+  closed:"最近終了したオークション",live:"現在価格",start:"開始価格",sold:"落札価格",unsold:"不成立",ended:"終了",
+  left:(d,h,m)=>d?`残り${d}日${h}時間`:h?`残り${h}時間${m}分`:`残り${m}分`,bids:n=>`入札${n}件`,
+  signIn:"ログイン",signOut:"ログアウト",
+  proof:"採取書類確認済み",wildChip:"天然採取",farmChip:"林間栽培",certChip:"品質検査合格",apprChip:"鑑定書付き",
+  item:"品目",grow:"育ち方",weight:"重さ",form:"状態",region:"採取地",dug:"採取日",basis:"採取の根拠",seller:"出品者",title:"出品者のタイトル（韓国語）",desc:"出品者の説明（韓国語）",
+  fresh:"生",dried:"乾燥",wildG:"天然・山で採取",farmG:"栽培",
+  minBid:v=>`次の最低入札額：${v}`,bidBtn:"入札する",confirm:v=>`${v}で入札を確定`,notify:"入札開始時に知らせる",notified:"開始時にお知らせします。",
+  needLogin:"入札にはログインが必要です。メールアドレスだけで登録できます。",tooLow:v=>`${v}から入札できます。`,already:"このオークションは終了しました。",bidOk:v=>`${v}で入札しました。`,top:"現在あなたが最高入札者です。",
+  fail:"保存できませんでした。もう一度お試しください。",history:"入札履歴",noBids:"まだ入札はありません。",you:"あなた",bidder:"入札者",buyNow:v=>`即決価格 ${v}`,
+  approx:"約",note:"価格は韓国ウォン（KRW）です。換算額はおおよその目安です。",
+  foot:'ノンマニ（농부와 심마니）・韓国の山野草マーケット ・ <a href="./">한국어</a> ・ 商標出願 第40-2026-0219569号',
+  ko:"韓国語の原文",law:"ノンマニでは効能・効果の表示を禁止しています。商品は大きさ・形・採取地のみを説明しています。"},
  "zh-Hant":{
   tabAuc:"拍賣",tabMkt:"商店",tabOrd:"我的訂單",
   mktNote:"韓國農民與採參人提供的新鮮及乾燥野生草本。可配送至韓國全境，目前尚無海外配送。",
@@ -259,45 +291,45 @@ const TX={
   ko:"韩文原文",law:"本平台不允许标示疗效，商品只描述大小、形状与产地。"}
 };
 /* item names: Korean category → [en, 繁, 简] */
-const ITEMS={"산삼":["Wild mountain ginseng","野山參","野山参"],"산양삼":["Forest-grown ginseng (sanyangsam)","山養參（林下參）","山养参（林下参）"],"장뇌삼":["Forest-grown ginseng (jangnoesam)","長腦參（林下參）","长脑参（林下参）"],
- "잔대":["Ladybell root","沙參","沙参"],"더덕":["Deodeok (bonnet bellflower root)","羊乳（四葉參）","羊乳（四叶参）"],"도라지":["Balloon flower root","桔梗","桔梗"],"천마":["Gastrodia tuber (cheonma)","天麻","天麻"],
- "하수오":["Fo-ti root","何首烏","何首乌"],"만삼":["Codonopsis root","黨參","党参"],"칡":["Kudzu root","葛根","葛根"],"지치":["Gromwell root","紫草","紫草"],"송이":["Pine mushroom (matsutake)","松茸","松茸"],
- "능이":["Neungi mushroom","香茸（虎掌菌）","香茸（虎掌菌）"],"꽃송이버섯":["Cauliflower mushroom","繡球菌","绣球菌"],"석이":["Rock tripe","石耳","石耳"],"상황":["Sanghwang mushroom (Phellinus)","桑黃","桑黄"],
- "영지":["Reishi mushroom","靈芝","灵芝"],"복령":["Poria","茯苓","茯苓"],"겨우살이":["Mistletoe","槲寄生","槲寄生"],"기타 귀한 임산물":["Rare forest product","珍稀林產","珍稀林产"]};
-const PERMITS={"국유림 임산물 채취 허가":["National-forest harvest permit","國有林採集許可","国有林采集许可"],"사유림 소유자 동의서":["Landowner’s written consent","私有林山主同意書","私有林山主同意书"],
- "본인 소유 임야·재배":["Seller’s own forest land","賣家自有林地","卖家自有林地"],"국유림 보호협약(마을 양여)":["Village forest-care agreement","國有林保護協約","国有林保护协约"],"산 임차 계약":["Forest lease contract","山林租賃契約","山林租赁合同"]};
-const PROV=[["서울","Seoul","首爾","首尔"],["부산","Busan","釜山","釜山"],["대구","Daegu","大邱","大邱"],["인천","Incheon","仁川","仁川"],["광주","Gwangju","光州","光州"],["대전","Daejeon","大田","大田"],["울산","Ulsan","蔚山","蔚山"],["세종","Sejong","世宗","世宗"],
- ["경기","Gyeonggi","京畿","京畿"],["강원","Gangwon","江原","江原"],["충북","North Chungcheong","忠清北道","忠清北道"],["충남","South Chungcheong","忠清南道","忠清南道"],["전북","North Jeolla","全羅北道","全罗北道"],["전남","South Jeolla","全羅南道","全罗南道"],
- ["경북","North Gyeongsang","慶尚北道","庆尚北道"],["경남","South Gyeongsang","慶尚南道","庆尚南道"],["제주","Jeju","濟州","济州"],["충청북","North Chungcheong","忠清北道","忠清北道"],["충청남","South Chungcheong","忠清南道","忠清南道"],["전라북","North Jeolla","全羅北道","全罗北道"],["전라남","South Jeolla","全羅南道","全罗南道"],["경상북","North Gyeongsang","慶尚北道","庆尚北道"],["경상남","South Gyeongsang","慶尚南道","庆尚南道"]];
-const FX_DEFAULT={USD:1400,HKD:180,TWD:44,CNY:195};
-const LI=()=>({en:0,"zh-Hant":1,"zh-Hans":2}[window.NM_LANG]);
+const ITEMS={"산삼":["Wild mountain ginseng","野山參","野山参","天然山参"],"산양삼":["Forest-grown ginseng (sanyangsam)","山養參（林下參）","山养参（林下参）","山養参（林間栽培人参）"],"장뇌삼":["Forest-grown ginseng (jangnoesam)","長腦參（林下參）","长脑参（林下参）","長脳参（林間栽培人参）"],
+ "잔대":["Ladybell root","沙參","沙参","ツリガネニンジン（沙参）"],"더덕":["Deodeok (bonnet bellflower root)","羊乳（四葉參）","羊乳（四叶参）","ツルニンジン（トドク）"],"도라지":["Balloon flower root","桔梗","桔梗","キキョウ根"],"천마":["Gastrodia tuber (cheonma)","天麻","天麻","天麻（オニノヤガラ）"],
+ "하수오":["Fo-ti root","何首烏","何首乌","何首烏（ツルドクダミ）"],"만삼":["Codonopsis root","黨參","党参","党参（ヒカゲノツルニンジン）"],"칡":["Kudzu root","葛根","葛根","葛根（クズの根）"],"지치":["Gromwell root","紫草","紫草","ムラサキの根（紫根）"],"송이":["Pine mushroom (matsutake)","松茸","松茸","マツタケ"],
+ "능이":["Neungi mushroom","香茸（虎掌菌）","香茸（虎掌菌）","コウタケ（ヌンイ）"],"꽃송이버섯":["Cauliflower mushroom","繡球菌","绣球菌","ハナビラタケ"],"석이":["Rock tripe","石耳","石耳","イワタケ"],"상황":["Sanghwang mushroom (Phellinus)","桑黃","桑黄","桑黄（メシマコブ類）"],
+ "영지":["Reishi mushroom","靈芝","灵芝","霊芝（マンネンタケ）"],"복령":["Poria","茯苓","茯苓","茯苓（ブクリョウ）"],"겨우살이":["Mistletoe","槲寄生","槲寄生","ヤドリギ"],"기타 귀한 임산물":["Rare forest product","珍稀林產","珍稀林产","希少な山の幸"]};
+const PERMITS={"국유림 임산물 채취 허가":["National-forest harvest permit","國有林採集許可","国有林采集许可","国有林の採取許可"],"사유림 소유자 동의서":["Landowner’s written consent","私有林山主同意書","私有林山主同意书","山林所有者の同意書"],
+ "본인 소유 임야·재배":["Seller’s own forest land","賣家自有林地","卖家自有林地","出品者所有の山林"],"국유림 보호협약(마을 양여)":["Village forest-care agreement","國有林保護協約","国有林保护协约","国有林保護協約（集落）"],"산 임차 계약":["Forest lease contract","山林租賃契約","山林租赁合同","山林賃貸借契約"]};
+const PROV=[["서울","Seoul","首爾","首尔","ソウル"],["부산","Busan","釜山","釜山","釜山"],["대구","Daegu","大邱","大邱","大邱"],["인천","Incheon","仁川","仁川","仁川"],["광주","Gwangju","光州","光州","光州"],["대전","Daejeon","大田","大田","大田"],["울산","Ulsan","蔚山","蔚山","蔚山"],["세종","Sejong","世宗","世宗","世宗"],
+ ["경기","Gyeonggi","京畿","京畿","京畿道"],["강원","Gangwon","江原","江原","江原道"],["충북","North Chungcheong","忠清北道","忠清北道","忠清北道"],["충남","South Chungcheong","忠清南道","忠清南道","忠清南道"],["전북","North Jeolla","全羅北道","全罗北道","全羅北道"],["전남","South Jeolla","全羅南道","全罗南道","全羅南道"],
+ ["경북","North Gyeongsang","慶尚北道","庆尚北道","慶尚北道"],["경남","South Gyeongsang","慶尚南道","庆尚南道","慶尚南道"],["제주","Jeju","濟州","济州","済州"],["충청북","North Chungcheong","忠清北道","忠清北道","忠清北道"],["충청남","South Chungcheong","忠清南道","忠清南道","忠清南道"],["전라북","North Jeolla","全羅北道","全罗北道","全羅北道"],["전라남","South Jeolla","全羅南道","全罗南道","全羅南道"],["경상북","North Gyeongsang","慶尚北道","庆尚北道","慶尚北道"],["경상남","South Gyeongsang","慶尚南道","庆尚南道","慶尚南道"]];
+const FX_DEFAULT={USD:1400,HKD:180,TWD:44,CNY:195,JPY:9.3};
+const LI=()=>({en:0,"zh-Hant":1,"zh-Hans":2,ja:3}[window.NM_LANG]);
 const t=k=>TX[window.NM_LANG][k];
 const S={auctions:[],bids:[],bidMap:{},sellers:{},site:{},uid:null,db:null,filter:"all",alerts:[],products:[],orders:[],mcat:"전체",tab:"auc"};
 try{const h=location.hash.slice(1);if(["auc","mkt","ord"].includes(h))S.tab=h}catch(e){}
 const CATMAP={"뿌리·줄기":"뿌리 약초","약초":"말린 약초·차","잎·꽃·차":"말린 약초·차"},mcat=c=>CATMAP[c]||c;
-const UNITS={"근(600g)":["geun (600 g)","斤（600克）","斤（600克）"],"1병":["bottle","瓶","瓶"],"1봉":["bag","袋","袋"],"1박스":["box","盒","盒"],"1세트":["set","組","组"]};
+const UNITS={"근(600g)":["geun (600 g)","斤（600克）","斤（600克）","斤（600g）"],"1병":["bottle","瓶","瓶","瓶"],"1봉":["bag","袋","袋","袋"],"1박스":["box","盒","盒","箱"],"1세트":["set","組","组","セット"]};
 const unitT=u=>UNITS[u]?UNITS[u][LI()]:u;
 /* preparation notes for buyers (lookalike notes stay with the operator) */
-const CARE={"고사리":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。"],"고비":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。"],
- "두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。"],"엄나무순":["Blanch before eating.","請汆燙後食用。","请焯水后食用。"],"땅두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。"],
- "원추리":["Eat only young leaves, well blanched.","只食用嫩葉，並充分汆燙。","只食用嫩叶，并充分焯水。"],"산수유":["Remove the seeds; eat the flesh only.","請去籽，只食用果肉。","请去籽，只食用果肉。"],
- "개복숭아":["Do not use the seeds.","請勿使用果核。","请勿使用果核。"],"매실":["Remove the seeds from syrups after aging; do not eat unripe seeds.","醃漬一段時間後請撈出果核，勿食未熟果核。","腌渍一段时间后请捞出果核，勿食未熟果核。"],
- "은행":["Do not eat many at once.","一次請勿多食。","一次请勿多食。"],"얼레지":["Blanch before eating; large amounts can upset the stomach.","請汆燙後食用，多食可能腹瀉。","请焯水后食用，多食可能腹泻。"],
- "수영":["High in oxalic acid; eat in moderation.","草酸含量高，請適量食用。","草酸含量高，请适量食用。"],"소리쟁이":["Young leaves only, blanched.","只食用嫩葉，汆燙後食用。","只食用嫩叶，焯水后食用。"],
- "아주까리":["Seeds are highly toxic. Leaves only, boiled and dried.","種子有劇毒，只食用煮過曬乾的葉子。","种子有剧毒，只食用煮过晒干的叶子。"],"토란":["Cook before eating.","請煮熟後食用。","请煮熟后食用。"],
- "살구":["Do not eat the kernels raw.","果仁請勿生食。","果仁请勿生食。"],"뽕나무버섯":["Do not eat raw.","請勿生食。","请勿生食。"]};
-function herbT(k){const d=window.NM_HERB_I18N||{};return d[k]?d[k][LI()]:ITEMS[k]?ITEMS[k][LI()]:""}
-function pname(p){const f=String((window.NM_LANG==="en"?p.nameEn:p.nameZh)||"").trim();return f||herbT(p.item)||p.name}
+const CARE={"고사리":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。","よく茹でてアク抜きしてからお召し上がりください。生では食べられません。"],"고비":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。","よく茹でてアク抜きしてからお召し上がりください。生では食べられません。"],
+ "두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。","下茹でしてからお召し上がりください。"],"엄나무순":["Blanch before eating.","請汆燙後食用。","请焯水后食用。","下茹でしてからお召し上がりください。"],"땅두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。","下茹でしてからお召し上がりください。"],
+ "원추리":["Eat only young leaves, well blanched.","只食用嫩葉，並充分汆燙。","只食用嫩叶，并充分焯水。","若葉のみを、よく茹でてお召し上がりください。"],"산수유":["Remove the seeds; eat the flesh only.","請去籽，只食用果肉。","请去籽，只食用果肉。","種を取り除き、果肉だけをお召し上がりください。"],
+ "개복숭아":["Do not use the seeds.","請勿使用果核。","请勿使用果核。","種は使わないでください。"],"매실":["Remove the seeds from syrups after aging; do not eat unripe seeds.","醃漬一段時間後請撈出果核，勿食未熟果核。","腌渍一段时间后请捞出果核，勿食未熟果核。","漬けた後は一定期間で種を取り出してください。未熟な種は食べないでください。"],
+ "은행":["Do not eat many at once.","一次請勿多食。","一次请勿多食。","一度にたくさん食べないでください。"],"얼레지":["Blanch before eating; large amounts can upset the stomach.","請汆燙後食用，多食可能腹瀉。","请焯水后食用，多食可能腹泻。","下茹でしてください。食べ過ぎるとお腹がゆるくなることがあります。"],
+ "수영":["High in oxalic acid; eat in moderation.","草酸含量高，請適量食用。","草酸含量高，请适量食用。","シュウ酸が多いため、食べ過ぎないでください。"],"소리쟁이":["Young leaves only, blanched.","只食用嫩葉，汆燙後食用。","只食用嫩叶，焯水后食用。","若葉のみを下茹でしてお召し上がりください。"],
+ "아주까리":["Seeds are highly toxic. Leaves only, boiled and dried.","種子有劇毒，只食用煮過曬乾的葉子。","种子有剧毒，只食用煮过晒干的叶子。","種子は猛毒です。茹でて干した葉のみを食べます。"],"토란":["Cook before eating.","請煮熟後食用。","请煮熟后食用。","加熱してからお召し上がりください。"],
+ "살구":["Do not eat the kernels raw.","果仁請勿生食。","果仁请勿生食。","種の中身（仁）は生で食べないでください。"],"뽕나무버섯":["Do not eat raw.","請勿生食。","请勿生食。","生では食べないでください。"]};
+function herbT(k){if(window.NM_LANG==="ja"){const j=window.NM_HERB_JA||{};return j[k]||(ITEMS[k]?ITEMS[k][3]:"")}const d=window.NM_HERB_I18N||{};return d[k]?d[k][LI()]:ITEMS[k]?ITEMS[k][LI()]:""}
+function pname(p){const f=String((window.NM_LANG==="en"?p.nameEn:window.NM_LANG==="ja"?p.nameJa:p.nameZh)||"").trim();return f||herbT(p.item)||p.name}
 const EXT=3*60*1000;
 function inc(p){return p<100000?1000:p<1000000?5000:p<10000000?10000:50000}
 const won=n=>"₩"+Math.round(n).toLocaleString("en-US");
-function fxCode(){if(window.NM_LANG==="en")return "USD";if(window.NM_LANG==="zh-Hans")return "CNY";return /hk|mo/i.test(navigator.language||"")?"HKD":"TWD"}
-function approx(n){const c=fxCode(),r=((S.site.fx||{})[c])||FX_DEFAULT[c],v=n/r;const sym={USD:"US$",HKD:"HK$",TWD:"NT$",CNY:"¥"}[c];
+function fxCode(){if(window.NM_LANG==="en")return "USD";if(window.NM_LANG==="ja")return "JPY";if(window.NM_LANG==="zh-Hans")return "CNY";return /hk|mo/i.test(navigator.language||"")?"HKD":"TWD"}
+function approx(n){const c=fxCode(),r=((S.site.fx||{})[c])||FX_DEFAULT[c],v=n/r;const sym={USD:"US$",HKD:"HK$",TWD:"NT$",CNY:"¥",JPY:"￥"}[c];
   return `${t("approx")} ${sym}${(v>=100?Math.round(v):Math.round(v*10)/10).toLocaleString("en-US")}`}
 function itemName(a){const k=ITEMS[a.item]?a.item:ITEMS[a.cat]?a.cat:"기타 귀한 임산물";return ITEMS[k][LI()]}
-function ftitle(a){return String((window.NM_LANG==="en"?a.titleEn:a.titleZh)||"").trim()}
+function ftitle(a){return String((window.NM_LANG==="en"?a.titleEn:window.NM_LANG==="ja"?a.titleJa:a.titleZh)||"").trim()}
 function region(r){r=String(r||"");const p=PROV.find(x=>r.startsWith(x[0]));return p?p[1+LI()]:""}
-function weight(w){return String(w||"").replace(/뿌리/g,window.NM_LANG==="en"?" root(s) ":"支 ").replace(/개/g,window.NM_LANG==="en"?" pcs ":"個 ").replace(/근/g,window.NM_LANG==="en"?" geun (600 g) ":"斤(600g) ").replace(/\s+/g," ").trim()}
+function weight(w){return String(w||"").replace(/뿌리/g,window.NM_LANG==="en"?" root(s) ":window.NM_LANG==="ja"?"本 ":"支 ").replace(/개/g,window.NM_LANG==="en"?" pcs ":"個 ").replace(/근/g,window.NM_LANG==="en"?" geun (600 g) ":"斤(600g) ").replace(/\s+/g," ").trim()}
 function permit(p){return PERMITS[p]?PERMITS[p][LI()]:""}
 /* same rules as the Korean app: bids are replayed in time order; a late bid extends the close by 3 minutes */
 function auc(a){
@@ -315,7 +347,7 @@ let toastT=0;function toast(m){const e=$("#toast");e.textContent=m;e.hidden=fals
 
 /* ---------- static text ---------- */
 function paintStatic(){
-  document.documentElement.lang=window.NM_LANG==="en"?"en":window.NM_LANG;
+  document.documentElement.lang=window.NM_LANG;
   document.title=window.NM_LANG==="en"?"Korean Wild Ginseng Auction · Nongmani":t("tag")+" · 農마니";
   $("#tagline").textContent=t("tag");$("#h1").textContent=t("h1");$("#lead").textContent=t("lead");
   $("#steps").innerHTML=t("steps").map(([b,s])=>`<li><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join("");

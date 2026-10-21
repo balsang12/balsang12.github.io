@@ -27,6 +27,12 @@ ok(await p.locator('#done .card').count()===1,'closed auction shown');
 ok((await p.locator('#list').innerText()).includes('Gastrodia tuber 1 kg'),'seller english title shown');
 ok(await p.locator('#beta').isVisible(),'beta notice');
 ok(await p.locator('[data-lang="zh-Hant"]').count()===0,'no traditional chinese option');
+await p.click('[data-lang="ja"]');await p.waitForTimeout(200);
+{const tx=await p.locator('#list .card').first().innerText();ok(tx.includes('天然山参')&&tx.includes('￥')&&tx.includes('慶尚南道'),'japanese item, yen, province: '+tx.split('\n').slice(0,4).join(' | '))}
+ok((await p.locator('#h1').innerText()).includes('シンマニ'),'japanese heading');
+await p.click('[data-tab="mkt"]');await p.waitForTimeout(150);
+{const tx=await p.locator('#mlist .card').first().innerText();ok(tx.length>0&&!/[A-Za-z]{4,}/.test(tx.split('\n')[0]),'japanese product name: '+tx.split('\n')[0])}
+await p.click('[data-tab="auc"]');await p.waitForTimeout(150);
 await p.click('[data-lang="zh-Hans"]');await p.waitForTimeout(200);
 ok((await p.locator('#list .card').first().innerText()).includes('野山参')&&(await p.locator('#list .card').first().innerText()).includes('¥'),'simplified + CNY');
 await p.locator('#list .card').first().click();await p.waitForTimeout(200);
