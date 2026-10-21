@@ -713,7 +713,7 @@ label.btn{display:inline-block}
 <section data-view="home">
   <div class="htop"><div class="hmain">
   <div class="hhead">
-    <div class="eyebrow">심마니·농부 약초 직거래 마켓 · 안전결제</div>
+    <div class="eyebrow">농부·심마니 약초 직거래 마켓 · 안전결제</div>
     <h1>어떤 약초를<br>찾으세요?</h1>
     <p class="hsub">심마니가 산에서 캔 약초부터 농부가 밭에서 키운 약초까지</p>
     <form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 약초 이름을 적어 주세요" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form>
@@ -745,7 +745,7 @@ label.btn{display:inline-block}
       <div class="hnums num"><div><b id="sideAuc">0</b><span>경매 진행 중</span></div><div><b id="sideShop">0</b><span>마켓 판매 중</span></div></div>
       <div class="actions"><button class="btn" data-go="auction">경매 보러 가기</button></div>
     </div>
-    <button class="reqcta col" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 심마니·농부가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
+    <button class="reqcta col" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 농부·심마니가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
     <ul class="hcheck"><li>채취 근거를 운영자가 확인한 물건만 노출</li><li>산양삼은 품질검사 합격증 필수</li><li>대금은 수령 확인 후 정산하는 안전결제</li><li>출품료·수수료는 등록 전에 미리 계산</li></ul>
   </aside>
   </div>
@@ -762,10 +762,10 @@ label.btn{display:inline-block}
 
 
   <div class="trustline hmob" role="list"><span role="listitem">✔ 채취 근거 확인</span><span role="listitem">✔ 산양삼 합격증</span><span role="listitem">✔ 안전결제</span><span role="listitem">✔ 수수료 공개</span></div>
-  <button class="reqcta hmob" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 심마니·농부가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
+  <button class="reqcta hmob" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 농부·심마니가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
   <details class="more">
     <summary>농마니 더 알아보기 (판매자 · 약초 사전)</summary>
-  <div class="sechead"><div><h2>활동 중인 심마니·농부</h2><div class="meta">프로필에서 후기와 거래 기록을 보고 1:1로 문의하세요</div></div></div>
+  <div class="sechead"><div><h2>활동 중인 농부·심마니</h2><div class="meta">프로필에서 후기와 거래 기록을 보고 1:1로 문의하세요</div></div></div>
   <div class="plist" id="homeSellers"></div>
 
   <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>약초 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초가 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
@@ -925,7 +925,7 @@ label.btn{display:inline-block}
         <h3>상점 정보</h3>
         <div class="row2">
           <div class="field"><label for="shName">상점 이름</label><input id="shName" required placeholder="예: 지리산 박씨네"></div>
-          <div class="field"><label for="shRole">판매자 구분</label><select id="shRole"><option>심마니 (자연산 채취)</option><option>농부 (재배)</option><option>심마니·농부 모두</option></select></div>
+          <div class="field"><label for="shRole">판매자 구분</label><select id="shRole"><option>심마니 (자연산 채취)</option><option>농부 (재배)</option><option>농부·심마니 모두</option></select></div>
         </div>
         <div class="field"><label for="shRegion">주 활동 지역</label><input id="shRegion" required placeholder="예: 경남 산청"></div>
         <div class="field"><label for="shBio">소개</label><textarea id="shBio" rows="2" placeholder="채취·재배 경력, 주로 다루는 품목"></textarea></div>
@@ -1805,7 +1805,7 @@ function renderHome(){
     const hh=$("#homeAucH");if(hh)hh.textContent=(first?"농마니 첫 경매":"이번 경매")+(n?(n<=5?` · 단 ${n}점`:` · ${n}점`):"");}
   {const dm=$("details.more");if(dm&&!dm.dataset.touched)dm.open=live().length<12}
   const sl=Object.keys(S.sellers).map(id=>({id,t:trust(id),r:sellerRating(id)})).sort((a,b)=>(b.t.cert-a.t.cert)||(b.t.done-a.t.done)||(b.r.n-a.r.n)).slice(0,6);
-  $("#homeSellers").innerHTML=sl.length?sl.map(({id,t,r})=>{const s=S.sellers[id];return `<button class="prow" type="button" data-profile="${esc(id)}">${avaHTML(id)}<div><b>${esc(s.shopName)}</b>${t.cert?' <span class="chip ok">인증</span>':""}<div class="meta">${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div><div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} 후기 ${r.n} · `:""}완료 거래 ${t.done}건</div></div><span class="meta">›</span></button>`}).join(""):emptyBox("아직 상점을 연 심마니·농부가 없습니다.",'<button class="btn" data-go="seller">내 상점 열기</button>');
+  $("#homeSellers").innerHTML=sl.length?sl.map(({id,t,r})=>{const s=S.sellers[id];return `<button class="prow" type="button" data-profile="${esc(id)}">${avaHTML(id)}<div><b>${esc(s.shopName)}</b>${t.cert?' <span class="chip ok">인증</span>':""}<div class="meta">${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div><div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} 후기 ${r.n} · `:""}완료 거래 ${t.done}건</div></div><span class="meta">›</span></button>`}).join(""):emptyBox("아직 상점을 연 농부·심마니가 없습니다.",'<button class="btn" data-go="seller">내 상점 열기</button>');
   const la=liveAucs().sort((a,b)=>proofFirst(a,b)||auc(a).end-auc(b).end).slice(0,4);
   $("#homeAuc").classList.toggle("hrow",la.length>0);$("#homeAuc").innerHTML=la.length?la.map(aucCard).join(""):emptyBox(`이번 경매에 올라온 물건이 아직 없습니다. 경매는 ${cyc()} 토요일 저녁 8시에 한꺼번에 마감합니다. 첫 출품 3번은 출품료가 무료입니다.`,'<button class="btn gold" data-go="seller">경매 출품 신청</button>');
   {const e=nextSat(Date.now()),sl=$("#sideLeft");if(sl){sl.dataset.end=e;sl.textContent=left(e-Date.now());$("#sideAuc").textContent=liveAucs().length;$("#sideShop").textContent=live().filter(p=>p.stock>0).length}}
@@ -1828,7 +1828,7 @@ function renderAuctions(){
   {const c_={new:(a,b)=>b.createdAt-a.createdAt,hot:(a,b)=>(k(b).bidders-k(a).bidders)||(k(b).count-k(a).count)||((LS.watch.includes(b.id))-(LS.watch.includes(a.id))),low:(a,b)=>k(a).cur-k(b).cur,high:(a,b)=>k(b).cur-k(a).cur,buynow:(a,b)=>a.buyNow-b.buyNow}[so]||endC;list.sort((a,b)=>proofFirst(a,b)||c_(a,b))}
   const ac=S.acat&&S.acat!=="전체"&&S.acat!=="기타 귀한 임산물"?S.acat:"",mk=ac?live().filter(p=>p.stock>0&&matchQ(ac,(p.item||"")+p.name)).length:0;
   $("#aucMkt").innerHTML=mk?`<button class="lk" type="button" data-mkt="${esc(ac)}">마켓에서 바로 살 수 있는 ${esc(ac)} 상품 ${mk}개 보기 →</button>`:"";
-  $("#aucGrid").innerHTML=list.length?list.map(aucCard).join(""):emptyBox((so==="buynow"?"즉시 구매가 걸린 경매가 없습니다.":st==="live"?`지금 진행 중인 ${ac?esc(ac)+" ":""}경매가 없습니다.`:"마감된 경매가 없습니다.")+(st==="live"?"<br>채취 의뢰를 올리면 심마니·농부가 견적을 보냅니다.":""),(st==="live"?alertBtn(ac,"auction"):"")+'<button class="btn primary" data-go="request">채취 의뢰하기</button>'+(ac?`<button class="btn" type="button" data-mkt="${esc(ac)}">마켓에서 ${esc(ac)} 찾기</button>`:'<button class="btn" type="button" data-mkt="">마켓 둘러보기</button>'));
+  $("#aucGrid").innerHTML=list.length?list.map(aucCard).join(""):emptyBox((so==="buynow"?"즉시 구매가 걸린 경매가 없습니다.":st==="live"?`지금 진행 중인 ${ac?esc(ac)+" ":""}경매가 없습니다.`:"마감된 경매가 없습니다.")+(st==="live"?"<br>채취 의뢰를 올리면 농부·심마니가 견적을 보냅니다.":""),(st==="live"?alertBtn(ac,"auction"):"")+'<button class="btn primary" data-go="request">채취 의뢰하기</button>'+(ac?`<button class="btn" type="button" data-mkt="${esc(ac)}">마켓에서 ${esc(ac)} 찾기</button>`:'<button class="btn" type="button" data-mkt="">마켓 둘러보기</button>'));
 }
 function renderShop(){
   const q=$("#shopQ").value.trim(),gf=$("#growF").value;
@@ -1846,7 +1846,7 @@ function renderShop(){
   $("#shopCount").textContent=list.length?`상품 ${list.length}개${s==="unit"?" · 단위가 다른 상품은 1kg 기준으로 바꿔 비교":""}${s==="pop"?" · 판매량과 후기로 정렬":""}`:"";
   $("#cats").innerHTML=CATS.map(c=>`<button class="cat" aria-pressed="${c===S.cat}" data-cat="${c}">${c}</button>`).join("");
   const ak=q||(S.cat!=="전체"?S.cat:"");
-  $("#shopGrid").innerHTML=list.length?list.map(card).join(""):hq.hit?"":emptyBox(q?`"${esc(q)}"에 맞는 상품이 아직 없습니다. 들어오면 알려 드리거나, 채취 의뢰를 올리면 심마니·농부가 견적을 보냅니다.`:uf&&S.cat==="전체"?`‘${esc(uf.t)}’에 맞는 상품을 준비하고 있습니다. 다른 방법도 둘러보세요.`:"이 분류에 판매 중인 상품이 아직 없습니다. 들어오면 알려 드릴까요?",alertBtn(ak,"shop")+'<button class="btn" data-go="request">채취 의뢰하기</button>');
+  $("#shopGrid").innerHTML=list.length?list.map(card).join(""):hq.hit?"":emptyBox(q?`"${esc(q)}"에 맞는 상품이 아직 없습니다. 들어오면 알려 드리거나, 채취 의뢰를 올리면 농부·심마니가 견적을 보냅니다.`:uf&&S.cat==="전체"?`‘${esc(uf.t)}’에 맞는 상품을 준비하고 있습니다. 다른 방법도 둘러보세요.`:"이 분류에 판매 중인 상품이 아직 없습니다. 들어오면 알려 드릴까요?",alertBtn(ak,"shop")+'<button class="btn" data-go="request">채취 의뢰하기</button>');
 }
 function renderRequests(){
   if(!S.uid){$("#myReqs").innerHTML=`<div class="empty">로그인하면 내 요청서가 보입니다.</div>`;return}
@@ -2612,7 +2612,7 @@ function recoRender(){const d=$("#dlg"),qs=recoQuestions(RC.a),note=`<p class="m
         return `<button type="button" class="rc" data-rcp="${i.kind}:${esc(x.id)}">${x.photo?`<img src="${esc(x.photo)}" alt="">`:`<span class="ph"></span>`}<div><b>${esc(name)}</b>
           <span class="meta num">${esc(shopName(x.sellerId))} · ${i.kind==="a"?`현재가 ${won(i.price)}`:`${won(x.price)}/${esc(x.unit)} · 배송비 포함 ${won(i.price)}`}</span>
           <div class="why">${why.slice(0,5).map(w=>`<span class="chip ${w==="데쳐서 드세요"?"gold":"ok"}">${esc(w)}</span>`).join("")}</div></div></button>`}).join("")}</div>
-      ${r.list.length?"":`<p style="margin:0">심마니와 농부에게 직접 구해 달라고 요청할 수 있어요.</p>`}
+      ${r.list.length?"":`<p style="margin:0">농부와 심마니에게 직접 구해 달라고 요청할 수 있어요.</p>`}
       <div class="actions"><button class="btn" type="button" id="rcAgain">다시 고르기</button><button class="btn ${r.list.length?"":"primary"}" type="button" id="rcReq">채취 의뢰하기</button></div>${note}</div></div>`;
     d.querySelectorAll("[data-rcp]").forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.rcp.split(":");k==="a"?openAuction(id):openProduct(id)});
     $("#rcAgain").onclick=()=>{RC.a={};RC.i=0;recoRender()};$("#rcReq").onclick=()=>{d.close();go("request")}}
@@ -2901,7 +2901,7 @@ function renderSell(){
   }else if(WZ.step===0){
     body=`<h2>처음 한 번만<br>알려 주세요</h2><p class="sub">손님에게 보일 가게 정보입니다. 나중에 바꿀 수 있어요.</p>
      <label class="fld"><span>가게 이름</span><input id="wzShop" placeholder="예: 지리산 박씨네" value="${esc(WZ.shop.name)}"></label>
-     <div class="fld"><span>나는</span><div class="chips" id="wzRole">${["심마니 (자연산 채취)","농부 (재배)","심마니·농부 모두"].map(r=>`<button type="button" data-v="${r}" aria-pressed="${WZ.shop.role===r}">${r.replace(" (자연산 채취)","").replace(" (재배)","")}</button>`).join("")}</div></div>
+     <div class="fld"><span>나는</span><div class="chips" id="wzRole">${["심마니 (자연산 채취)","농부 (재배)","농부·심마니 모두"].map(r=>`<button type="button" data-v="${r}" aria-pressed="${WZ.shop.role===r}">${r.replace(" (자연산 채취)","").replace(" (재배)","")}</button>`).join("")}</div></div>
      <label class="fld"><span>주로 캐거나 키우는 곳</span><input id="wzReg" placeholder="예: 경남 산청" value="${esc(WZ.shop.region)}"></label>
      <p class="hint">농업경영체·임업경영체 등록이 있으시면 나중에 '마이 → 판매자'에서 번호를 넣어 주세요. 확인되면 인증 배지가 붙습니다.</p>
      <p class="hint">휴대폰이 어려우시면 가족이나 동네 매니저에게 맡길 수 있어요. 가게를 만든 뒤 '마이 → 판매자'의 <b>가게 관리자</b>에서 초대 번호를 만들어 알려 주세요.</p>`;
@@ -3136,7 +3136,7 @@ function renderWiz(){
   else if(st.k==="qty")body=`<div class="stepper"><button type="button" id="wMinus" aria-label="줄이기">−</button><input id="wQty" type="number" min="1" class="num" value="${W.qty}" aria-label="수량"><button type="button" id="wPlus" aria-label="늘리기">+</button></div><div class="pills">${["kg","근(600g)","뿌리","관(3.75kg)"].map(u=>`<button type="button" class="pill" data-wu="${u}" aria-pressed="${W.unit===u}">${u}</button>`).join("")}</div>`;
   else if(st.k==="due")body=`<div class="choices">${[["1주 안",plus(7)],["2주 안",plus(14)],["한 달 안",plus(30)],["날짜 직접 고르기",""]].map(([v,d])=>`<button type="button" class="choice" data-wd="${v}" aria-pressed="${W.dueKind===v}"><span>${v}</span>${d?`<small>${d.slice(5).replace("-","/")}까지</small>`:""}</button>`).join("")}</div>${W.dueKind==="날짜 직접 고르기"?`<div class="field"><label for="wDue">받을 날짜</label><input id="wDue" type="date" min="${plus(1)}" value="${esc(W.due||plus(14))}"></div>`:""}`;
   else if(st.k==="memo")body=`<div class="field"><textarea id="wMemo" rows="4" placeholder="크기, 손질 상태, 포장, 예산 (선택)" aria-label="요청 사항">${esc(W.memo)}</textarea></div>`;
-  else body=`<dl class="spec"><dt>품목</dt><dd>${esc(W.item)}</dd><dt>생산 방식</dt><dd>${esc(W.grow)}</dd><dt>수량</dt><dd class="num">${W.qty} ${esc(W.unit)}</dd><dt>형태</dt><dd>${esc(W.form)}</dd><dt>받을 날</dt><dd class="num">${esc(dueOf())}까지</dd><dt>산지</dt><dd>${esc(W.region)}</dd>${W.memo?`<dt>요청 사항</dt><dd>${esc(W.memo)}</dd>`:""}</dl><div class="notice">요청서를 올리면 활동 중인 심마니·농부에게 보입니다. 받은 견적은 오른쪽(휴대폰은 아래)에서 비교하고, 궁금한 점은 대화로 물어보세요.</div>`;
+  else body=`<dl class="spec"><dt>품목</dt><dd>${esc(W.item)}</dd><dt>생산 방식</dt><dd>${esc(W.grow)}</dd><dt>수량</dt><dd class="num">${W.qty} ${esc(W.unit)}</dd><dt>형태</dt><dd>${esc(W.form)}</dd><dt>받을 날</dt><dd class="num">${esc(dueOf())}까지</dd><dt>산지</dt><dd>${esc(W.region)}</dd>${W.memo?`<dt>요청 사항</dt><dd>${esc(W.memo)}</dd>`:""}</dl><div class="notice">요청서를 올리면 활동 중인 농부·심마니에게 보입니다. 받은 견적은 오른쪽(휴대폰은 아래)에서 비교하고, 궁금한 점은 대화로 물어보세요.</div>`;
   const needNext=["item","qty","memo"].includes(st.k)||(st.k==="due"&&W.dueKind==="날짜 직접 고르기");
   el.innerHTML=`<div class="meta num">${W.step+1} / ${n}</div><div class="wbar"><i style="width:${(W.step+1)/n*100}%"></i></div><div class="wq">${st.q}</div>${body}
    <div class="wnav">${W.step?'<button type="button" class="btn" id="wBack">이전</button>':""}${st.k==="done"?'<button type="button" class="btn primary needWrite" id="wSend">요청서 올리기</button>':needNext?`<button type="button" class="btn primary" id="wNext">${st.k==="memo"&&!W.memo?"건너뛰기":"다음"}</button>`:""}</div>`;
@@ -3626,7 +3626,7 @@ function openDict(name){
   const prep=!ban&&(idn.prep||idn.store||idn.eat||idn.grade)?`<div class="sec"><h3>고르는 법·손질·보관</h3><dl class="facts">${idn.grade?`<dt>고르는 법</dt><dd>${esc(idn.grade)}</dd>`:""}${idn.prep?`<dt>손질</dt><dd>${esc(idn.prep)}</dd>`:""}${idn.store?`<dt>보관</dt><dd>${esc(idn.store)}</dd>`:""}${idn.eat?`<dt>먹는 법</dt><dd>${esc(idn.eat)}</dd>`:""}</dl></div>`:"";
   const meta=S.hmeta[hid(name)]||{},rv=Array.isArray(meta.review)?meta.review:[],chg=Array.isArray(meta.changes)?meta.changes:[];
   const isSeller=!!S.sellers[S.uid];
-  const fieldHTML=`<div class="sec field-notes"><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">심마니·농부가 직접 남긴 자료</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
+  const fieldHTML=`<div class="sec field-notes"><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">농부·심마니가 직접 남긴 자료</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
     ${S.uid?`<details${isSeller?"":" hidden"}><summary class="meta" style="cursor:pointer">내 현장 기록 남기기</summary><form class="panel" id="fnForm" style="padding:12px;margin-top:8px">
       <div class="field"><label for="fnKind">무엇을 남길까요</label><select id="fnKind"><option value="name">우리 지역에서 부르는 이름</option><option value="harvest">우리 지역에서 실제로 캐는 달</option></select></div>
       <div class="field" id="fnNameWrap"><label for="fnName">부르는 이름</label><input id="fnName" maxlength="20" placeholder="예: 딱주"></div>
@@ -3682,7 +3682,7 @@ function watchField(name){
     const hv=l.filter(x=>x.kind==="harvest"&&Array.isArray(x.months)).sort((a,b)=>a.region.localeCompare(b.region));
     b.innerHTML=(Object.keys(names).length?`<div><div class="eyebrow" style="margin-bottom:6px">지역에서 부르는 이름</div><div class="fn-names">${Object.entries(names).map(([n,rs])=>`<span>${esc(n)}<small>${esc([...rs].join(", "))}</small></span>`).join("")}</div></div>`:"")+
       (hv.length?`<div><div class="eyebrow" style="margin:8px 0 6px">지역별 실제 채취 달</div><div style="overflow-x:auto"><table class="fn-tbl num"><tr><th>지역 · 기록한 곳</th>${Array.from({length:12},(_,k)=>`<th>${k+1}</th>`).join("")}</tr>${hv.map(x=>`<tr><td>${esc(x.region)} · ${esc(x.shop||"")}${x.memo?`<div class="meta" style="font-size:11px">${esc(x.memo)}</div>`:""}</td>${Array.from({length:12},(_,k)=>`<td class="${x.months.includes(k+1)?"on":""}"></td>`).join("")}</tr>`).join("")}</table></div></div>`:"")||
-      '<div class="meta">아직 현장 기록이 없습니다. 이 약초를 캐는 심마니·농부라면 지역 이름이나 실제로 캐는 달을 남겨 주세요.</div>';
+      '<div class="meta">아직 현장 기록이 없습니다. 이 약초를 캐는 농부·심마니라면 지역 이름이나 실제로 캐는 달을 남겨 주세요.</div>';
     if(S.owner){const del=l.map(x=>`<button class="btn sm danger" type="button" data-fndel="${esc(x.id)}">${esc(x.kind==="name"?x.value:x.region+" 채취")} 지우기</button>`).join("");if(del)b.insertAdjacentHTML("beforeend",`<details><summary class="meta" style="cursor:pointer">현장 기록 정리 (운영자)</summary><div class="actions" style="margin-top:6px">${del}</div></details>`);
       b.querySelectorAll("[data-fndel]").forEach(x=>x.onclick=()=>guard(()=>S.db.doc("fieldnotes/"+x.dataset.fndel).delete(),"현장 기록을 지웠습니다"))}
   },()=>{const b=box();if(b)b.innerHTML='<div class="meta">현장 기록을 불러오지 못했습니다.</div>'});
@@ -3812,7 +3812,7 @@ const DEMO_P=[
  {name:"약도라지 배즙 30포",item:"도라지",grow:GROWS[1],cat:"가공품",form:"즙·액상차",unit:"1박스",price:29000,region:"경북 봉화",permit:"본인 소유 임야·재배",desc:"[예시] 3년근 도라지와 배를 함께 달여 파우치에 담았습니다.",proc:{biz:"위탁 생산 (다른 공장에 맡김)",bizNo:"예시-0001",maker:"예시식품 / 경북 영주",ingr:"배 80% (국산), 도라지 20% (봉화산)",vol:"100ml × 30포",shelf:"제조일로부터 18개월"}}
 ];
 $("#seedDemo").onclick=async()=>{
-  if(!S.sellers[S.uid])await guard(()=>S.db.doc("sellers/"+S.uid).set({shopName:"농마니 예시 상점",role:"심마니·농부 모두",region:"전국",bio:"운영자가 넣은 예시입니다.",updatedAt:Date.now()}));
+  if(!S.sellers[S.uid])await guard(()=>S.db.doc("sellers/"+S.uid).set({shopName:"농마니 예시 상점",role:"농부·심마니 모두",region:"전국",bio:"운영자가 넣은 예시입니다.",updatedAt:Date.now()}));
   let n=0;const now=Date.now();
   for(const d of DEMO_A){const {dur,...rest}=d;if(await guard(()=>S.db.collection("auctions").add({...rest,cert:rest.cert||"",appraise:rest.appraise||"",date:iso(new Date(now-2*864e5)),schedule:dur?"test":"sat",duration:dur||0,ship:7000,listFee:listFee(rest.start),sellerId:S.uid,status:"진행중",startedAt:now,endsAt:dur?now+dur:nextSat(now),demo:true,createdAt:now-n*1000})))n++}
   for(const d of DEMO_P){if(await guard(()=>S.db.collection("products").add({...d,cert:d.cert||"",stock:20,sellerId:S.uid,status:"판매중",demo:true,createdAt:now-n*1000})))n++}
