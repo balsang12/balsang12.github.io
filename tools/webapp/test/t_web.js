@@ -106,6 +106,56 @@ async function open(b, pre, shot) {
   ok(pf.sellerBox && pf.parcelProof && pf.linked, 'seller sends own-land parcel number later');
   ok(pf.queueParcel && pf.badge && pf.paid, 'operator checks parcel, badge, then payout');
   ok(pf.land, 'landowner lookup request still works');
+  // 5) 사후 확인, 가공품 신고 번호, 기준 금액 설정, 내 채취지
+  const rv = await p.evaluate(async () => {
+    const r = {}, ups = () => window.__calls.filter(c => c[0] === 'upsert'), wait = ms => new Promise(z => setTimeout(z, ms));
+    r.tierDefault = [tierOf(200000), tierOf(500000), tierOf(1000000)].join(',');
+    S.site = { ...(S.site || {}), reviewWon: 500000 }; r.tierCustom = tierOf(600000); S.site.reviewWon = 1000000;
+    // 새 판매자도 일반 품목은 바로 판매
+    S.checks = {}; S.orders = S.orders.filter(o => o.sellerId !== S.uid);
+    r.cert = trust(S.uid).cert;
+    const res = await prodAdd({ item: '더덕', name: '더덕 1kg', cat: '뿌리 약초', form: '생물', unit: '1kg', price: 30000, stock: 5, region: '강원', grow: '재배 (인증 없음)', permit: PERMITS[0], desc: '' }, '');
+    r.autoNew = res === 'auto';
+    // 가공품도 바로 판매, 정산은 신고 번호 확인 뒤
+    $('#sCat').value = '가공품'; procUI(); $('#sItem').value = '오미자'; $('#sName').value = '오미자청 500ml'; $('#sForm').value = $('#sForm').options[0].value; $('#sUnit').value = $('#sUnit').options[0].value; $('#sPrice').value = '25000'; $('#sStock').value = '3'; $('#sRegion').value = '문경'; $('#sGrow').value = GROWS[1];
+    $('#pBizNo').value = '2026-0001'; $('#pIngr').value = '오미자, 설탕'; $('#pVol').value = '500ml'; $('#pShelf').value = '1년'; $('#sOath').checked = true; $('#sDesc').value = '';
+    await $('#sellForm').onsubmit({ preventDefault() {} }); await wait(600);
+    const pr = ups().filter(c => c[1] === 'products').pop(); r.procLive = pr[3].status === '판매중' && pr[3].auto === true;
+    const pid = pr[2];
+    await S.db.collection('orders').add({ productId: pid, productName: '오미자청', unit: '1병', qty: 1, total: 25000, buyerId: 'x', sellerId: S.uid, status: '수령확인', createdAt: Date.now() }); await wait(600);
+    const oid = S.orders.find(o => o.productId === pid).id;
+    await ACT.payout(oid); await wait(300); r.payHeld = S.orders.find(o => o.id === oid).status === '수령확인';
+    go('admin'); renderAdmin(); await wait(100);
+    r.feed = !!document.querySelector(`#postQueue [data-pbiz="${pid}"]`);
+    document.querySelector(`#postQueue [data-pbiz="${pid}"]`).click(); await wait(700);
+    r.bizOk = !!S.products.find(x => x.id === pid).bizOk;
+    await ACT.payout(oid); await wait(500); r.paid = S.orders.find(o => o.id === oid).status === '정산완료';
+    // 모두 확인함
+    document.querySelector('#postAll').click(); await wait(800);
+    r.allChecked = S.products.filter(x => x.auto && x.status === '판매중' && x.cat !== '가공품' && !x.reviewedAt).length === 0;
+    // 내 채취지
+    go('seller'); renderSeller(); await wait(100);
+    $('#siteParcel').value = '인제군 기린면 OO리 산12'; $('#sitePermit').value = PERMITS[0];
+    await addSite(); await wait(700);
+    const st = ups().filter(c => c[1] === 'sites').pop(); r.siteSaved = st && st[3].status === '대기' && st[3].by === S.uid;
+    go('admin'); renderAdmin(); await wait(100);
+    document.querySelector(`#siteQueue [data-sok="${st[2]}"]`).click(); await wait(800);
+    r.siteOk = mySites().some(x => x.id === st[2]);
+    go('seller'); renderSeller(); await wait(100);
+    r.siteOption = [...document.querySelectorAll('#aSite option')].some(o => o.value === st[2]) && !$('#aSite').closest('.field').hidden;
+    $('#aCat').value = '산삼'; $('#aGrow').value = '자연산 (산에서 채취)'; $('#aTitle').value = '산삼 2뿌리'; $('#aWeight').value = '2뿌리'; $('#aRegion').value = '강원 인제'; $('#aStart').value = '150000'; $('#aBuyNow').value = '';
+    aPhoto = 'data:image/png;base64,AAAA'; aProof = ''; $('#aOath').checked = true; $('#aSite').value = st[2]; aucUI();
+    await $('#aucForm').onsubmit({ preventDefault() {} }); await wait(300);
+    const au = ups().filter(c => c[1] === 'auctions').pop();
+    r.siteAuction = au[3].siteRef === st[2] && au[3].proofOk === true && !au[3].proofDue && au[3].status === '진행중';
+    return r;
+  });
+  console.log(JSON.stringify(rv));
+  ok(rv.tierDefault === '기본,영상,감정' && rv.tierCustom === '감정', 'thresholds follow operator settings');
+  ok(rv.autoNew, 'new seller ordinary item goes live without review');
+  ok(rv.procLive && rv.payHeld && rv.feed && rv.bizOk && rv.paid, 'processed food sells now, payout after business number check');
+  ok(rv.allChecked, 'bulk check clears the post-review feed');
+  ok(rv.siteSaved && rv.siteOk && rv.siteOption && rv.siteAuction, 'verified harvest site gives instant proof');
   // 4) 해외 제목
   const it = await p.evaluate(async () => {
     const r = {};

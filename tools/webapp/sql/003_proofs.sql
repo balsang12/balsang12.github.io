@@ -1,3 +1,5 @@
 -- v58: proofs (채취 근거 서류 사진)와 landreqs(산주 찾기)는 본인과 운영자만 읽는 inbox.
 -- nm_kind / nm_actor 에 'proofs','landreqs' 추가 (마이그레이션 proofs_landreqs_kinds)
 -- proofOk 배지는 운영자만 바꿀 수 있음 (마이그레이션 proof_badge_admin_only, 트리거 docs_proof_guard)
+-- v66: sites(내 채취지) inbox, actor 'by'. nm_proof_guard: proofOk는 운영자 또는 판매자 본인의 확인된·유효한 채취지(siteRef)일 때만,
+--      bizOk(가공품 영업 신고 번호 확인)는 운영자만, 판매자가 채취지를 고치면 다시 '대기'. (마이그레이션 harvest_sites_and_biz_check, site_edits_need_review)

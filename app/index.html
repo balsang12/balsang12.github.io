@@ -877,6 +877,7 @@ label.btn{display:inline-block}
   <div class="actions"><button class="btn primary" type="button" data-sell="1" style="min-height:52px;font-size:17px;padding-inline:22px">+ 사진 찍어 쉽게 올리기</button><span class="meta">아래 양식은 가공품·자세한 등록용입니다</span></div>
   <div class="stats" id="sellerStats"></div>
   <div id="credBox"></div>
+  <div id="siteBox"></div>
   <details class="panel bulk" id="bulk">
     <summary><b>엑셀로 여러 개 한꺼번에 올리기</b><span class="meta">상품이 많을 때 컴퓨터에서 쓰세요 · 가공품은 아래 양식으로 하나씩</span></summary>
     <div class="bulkb">
@@ -965,6 +966,7 @@ label.btn{display:inline-block}
         </div>
         <div class="field"><label for="sDesc">상품 설명</label><textarea id="sDesc" rows="3" placeholder="재배·채취 과정, 손질 방법, 보관법"></textarea></div>
         <div class="field"><label for="sProof" id="sProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="sProof" type="file" accept="image/*"><img id="sProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
+        <div class="field" hidden><label for="sSite">확인된 내 채취지에서 캤나요?</label><select id="sSite"><option value="">아니요</option></select></div>
         <div class="field"><label for="sParcel">본인 산이면 지번 (서류 대신)</label><input id="sParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
         <label class="oath"><input type="checkbox" id="sOath"><span>법을 지켜 채취·생산했습니다. 남의 산에서 허락 없이 캐지 않았습니다.</span></label>
         <div class="notice" id="sClaim">효능 표현과 인증 없는 "무농약·유기농·친환경" 문구는 등록할 수 없습니다.</div>
@@ -995,16 +997,17 @@ label.btn{display:inline-block}
         </div>
         <div class="field"><label for="aPermit">채취 근거</label><select id="aPermit"><option>국유림 임산물 채취 허가</option><option>사유림 소유자 동의서</option><option>본인 소유 임야·재배</option><option>국유림 보호협약(마을 양여)</option><option>산 임차 계약</option></select></div>
         <div class="field"><label for="aProof" id="aProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="aProof" type="file" accept="image/*"><img id="aProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
+        <div class="field" hidden><label for="aSite">확인된 내 채취지에서 캤나요?</label><select id="aSite"><option value="">아니요</option></select></div>
         <div class="field"><label for="aParcel">본인 산이면 지번 (서류 대신)</label><input id="aParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
         <label class="oath"><input type="checkbox" id="aOath"><span>법을 지켜 채취했습니다. 남의 산에서 허락 없이 캐지 않았습니다.</span></label>
         <div class="field" id="certWrapA" hidden><label for="aCert">산양삼 품질검사 합격증 번호</label><input id="aCert" placeholder="한국임업진흥원 합격증 번호"></div>
         <div class="field" id="appraiseWrap"><label for="aAppraise" id="aAppraiseLbl">감정 기관·감정서 번호 (있으면)</label><input id="aAppraise" placeholder="예: OO심마니협회 감정서 제2026-000호"></div>
-        <div class="field" id="apPhotoWrap" hidden><label for="aApPhoto">감정서 사진 (100만 원 이상 필수)</label><div class="photo-pick"><input id="aApPhoto" type="file" accept="image/*"><img id="aApPhotoPrev" alt="" hidden></div></div>
+        <div class="field" id="apPhotoWrap" hidden><label for="aApPhoto" id="apLbl">감정서 사진 (100만 원 이상 필수)</label><div class="photo-pick"><input id="aApPhoto" type="file" accept="image/*"><img id="aApPhotoPrev" alt="" hidden></div></div>
         <div class="row2">
           <div class="field"><label for="aStart">시작가(원)</label><input id="aStart" type="number" min="10000" step="1000" required class="num" value="300000"></div>
           <div class="field"><label for="aBuyNow">즉시 구매가(원, 선택)</label><input id="aBuyNow" type="number" min="0" step="1000" class="num" placeholder="비워 두면 없음"></div>
         </div>
-        <div class="field" id="videoWrap" hidden><label for="aVideo">인증 영상 링크 (30만 원 이상 필수)</label><input id="aVideo" type="url" placeholder="https:// 유튜브·네이버 동영상 등 링크"><span class="meta">당일 날짜를 쓴 메모, 저울 위 물건, 채취 장소가 30초 안에 나오게 찍어 주세요.</span></div>
+        <div class="field" id="videoWrap" hidden><label for="aVideo" id="videoLbl">인증 영상 링크 (30만 원 이상 필수)</label><input id="aVideo" type="url" placeholder="https:// 유튜브·네이버 동영상 등 링크"><span class="meta">당일 날짜를 쓴 메모, 저울 위 물건, 채취 장소가 30초 안에 나오게 찍어 주세요.</span></div>
         <div class="notice" id="aTier"></div>
         <div class="field"><label for="aDur">마감</label><select id="aDur"><option value="sat" selected>토요일 저녁 8시 정기 경매</option><option value="600000">10분 (시험용)</option></select><span class="meta" id="aDurNote"></span></div>
         <div class="field"><label for="aPhoto">실물 사진 (1장, 필수)</label><div class="photo-pick"><input id="aPhoto" type="file" accept="image/*"><img id="aPhotoPrev" alt="" hidden></div></div><div class="field" id="aShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aShare" style="margin-top:5px"> <span>이 사진을 <b>약초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 약초 백과에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="aSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
@@ -1031,6 +1034,9 @@ label.btn{display:inline-block}
   <div class="panel goldp" style="margin-bottom:16px"><h3>경매 운영</h3>
     <div class="row2"><div class="field"><label for="cfgCycle">경매 주기</label><select id="cfgCycle"><option value="biweekly">격주 (물건이 적을 때)</option><option value="weekly">매주</option></select></div>
     <div class="field"><label for="cfgAnchor">기준 경매일 (토요일)</label><input id="cfgAnchor" type="date"></div></div>
+    <div class="row2"><div class="field"><label for="cfgVideo">경매 인증 영상 기준 (원)</label><input id="cfgVideo" type="number" min="10000" step="10000" class="num"></div>
+      <div class="field"><label for="cfgReview">경매 직접 승인·감정서 기준 (원)</label><input id="cfgReview" type="number" min="10000" step="10000" class="num"></div></div>
+    <div class="field"><label for="cfgProof">채취 근거 기준 (원, 경매·마켓 공통 · 자연산 산삼은 금액과 상관없이 필요)</label><input id="cfgProof" type="number" min="10000" step="10000" class="num"></div>
     <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="cfgBeta"> 베타 모드 (구매·입찰·견적 결제를 받지 않고 오픈 알림만 받음, 출품료 무료)</label>
     <div class="actions"><button class="btn gold" type="button" id="cfgSave">저장</button><span class="meta" id="cfgNote"></span></div>
     <h3 style="margin-top:14px">경매 열림 알림을 기다리는 손님</h3><div class="list" id="alertCounts"></div>
@@ -1056,6 +1062,8 @@ label.btn{display:inline-block}
           <li><b>감정서 원칙:</b> 자연산 산삼 민간 감정서를 어디까지 믿을지 운영 원칙 정하기</li>
           <li><b>베타 끄기:</b> 위 결제·사업자 준비가 끝나면 설정에서 베타를 끄면 실제 주문·입찰이 열림</li>
         </ul></div>
+      <div class="panel"><h3>새로 올라온 것 (사후 확인)</h3><p class="meta" style="margin:0 0 8px">바로 판매가 시작된 상품·경매입니다. 위험한 것이 위에 옵니다. 문제가 있으면 내리세요.</p><div class="actions" style="margin-bottom:8px"><button class="btn sm" type="button" id="postAll">가공품 빼고 모두 확인함</button></div><div class="list" id="postQueue"></div></div>
+      <div class="panel"><h3>채취지 확인</h3><p class="meta" style="margin:0 0 8px">판매자가 등록한 산입니다. 한 번 확인하면 그 산에서 캔 산삼은 근거가 자동으로 확인됩니다.</p><div class="list" id="siteQueue"></div></div>
       <div class="panel"><h3>채취 증빙 확인</h3><p class="meta" style="margin:0 0 8px">서류 사진은 운영자만 봅니다. 이름·지번이 출품 정보와 맞는지 보고 확인해 주세요.</p><div class="list" id="proofQueue"></div></div>
       <div class="panel"><h3>산주 찾기 요청</h3><p class="meta" style="margin:0 0 8px">산림조합에 지번으로 산주를 문의하고, 동의서를 받도록 연결합니다.</p><div class="list" id="landQueue"></div></div>
       <div class="panel"><h3>약초 사전 오류 신고</h3><div class="list" id="herbReports"></div></div>
@@ -1101,17 +1109,19 @@ label.btn{display:inline-block}
       <ul>
         <li>모든 출품에는 "법을 지켜 채취·생산했습니다" 확인이 필요합니다. 남의 산에서 허락 없이 캔 것은 팔 수 없습니다.</li>
         <li>산양삼·장뇌삼은 생산신고번호나 품질검사 합격증 번호가 있어야 합니다.</li>
-        <li>자연산 산삼과 100만 원 이상 상품은 먼저 올리고, <b>정산 전 14일 안</b>에 채취 근거를 내면 됩니다. 허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다.</li>
+        <li>자연산 산삼과 <span class="pw">100만 원</span> 이상 상품은 먼저 올리고, <b>정산 전 14일 안</b>에 채취 근거를 내면 됩니다. 허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다.</li>
         <li>근거가 확인되면 "채취 증빙 확인" 배지가 붙고 목록 앞쪽에 보입니다. 기한 안에 근거가 없으면 구매자에게 환불됩니다.</li>
+        <li>자주 가는 산은 판매자 센터의 "내 채취지"에 한 번 등록해 두세요. 운영자가 확인하면 그 산에서 캔 산삼은 고르기만 하면 근거가 확인됩니다.</li>
         <li>산주를 모르면 출품 화면의 "산주 찾기"로 요청하세요. 산림조합을 통해 연결해 드립니다.</li>
       </ul>
     </div>
     <div>
       <h3>검수 방법</h3>
       <div class="tbl"><table><thead><tr><th>시작가</th><th>판매자가 낼 것</th><th>확인</th></tr></thead><tbody>
-        <tr><td>30만 원 미만 (마켓 상품 포함)</td><td>실물 사진, 채취 근거</td><td>AI 1차 검수 뒤 운영자가 훑어봄. 인증 판매자는 검수 없이 바로 등록</td></tr>
-        <tr><td>30만~100만 원</td><td>+ 30초 인증 영상 (당일 날짜 메모, 저울 위 물건, 채취 장소)</td><td>운영자 확인</td></tr>
-        <tr><td>100만 원 이상</td><td>+ 감정서 사진과 번호 (감정비는 판매자 부담)</td><td>운영자 직접 확인</td></tr>
+        <tr><td id="rv1">30만 원 미만 (마켓 상품 포함)</td><td>실물 사진</td><td>바로 올라감. 운영자가 나중에 훑어봄</td></tr>
+        <tr><td id="rv2">30만~100만 원</td><td>+ 30초 인증 영상 (당일 날짜 메모, 저울 위 물건, 채취 장소)</td><td>바로 올라감. 운영자가 나중에 훑어봄</td></tr>
+        <tr><td id="rv3">100만 원 이상</td><td>+ 감정서 사진과 번호 (감정비는 판매자 부담)</td><td>운영자가 직접 확인한 뒤 올라감</td></tr>
+        <tr><td>가공품</td><td>영업 신고 번호, 원재료, 내용량, 소비기한</td><td>바로 판매. 운영자가 신고 번호를 확인한 뒤 정산</td></tr>
       </tbody></table></div>
       <ul style="margin-top:10px">
         <li>구매자는 발송 후 5일 안에 수령 확인이나 문제 신고를 합니다. 아무것도 하지 않으면 자동으로 수령 확인됩니다.</li>
@@ -1212,8 +1222,13 @@ function nextSat(from){const d=new Date(from+MIN_LEAD);const t=new Date(d);t.set
   const c=aucCfg();if(c.cycle==="biweekly"){const wk=Math.round((t.getTime()-c.anchor)/(7*864e5));if(((wk%2)+2)%2===1)t.setDate(t.getDate()+7)}return t.getTime()}
 const satLabel=t=>{const d=new Date(t);return `${d.getMonth()+1}월 ${d.getDate()}일(토) 저녁 8시`};
 function inc(p){return p<100000?1000:p<1000000?5000:p<10000000?10000:50000}
-const TIER_VIDEO=300000,TIER_APPRAISE=1000000,CONFIRM_MS=5*864e5;
-const tierOf=st=>st>=TIER_APPRAISE?"감정":st>=TIER_VIDEO?"영상":"기본";
+const CONFIRM_MS=5*864e5;
+/* 검수 기준 금액: 운영자 설정(settings/site)에서 바꿀 수 있음 */
+const cfgWon=(k,d)=>{const v=+((S.site||{})[k]);return Number.isFinite(v)&&v>0?v:d};
+const videoWon=()=>cfgWon("videoWon",300000),reviewWon=()=>cfgWon("reviewWon",1000000),proofWon=()=>cfgWon("proofWon",1000000);
+const man=n=>n%10000===0?`${(n/10000).toLocaleString("ko-KR")}만 원`:won(n);
+const tierOf=st=>st>=reviewWon()?"감정":st>=videoWon()?"영상":"기본";
+const AUTO_ST=["ok","caution"];
 
 /* ---------- 분류 ---------- */
 const ACATS=["전체","산삼","산양삼","잔대","더덕","도라지","천마","하수오","만삼","칡","지치","송이","능이","꽃송이버섯","석이","상황","영지","복령","겨우살이","기타 귀한 임산물"];
@@ -1878,7 +1893,7 @@ function sellerAucHTML(){
     return `<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b>${statusChip(x.phase==="결제대기"?"낙찰":x.phase)}</div><div class="meta num">${esc(a.cat)} · 시작가 ${won(a.start)}${a.buyNow?" · 즉시 "+won(a.buyNow):""}</div>${body}${proofMissing(a)?`<div class="notice" style="margin-top:6px">${a.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${a.proofDue?day(a.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${a.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(a.proofNote)}</span>`:""}
       <div class="actions" style="margin-top:6px"><input id="pl-${a.id}" type="file" accept="image/*" aria-label="근거 사진"><input id="pp-${a.id}" placeholder="본인 산 지번" aria-label="본인 산 지번" style="max-width:200px"><button class="btn sm primary" data-act="proofLater" data-id="auctions:${a.id}">근거 보내기</button></div>`}</div>`:""}</div>`}).join("");
 }
-function renderSeller(){
+function renderSeller(){renderSites();
   const me=S.sellers[S.uid];
   $("#shopLabel").textContent=me?`${me.shopName} · ${me.role||""} · ${me.region} · ${trust(S.uid).cert?"인증 판매자":"일반 판매자 (문제없는 거래 3건이면 인증)"}`:"상점 정보를 먼저 저장해 주세요";aucUI();
   if(me&&document.activeElement?.form?.id!=="shopForm"){$("#shName").value=me.shopName;$("#shRegion").value=me.region;$("#shBio").value=me.bio||"";if(me.role)$("#shRole").value=me.role;$("#shRegType").value=me.regType||"";$("#shRegNo").value=me.regNo||"";$("#shBiz").value=me.biz||""}
@@ -1978,7 +1993,27 @@ function renderAdmin(){
     <div class="meta">품목 ${esc(r.herb||"-")} · 연락처 ${esc(r.contact||"앱 메시지")} · 상태 ${esc(r.status)}</div>
     <div class="actions">${r.status==="접수"?`<button class="btn sm" type="button" data-lr="${r.id}" data-to="문의중">산림조합에 문의함</button>`:""}<button class="btn sm primary" type="button" data-lr="${r.id}" data-to="연결">산주와 연결함</button><button class="btn sm danger" type="button" data-lr="${r.id}" data-to="못찾음">찾지 못함</button></div></div>`).join(""):`<div class="empty">들어온 요청이 없습니다.</div>`;
   $("#landQueue").querySelectorAll("[data-lr]").forEach(b=>b.onclick=()=>guard(()=>S.db.doc("landreqs/"+b.dataset.lr).update({status:b.dataset.to,doneAt:Date.now()}),"상태를 바꿨습니다"));
-  const n=pendA.length+pendP.length+payO.length+payA.length+dA.length+dO.length+rps.length+pq.length+pfs.length+lrs.filter(r=>r.status==="접수").length;$("#dotAdmin").innerHTML=n?`<span class="dot">${n}</span>`:"";
+  const risk=x=>(x.cat==="가공품"&&!x.bizOk?8:0)+(trust(x.sellerId).cert?0:4)+(String(x.grow||"").startsWith("자연산")?2:0)+((x.start||x.price||0)>=videoWon()?2:0);
+  const post=[...S.auctions.filter(a=>a.autoApproved&&!a.reviewedAt&&a.status==="진행중"&&!a.demo).map(a=>["auctions",a]),...S.products.filter(p=>p.auto&&!p.reviewedAt&&p.status==="판매중"&&!p.demo).map(p=>["products",p])].sort((a,b)=>risk(b[1])-risk(a[1])||b[1].createdAt-a[1].createdAt).slice(0,60);
+  $("#postQueue").innerHTML=post.length?post.map(([c,x])=>`<div class="item sunk"><div class="itop"><b>${esc(x.title||x.name)}</b><span class="meta">${esc(shopName(x.sellerId))}${trust(x.sellerId).cert?"":" · 새 판매자"}</span></div>
+    <div style="display:flex;gap:10px;align-items:flex-start">${x.photo?`<img src="${esc(x.photo)}" alt="" style="width:84px;height:84px;object-fit:cover;border-radius:8px;flex:none">`:""}<div class="meta num">${c==="auctions"?`경매 · 시작가 ${won(x.start)}`:`마켓 · ${won(x.price)}/${esc(x.unit)}`} · ${esc(x.item||x.cat)} · ${esc(x.grow||"")} · ${esc(x.region||"")}${x.desc?`<br>${esc(String(x.desc).slice(0,120))}`:""}</div></div>
+    ${x.cat==="가공품"?`<div class="notice">영업 신고 번호 <b>${esc(x.proc?.bizNo||"-")}</b> · ${esc(x.proc?.biz||"")}${x.proc?.maker?" · 제조원 "+esc(x.proc.maker):""} — <a href="https://www.foodsafetykorea.go.kr" target="_blank" rel="noopener">식품안전나라</a>에서 번호가 있는지 확인하세요. 확인 전에는 정산되지 않습니다.</div>`:""}
+    <div class="actions">${x.cat==="가공품"?`<button class="btn sm primary" type="button" data-pbiz="${esc(x.id)}">신고 번호 확인함</button>`:`<button class="btn sm primary" type="button" data-pok="${c}:${esc(x.id)}">확인함</button>`}<button class="btn sm danger" type="button" data-pdown="${c}:${esc(x.id)}">내리기</button></div></div>`).join(""):`<div class="empty">새로 확인할 것이 없습니다.</div>`;
+  const pOk=(c,id,extra)=>S.db.doc(c+"/"+id).update({reviewedAt:Date.now(),...(extra||{})});
+  $("#postQueue").querySelectorAll("[data-pok]").forEach(b=>b.onclick=()=>{const [c,id]=b.dataset.pok.split(":");guard(()=>pOk(c,id),"확인했습니다")});
+  $("#postQueue").querySelectorAll("[data-pbiz]").forEach(b=>b.onclick=()=>guard(()=>pOk("products",b.dataset.pbiz,{bizOk:true}),"영업 신고 번호를 확인했습니다. 이제 정산할 수 있습니다"));
+  $("#postQueue").querySelectorAll("[data-pdown]").forEach(b=>b.onclick=()=>{const [c,id]=b.dataset.pdown.split(":");
+    guard(()=>c==="auctions"?S.db.doc("auctions/"+id).update({status:"반려",rejectReason:"운영자 사후 확인에서 내림",reviewedAt:Date.now()}):S.db.doc("products/"+id).update({status:"판매중지",reviewedAt:Date.now()}),"내렸습니다")});
+  $("#postAll").onclick=async()=>{const list=post.filter(([c,x])=>x.cat!=="가공품");if(!list.length){toast("한꺼번에 확인할 것이 없습니다");return}
+    await guard(async()=>{for(const [c,x] of list)await pOk(c,x.id)},`${list.length}건을 확인했습니다`)};
+  const sq=(S.sites||[]).filter(x=>x.status==="대기").sort((a,b)=>a.createdAt-b.createdAt);
+  $("#siteQueue").innerHTML=sq.length?sq.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.parcel)}</b><span class="meta">${esc(shopName(x.by))} · ${day(x.createdAt)}</span></div>
+    <div class="meta">${esc(x.permit)}${x.until?" · "+day(x.until)+"까지":" · 기간 없음"}</div>
+    ${/^data:image\//.test(x.photo||"")?`<img src="${esc(x.photo)}" alt="채취지 근거" style="max-height:200px;width:auto;border-radius:8px;justify-self:start">`:`<div class="notice">본인 산 · <a href="https://www.iros.go.kr" target="_blank" rel="noopener">인터넷등기소</a>에서 소유자가 판매자 본인인지 확인하세요.</div>`}
+    <div class="actions"><button class="btn sm primary" type="button" data-sok="${esc(x.id)}">확인함</button><input id="sr-${x.id}" placeholder="부족한 점" aria-label="부족한 점"><button class="btn sm danger" type="button" data-sno="${esc(x.id)}">부족함</button></div></div>`).join(""):`<div class="empty">확인할 채취지가 없습니다.</div>`;
+  $("#siteQueue").querySelectorAll("[data-sok]").forEach(b=>b.onclick=()=>guard(()=>S.db.doc("sites/"+b.dataset.sok).update({status:"확인",doneAt:Date.now()}),"확인했습니다. 판매자가 이 산을 고르면 근거가 바로 확인됩니다"));
+  $("#siteQueue").querySelectorAll("[data-sno]").forEach(b=>b.onclick=()=>{const id=b.dataset.sno,why=$("#sr-"+id).value.trim();if(!why){toast("부족한 점을 적어 주세요");return}guard(()=>S.db.doc("sites/"+id).update({status:"부족",reason:why.slice(0,200),doneAt:Date.now()}),"판매자에게 보완을 요청했습니다")});
+  const n=pendA.length+pendP.length+payO.length+payA.length+dA.length+dO.length+rps.length+pq.length+pfs.length+lrs.filter(r=>r.status==="접수").length+post.filter(([c,x])=>x.cat==="가공품").length+sq.length;$("#dotAdmin").innerHTML=n?`<span class="dot">${n}</span>`:"";
 }
 function renderHerbs(){
   const q=($("#herbQ").value||"").trim(),f=$("#herbF").value;
@@ -1990,6 +2025,8 @@ function renderGuide(){
   $("#herbSum").textContent=`${HERBS.length}종 · 식용 원료 ${cnt("ok")} · 식용 주의 ${cnt("caution")} · 식품원료 확인 필요 ${cnt("check")} · 판매 불가 ${cnt("hanyak")+cnt("ban")} (한약재 전용 ${cnt("hanyak")}, 독초 ${cnt("ban")})`;
   renderHerbs();$("#herbQ").oninput=$("#herbF").onchange=renderHerbs;
   $("#incTable").innerHTML=[["10만 원 미만",1000],["10만~100만 원",5000],["100만~1,000만 원",10000],["1,000만 원 이상",50000]].map(r=>`<tr><td>${r[0]}</td><td class="r num">${won(r[1])}</td></tr>`).join("");
+  document.querySelectorAll(".pw").forEach(e=>e.textContent=man(proofWon()));
+  if($("#rv1")){$("#rv1").textContent=`${man(videoWon())} 미만 (마켓 상품 포함)`;$("#rv2").textContent=`${man(videoWon())}~${man(reviewWon())}`;$("#rv3").textContent=`${man(reviewWon())} 이상`}
   $("#feeTable").innerHTML=`
    <tr><td>경매 출품료</td><td>출품하는 판매자</td><td>시작가 10만 원 미만 ${won(3000)} · 10만~100만 원 ${won(5000)} · 100만 원 이상 ${won(20000)}(운영자 직접 확인 포함). 반려 시 환불, 유찰 시 1회 무료 재출품</td></tr>
    <tr><td>경매 낙찰 수수료</td><td>낙찰된 판매자</td><td>낙찰가 중 100만 원까지 8%, 100만~500만 원 구간 5%, 500만 원 넘는 구간 3%</td></tr>
@@ -2203,7 +2240,7 @@ const ACT={
   delP(id){const b=document.querySelector(`[data-act="delP"][data-id="${id}"]`);if(b.dataset.armed){guard(()=>S.db.doc("products/"+id).delete(),"상품을 삭제했습니다")}else{b.dataset.armed=1;b.textContent="한 번 더 누르면 삭제";setTimeout(()=>{b.textContent="삭제";delete b.dataset.armed},3000)}},
   async approve(id){await guard(()=>S.db.doc("products/"+id).update({status:"판매중",reviewedAt:Date.now()}),"승인했습니다")},
   async reject(id){const why=$("#rj-"+id).value.trim();if(!why){toast("반려 사유를 적어 주세요");return}await guard(()=>S.db.doc("products/"+id).update({status:"반려",rejectReason:why.slice(0,200)}),"반려했습니다")},
-  async payout(id){const o=S.orders.find(x=>x.id===id),pp=o&&S.products.find(x=>x.id===o.productId);if(proofMissing(pp)){toast("채취 근거가 확인되지 않아 정산할 수 없습니다. 증빙을 확인하거나 환불해 주세요");return}await guard(()=>S.db.doc("orders/"+id).update({status:"정산완료",paidAt:Date.now()}),"정산 완료로 바꿨습니다")}
+  async payout(id){const o=S.orders.find(x=>x.id===id),pp=o&&S.products.find(x=>x.id===o.productId);if(pp&&pp.cat==="가공품"&&!pp.bizOk){toast("가공품은 영업 신고 번호를 확인한 뒤 정산할 수 있습니다 (위 ‘새로 올라온 것’)");return}if(proofMissing(pp)){toast("채취 근거가 확인되지 않아 정산할 수 없습니다. 증빙을 확인하거나 환불해 주세요");return}await guard(()=>S.db.doc("orders/"+id).update({status:"정산완료",paidAt:Date.now()}),"정산 완료로 바꿨습니다")}
 };
 document.addEventListener("click",e=>{
   const a=e.target.closest("[data-act]");if(a){ACT[a.dataset.act]?.(a.dataset.id);return}
@@ -2292,8 +2329,9 @@ function aucUI(){
   const tier=tierOf(st),cert=!!S.uid&&trust(S.uid).cert;
   $("#videoWrap").hidden=tier==="기본";$("#apPhotoWrap").hidden=tier!=="감정";
   $("#aAppraiseLbl").textContent=tier==="감정"?"감정 기관·감정서 번호 (필수)":"감정 기관·감정서 번호 (있으면)";
-  $("#aTier").textContent=tier==="기본"?(cert?"시작가 30만 원 미만 · 인증 판매자라 검수 없이 바로 다음 경매에 올라갑니다.":"시작가 30만 원 미만 · 사진과 채취 근거만 확인합니다."):tier==="영상"?"시작가 30만~100만 원 · 30초 인증 영상 링크가 필요합니다.":"시작가 100만 원 이상 · 감정서 사진과 번호가 필요하고, 운영자가 직접 확인합니다. 감정비는 판매자 부담입니다.";
-  $("#aSubmit").textContent=tier==="기본"&&cert?(lf?`출품료 ${won(lf)} 테스트 결제하고 바로 출품`:"첫 출품 무료로 바로 출품"):(lf?`출품료 ${won(lf)} 테스트 결제하고 검수 요청`:"첫 출품 무료로 검수 요청");
+  $("#aTier").textContent=tier==="기본"?`시작가 ${man(videoWon())} 미만 · 검수 없이 바로 다음 경매에 올라갑니다. 운영자가 나중에 훑어봅니다.`:tier==="영상"?`시작가 ${man(videoWon())}~${man(reviewWon())} · 30초 인증 영상 링크가 필요합니다. 검수 없이 바로 올라갑니다.`:`시작가 ${man(reviewWon())} 이상 · 감정서 사진과 번호가 필요하고, 운영자가 직접 확인한 뒤 올라갑니다. 감정비는 판매자 부담입니다.`;
+  $("#aSubmit").textContent=tier!=="감정"?(lf?`출품료 ${won(lf)} 테스트 결제하고 바로 출품`:"첫 출품 무료로 바로 출품"):(lf?`출품료 ${won(lf)} 테스트 결제하고 검수 요청`:"첫 출품 무료로 검수 요청");
+  $("#videoLbl")&&($("#videoLbl").textContent=`인증 영상 링크 (${man(videoWon())} 이상 필수)`);$("#apLbl")&&($("#apLbl").textContent=`감정서 사진 (${man(reviewWon())} 이상 필수)`);
   const hit=CLAIMS.filter(w=>($("#aTitle").value+$("#aDesc").value).includes(w));
   $("#aClaim").className="notice"+(hit.length?" bad":"");$("#aClaim").textContent=hit.length?`효능 표현으로 보이는 단어가 있습니다: ${hit.join(", ")}. 검수에서 반려될 수 있습니다.`:"효능·질병 표현(예: \"암에 좋은\")은 쓸 수 없습니다. 크기·모양·채취 과정 위주로 적어 주세요.";
 }
@@ -2316,15 +2354,15 @@ $("#aucForm").onsubmit=async e=>{e.preventDefault();
   if(isBlocked(ist)){toast(`${hh.name}: ${ST_LABEL[ist]} 품목이라 출품할 수 없습니다`);return}
   const bh=blockHits($("#aTitle").value+" "+$("#aDesc").value);if(bh.length){toast(`판매할 수 없는 품목 이름이 들어 있습니다: ${bh.map(h=>h.name).join(", ")}`);return}
   const tier=tierOf(st),video=$("#aVideo").value.trim();
-  if(tier!=="기본"&&!/^https:\/\/\S+$/.test(video)){toast("시작가 30만 원 이상은 https://로 시작하는 인증 영상 링크가 필요합니다");return}
-  if(tier==="감정"&&(!aApPhoto||!$("#aAppraise").value.trim())){toast("시작가 100만 원 이상은 감정서 사진과 번호가 필요합니다");return}
+  if(tier!=="기본"&&!/^https:\/\/\S+$/.test(video)){toast(`시작가 ${man(videoWon())} 이상은 https://로 시작하는 인증 영상 링크가 필요합니다`);return}
+  if(tier==="감정"&&(!aApPhoto||!$("#aAppraise").value.trim())){toast(`시작가 ${man(reviewWon())} 이상은 감정서 사진과 번호가 필요합니다`);return}
   const pNeed=proofNeed(item,$("#aGrow").value,Math.max(st,bn)),pErr=proofCheck({item,grow:$("#aGrow").value,price:Math.max(st,bn),oath:$("#aOath").checked,photo:aProof,cert:$("#aCert").value});if(pErr){toast(pErr);return}
-  const auto=tier==="기본"&&ist==="ok"&&trust(S.uid).cert&&pNeed!=="photo",now=Date.now(),sched=$("#aDur").value;
+  const auto=tier!=="감정"&&AUTO_ST.includes(ist),now=Date.now(),sched=$("#aDur").value;
   if(CLAIMS.some(w=>($("#aTitle").value+$("#aDesc").value).includes(w))){toast("효능 표현을 빼고 다시 올려 주세요");return}
-  const pRef=await saveProof(aProof,{permit:$("#aPermit").value,parcel:$("#aParcel").value,title:$("#aTitle").value.trim(),kind:"auctions"});if(pRef===null)return;
+  const aSiteId=$("#aSite").value,pRef=aSiteId?"":await saveProof(aProof,{permit:$("#aPermit").value,parcel:$("#aParcel").value,title:$("#aTitle").value.trim(),kind:"auctions"});if(pRef===null)return;
   const tEn=$("#aTitleEn").value.trim().slice(0,80),tZh=$("#aTitleZh").value.trim().slice(0,60),tJa=$("#aTitleJa").value.trim().slice(0,60),ci=claimIntl(tEn+" "+tZh+" "+tJa);if(ci.length){toast(`해외 제목에서 효능 표현을 빼 주세요: ${ci.join(", ")}`);return}
-  const fee0=feeFor(S.uid,st);const ok=await guard(()=>S.db.collection("auctions").add({title:$("#aTitle").value.trim().slice(0,60),titleEn:tEn,titleZh:tZh,titleJa:tJa,cat,grow:$("#aGrow").value,weight:$("#aWeight").value.trim().slice(0,40),form:$("#aForm").value,region:$("#aRegion").value.trim().slice(0,40),date:$("#aDate").value,permit:$("#aPermit").value,cert:cat==="산양삼"?$("#aCert").value.trim().slice(0,40):"",appraise:$("#aAppraise").value.trim().slice(0,60),start:st,buyNow:bn,schedule:$("#aDur").value==="sat"?"sat":"test",duration:$("#aDur").value==="sat"?0:+$("#aDur").value,ship:$("#aForm").value==="생물"?7000:4000,item:hh?hh.name:item.slice(0,30),itemStatus:ist,photo:aPhoto,apPhoto:tier==="감정"?aApPhoto:"",video:tier==="기본"?"":video.slice(0,300),tier,desc:$("#aDesc").value.slice(0,1000),...proofFields(pNeed,pRef),listFee:fee0,sellerId:S.uid,status:auto?"진행중":"검수대기",startedAt:auto?now:0,endsAt:auto?(sched==="sat"?nextSat(now):now+(+sched)):0,autoApproved:auto,createdAt:now}),auto?`인증 판매자라 바로 ${sched==="sat"?satLabel(nextSat(now)):"시험용"} 경매에 올렸습니다`:(fee0?`출품료 ${won(fee0)}를 테스트 결제하고 검수를 요청했습니다`:"첫 출품 무료로 검수를 요청했습니다"));
-  if(ok){await sharePhoto("a",aPhoto,item,$("#aTitle").value.trim()+" · "+$("#aRegion").value.trim());$("#aTitle").value="";$("#aDesc").value="";$("#aVideo").value="";aPhoto="";aApPhoto="";aProof="";$("#aTitleEn").value="";$("#aTitleZh").value="";$("#aTitleJa").value="";$("#aParcel").value="";$("#aPhoto").value="";$("#aApPhoto").value="";$("#aProof").value="";$("#aPhotoPrev").hidden=true;$("#aApPhotoPrev").hidden=true;$("#aProofPrev").hidden=true;$("#aOath").checked=false;aucUI()}};
+  const fee0=feeFor(S.uid,st);const ok=await guard(()=>S.db.collection("auctions").add({title:$("#aTitle").value.trim().slice(0,60),titleEn:tEn,titleZh:tZh,titleJa:tJa,cat,grow:$("#aGrow").value,weight:$("#aWeight").value.trim().slice(0,40),form:$("#aForm").value,region:$("#aRegion").value.trim().slice(0,40),date:$("#aDate").value,permit:$("#aPermit").value,cert:cat==="산양삼"?$("#aCert").value.trim().slice(0,40):"",appraise:$("#aAppraise").value.trim().slice(0,60),start:st,buyNow:bn,schedule:$("#aDur").value==="sat"?"sat":"test",duration:$("#aDur").value==="sat"?0:+$("#aDur").value,ship:$("#aForm").value==="생물"?7000:4000,item:hh?hh.name:item.slice(0,30),itemStatus:ist,photo:aPhoto,apPhoto:tier==="감정"?aApPhoto:"",video:tier==="기본"?"":video.slice(0,300),tier,desc:$("#aDesc").value.slice(0,1000),...proofFields(pNeed,pRef,aSiteId),listFee:fee0,sellerId:S.uid,status:auto?"진행중":"검수대기",startedAt:auto?now:0,endsAt:auto?(sched==="sat"?nextSat(now):now+(+sched)):0,autoApproved:auto,createdAt:now}),auto?`바로 ${sched==="sat"?satLabel(nextSat(now)):"시험용"} 경매에 올렸습니다`:(fee0?`출품료 ${won(fee0)}를 테스트 결제하고 검수를 요청했습니다`:"첫 출품 무료로 검수를 요청했습니다"));
+  if(ok){await sharePhoto("a",aPhoto,item,$("#aTitle").value.trim()+" · "+$("#aRegion").value.trim());$("#aTitle").value="";$("#aDesc").value="";$("#aVideo").value="";aPhoto="";aApPhoto="";aProof="";$("#aTitleEn").value="";$("#aTitleZh").value="";$("#aTitleJa").value="";$("#aParcel").value="";$("#aSite").value="";$("#aPhoto").value="";$("#aApPhoto").value="";$("#aProof").value="";$("#aPhotoPrev").hidden=true;$("#aApPhotoPrev").hidden=true;$("#aProofPrev").hidden=true;$("#aOath").checked=false;aucUI()}};
 $("#sellForm").onsubmit=async e=>{e.preventDefault();
   if(!S.sellers[S.uid]){toast("위에서 상점 정보를 먼저 저장해 주세요");return}
   const g=$("#sGrow").value,t=$("#sName").value+$("#sDesc").value,itemRaw=$("#sItem").value.trim(),hp=findHerb(itemRaw),pst=hp?hp.st:"unknown";
@@ -2338,10 +2376,10 @@ $("#sellForm").onsubmit=async e=>{e.preventDefault();
     if(CLAIMS.some(w=>pv("pIngr").includes(w))){toast("원재료 칸에 효능 표현을 뺀 뒤 다시 올려 주세요");return}}
   if(CLAIMS.some(w=>t.includes(w))||(!isCert({grow:g})&&ECO.some(w=>t.includes(w)))){toast("쓸 수 없는 표현을 빼고 다시 올려 주세요");return}
   const pNeedS=pr?"basic":proofNeed(itemRaw,g,+$("#sPrice").value),pErrS=pr?($("#sOath").checked?"":"‘법을 지켜 채취·생산했습니다’에 체크해 주세요"):proofCheck({item:itemRaw,grow:g,price:+$("#sPrice").value,oath:$("#sOath").checked,photo:sProof,cert:$("#sCert").value});if(pErrS){toast(pErrS);return}
-  const pRefS=await saveProof(sProof,{permit:$("#sPermit").value,parcel:$("#sParcel").value,title:$("#sName").value.trim(),kind:"products"});if(pRefS===null)return;S.lastProofRef=pRefS;
-  const autoP=!pr&&pst==="ok"&&trust(S.uid).cert&&pNeedS!=="photo";
-  const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:itemRaw.slice(0,30),itemStatus:pst,name:$("#sName").value.trim().slice(0,60),cat:$("#sCat").value,form:$("#sForm").value,price:+$("#sPrice").value,unit:$("#sUnit").value,region:$("#sRegion").value.trim().slice(0,40),stock:+$("#sStock").value,permit:$("#sPermit").value,grow:g,cert:$("#sCert").value.trim().slice(0,40),photo:sPhoto,desc:$("#sDesc").value.slice(0,1000),...proofFields(pNeedS,pRefS),...(pr?{proc:{biz:$("#pBiz").value,bizNo:pv("pBizNo").slice(0,40),maker:pv("pMaker").slice(0,80),ingr:pv("pIngr").slice(0,200),vol:pv("pVol").slice(0,40),shelf:pv("pShelf").slice(0,40)}}:{}),sellerId:S.uid,status:autoP?"판매중":"검수대기",createdAt:Date.now()}),autoP?"인증 판매자라 바로 판매를 시작했습니다":"검수 요청을 보냈습니다");
-  if(ok){await sharePhoto("s",sPhoto,itemRaw,$("#sName").value.trim()+" · "+$("#sRegion").value.trim());$("#sItem").value="";$("#sItemNote").hidden=true;$("#sName").value="";$("#sDesc").value="";$("#sPrice").value="";sPhoto="";sProof="";$("#sParcel").value="";$("#sPhoto").value="";$("#sProof").value="";$("#sPhotoPrev").hidden=true;$("#sProofPrev").hidden=true;$("#sOath").checked=false;["pBizNo","pMaker","pIngr","pVol","pShelf"].forEach(k=>$("#"+k).value="")}};
+  const sSiteId=pr?"":$("#sSite").value,pRefS=sSiteId?"":await saveProof(sProof,{permit:$("#sPermit").value,parcel:$("#sParcel").value,title:$("#sName").value.trim(),kind:"products"});S.lastSite=sSiteId;if(pRefS===null)return;S.lastProofRef=pRefS;
+  const autoP=AUTO_ST.includes(pst);
+  const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:itemRaw.slice(0,30),itemStatus:pst,name:$("#sName").value.trim().slice(0,60),cat:$("#sCat").value,form:$("#sForm").value,price:+$("#sPrice").value,unit:$("#sUnit").value,region:$("#sRegion").value.trim().slice(0,40),stock:+$("#sStock").value,permit:$("#sPermit").value,grow:g,cert:$("#sCert").value.trim().slice(0,40),photo:sPhoto,desc:$("#sDesc").value.slice(0,1000),...proofFields(pNeedS,pRefS,sSiteId),auto:autoP,...(pr?{proc:{biz:$("#pBiz").value,bizNo:pv("pBizNo").slice(0,40),maker:pv("pMaker").slice(0,80),ingr:pv("pIngr").slice(0,200),vol:pv("pVol").slice(0,40),shelf:pv("pShelf").slice(0,40)}}:{}),sellerId:S.uid,status:autoP?"판매중":"검수대기",createdAt:Date.now()}),autoP?(pr?"바로 판매를 시작했습니다. 운영자가 영업 신고 번호를 확인하면 정산됩니다":"바로 판매를 시작했습니다"):"검수 요청을 보냈습니다");
+  if(ok){await sharePhoto("s",sPhoto,itemRaw,$("#sName").value.trim()+" · "+$("#sRegion").value.trim());$("#sItem").value="";$("#sItemNote").hidden=true;$("#sName").value="";$("#sDesc").value="";$("#sPrice").value="";sPhoto="";sProof="";$("#sParcel").value="";$("#sSite").value="";$("#sPhoto").value="";$("#sProof").value="";$("#sPhotoPrev").hidden=true;$("#sProofPrev").hidden=true;$("#sOath").checked=false;["pBizNo","pMaker","pIngr","pVol","pShelf"].forEach(k=>$("#"+k).value="")}};
 
 /* ---------- 견적 충전금 (숨고식, 원화) ---------- */
 // 설정과 충전 기록은 sellers 아래 운영자만 쓸 수 있는 자리(sellers/_credits)에 둡니다. 금액은 모두 원 단위입니다.
@@ -2463,12 +2501,12 @@ const PERMITS=["본인 소유 임야·재배","국유림 임산물 채취 허가
 const BIG_WON=1000000;
 /* 증빙 단계: basic = 산지 + 준법 확인, cert = 산양삼·장뇌삼 번호, photo = 자연산 산삼 또는 100만 원 이상은 서류 사진과 운영자 확인 */
 function proofNeed(item,grow,price){const t=String(item||""),h=findHerb(t)?.name||"";
-  if(/산양삼|장뇌삼/.test(t)||h==="산양삼")return +price>=1000000?"photo":"cert";
+  if(/산양삼|장뇌삼/.test(t)||h==="산양삼")return +price>=proofWon()?"photo":"cert";
   if(/산삼/.test(t)&&String(grow||"").startsWith("자연산"))return "photo";
-  return +price>=1000000?"photo":"basic"}
+  return +price>=proofWon()?"photo":"basic"}
 const PROOF_TXT={basic:"산지와 준법 확인만 있으면 됩니다. 서류 사진을 올리면 '채취 증빙 확인' 배지가 붙고 경매에서 먼저 보입니다.",
   cert:"산양삼·장뇌삼은 생산신고번호나 품질검사 합격증 번호가 필요합니다.",
-  photo:"자연산 산삼과 100만 원 이상 상품은 채취 근거가 필요합니다. 지금 없어도 먼저 올릴 수 있고, 정산 전(14일 안)까지 셋 중 하나만 올리면 됩니다: ① 허가증·동의서 사진 ② 산주가 보낸 동의 문자·카톡 캡처 ③ 본인 산이면 지번. 근거가 없으면 구매자에게 환불됩니다."};
+  get photo(){return `자연산 산삼과 ${man(proofWon())} 이상 상품은 채취 근거가 필요합니다. 지금 없어도 먼저 올릴 수 있고, 정산 전(14일 안)까지 셋 중 하나만 올리면 됩니다: ① 허가증·동의서 사진 ② 산주가 보낸 동의 문자·카톡 캡처 ③ 본인 산이면 지번. 확인된 내 채취지에서 캤으면 고르기만 하면 됩니다. 근거가 없으면 구매자에게 환불됩니다.`}};
 const PROOF_DAYS=14;
 function proofCheck(o){const need=proofNeed(o.item,o.grow,o.price);
   if(!o.oath)return "‘법을 지켜 채취·생산했습니다’에 체크해 주세요";
@@ -2479,7 +2517,27 @@ function proofId(){return "pf"+Date.now().toString(36)+Math.random().toString(36
 async function saveProof(photo,meta){const parcel=String(meta.parcel||"").trim();if(!photo&&parcel.length<4)return "";const id=proofId();
   const ok=await guard(()=>S.db.doc("proofs/"+id).set({by:S.uid,photo:photo||"",parcel:parcel.slice(0,120),permit:String(meta.permit||"").slice(0,40),title:String(meta.title||"").slice(0,60),kind:meta.kind,status:"대기",createdAt:Date.now()}));
   return ok?id:null}
-function proofFields(need,pid){return {oath:true,proofNeed:need,proofRef:pid||"",proofOk:false,proofDue:need==="photo"?Date.now()+PROOF_DAYS*864e5:0}}
+function proofFields(need,pid,site){const ok=!!(site&&mySites().some(x=>x.id===site));return {oath:true,proofNeed:need,proofRef:pid||"",siteRef:ok?site:"",proofOk:ok,proofDue:need==="photo"&&!ok?Date.now()+PROOF_DAYS*864e5:0}}
+/* 내 채취지: 운영자가 한 번 확인한 산(지번)은 다음 출품부터 고르기만 하면 근거가 확인됩니다 */
+const mySites=()=>(S.sites||[]).filter(x=>x.by===S.uid&&x.status==="확인"&&(!x.until||x.until>Date.now()));
+async function addSite(){const parcel=$("#siteParcel").value.trim(),permit=$("#sitePermit").value,until=$("#siteUntil").value?Date.parse($("#siteUntil").value+"T23:59:59+09:00"):0;
+  if(parcel.length<4){toast("산의 지번을 적어 주세요");return}
+  let photo="";const f=$("#sitePhoto").files[0];if(f){try{photo=await shrinkPhoto(f)}catch(e){toast("사진을 읽지 못했습니다");return}}
+  if(permit!==PERMITS[0]&&!photo){toast("본인 산이 아니면 허가증·동의서 사진이나 산주 동의 문자 캡처를 넣어 주세요");return}
+  if(await guard(()=>S.db.collection("sites").add({by:S.uid,parcel:parcel.slice(0,120),permit,photo,until,status:"대기",createdAt:Date.now()}),"채취지를 등록했습니다. 운영자가 확인하면 출품할 때 고를 수 있습니다")){$("#siteParcel").value="";$("#sitePhoto").value="";$("#siteUntil").value=""}}
+function renderSites(){const box=$("#siteBox");if(!box)return;
+  if(!S.uid||!S.sellers[S.uid]){box.innerHTML="";return}
+  const mine=(S.sites||[]).filter(x=>x.by===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
+  box.innerHTML=`<details class="panel" ${mine.length?"":"open"}><summary><b>내 채취지</b> <span class="meta">자주 가는 산을 한 번 등록해 두면 산삼을 올릴 때마다 근거를 낼 필요가 없습니다</span></summary>
+   <div class="list" style="margin-top:8px">${mine.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.parcel)}</b><span class="chip ${x.status==="확인"?"ok":x.status==="부족"?"hot":""}">${x.status==="확인"?(x.until&&x.until<Date.now()?"기간 끝남":"확인됨"):x.status==="부족"?"보완 필요":"확인 중"}</span></div><div class="meta">${esc(x.permit)}${x.until?" · "+day(x.until)+"까지":""}${x.reason?` · <span style="color:var(--berry)">${esc(x.reason)}</span>`:""}</div></div>`).join("")}</div>
+   <div class="row2" style="margin-top:8px"><div class="field"><label for="siteParcel">산 지번</label><input id="siteParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
+   <div class="field"><label for="sitePermit">근거</label><select id="sitePermit">${PERMITS.map(x=>`<option>${x}</option>`).join("")}</select></div></div>
+   <div class="row2"><div class="field"><label for="sitePhoto">허가증·동의서 사진 또는 산주 동의 문자 캡처 (본인 산이면 없어도 됨)</label><input id="sitePhoto" type="file" accept="image/*"></div>
+   <div class="field"><label for="siteUntil">동의·허가 기간 끝나는 날 (있으면)</label><input id="siteUntil" type="date"></div></div>
+   <div class="actions"><button class="btn primary" type="button" id="siteAdd">채취지 등록</button></div></details>`;
+  $("#siteAdd").onclick=addSite;
+  const opts=`<option value="">아니요 (근거를 따로 냄)</option>`+mySites().map(x=>`<option value="${esc(x.id)}">${esc(x.parcel)}</option>`).join("");
+  ["aSite","sSite"].forEach(i=>{const e=$("#"+i);if(e){const v=e.value;e.innerHTML=opts;e.value=v;e.closest(".field").hidden=!mySites().length}})}
 function proofChip(x){return x&&x.proofOk?'<span class="chip solid">채취 증빙 확인</span>':x&&x.proofNeed==="photo"?'<span class="chip">채취 증빙 확인 중</span>':""}
 const proofMissing=x=>x&&x.proofNeed==="photo"&&!x.proofOk;
 const proofLate=x=>proofMissing(x)&&!x.proofRef&&x.proofDue&&Date.now()>x.proofDue;
@@ -2505,15 +2563,15 @@ function prodCheck(d){
   if(!GROWS.includes(d.grow))return "생산 방식은 자연산·재배·무농약·유기농 중 하나입니다";
   if(!PERMITS.includes(d.permit))return "채취 근거는 본인 소유·국유림 허가·사유림 동의서 중 하나입니다";
   if(isCert({grow:d.grow})&&!(d.cert||"").trim())return "무농약·유기농은 인증번호가 있어야 합니다";
-  {const nd=proofNeed(d.item,d.grow,d.price);if(nd==="cert"&&!(d.cert||"").trim())return "산양삼·장뇌삼은 생산신고번호나 합격증 번호를 인증번호 칸에 적어 주세요";if(nd==="photo"&&!d.proofRef)return "자연산 산삼·100만 원 이상은 서류 사진과 함께 한 건씩 올려 주세요"}
+  {const nd=proofNeed(d.item,d.grow,d.price);if(nd==="cert"&&!(d.cert||"").trim())return "산양삼·장뇌삼은 생산신고번호나 합격증 번호를 인증번호 칸에 적어 주세요";if(nd==="photo"&&!d.proofRef&&!d.siteRef&&!d.later)return `자연산 산삼·${man(proofWon())} 이상은 한 건씩 올려 주세요`}
   const t=d.name+" "+(d.desc||""),bh=blockHits(t);
   if(bh.length)return `판매할 수 없는 품목 이름이 들어 있습니다: ${bh.map(h=>h.name).join(", ")}`;
   const c=CLAIMS.filter(w=>t.includes(w));if(c.length)return `효능 표현을 빼 주세요: ${c.join(", ")}`;
   if(!isCert({grow:d.grow})){const e=ECO.filter(w=>t.includes(w));if(e.length)return `인증 없이 쓸 수 없는 표현입니다: ${e.join(", ")}`}
   return ""}
 async function prodAdd(d,photo){
-  const hp=findHerb(d.item),pst=hp?hp.st:"unknown",nd=proofNeed(d.item,d.grow,d.price),auto=pst==="ok"&&trust(S.uid).cert&&nd!=="photo";
-  const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:String(d.item).slice(0,30),itemStatus:pst,name:String(d.name).slice(0,60),cat:d.cat,form:d.form,price:+d.price,unit:d.unit,region:String(d.region).slice(0,40),stock:+d.stock,permit:d.permit,grow:d.grow,cert:String(d.cert||"").slice(0,40),photo:photo||"",desc:String(d.desc||"").slice(0,1000),...proofFields(nd,d.proofRef),sellerId:S.uid,status:auto?"판매중":"검수대기",createdAt:Date.now()}));
+  const hp=findHerb(d.item),pst=hp?hp.st:"unknown",nd=proofNeed(d.item,d.grow,d.price),auto=AUTO_ST.includes(pst);
+  const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:String(d.item).slice(0,30),itemStatus:pst,name:String(d.name).slice(0,60),cat:d.cat,form:d.form,price:+d.price,unit:d.unit,region:String(d.region).slice(0,40),stock:+d.stock,permit:d.permit,grow:d.grow,cert:String(d.cert||"").slice(0,40),photo:photo||"",desc:String(d.desc||"").slice(0,1000),...proofFields(nd,d.proofRef,d.siteRef),auto,sellerId:S.uid,status:auto?"판매중":"검수대기",createdAt:Date.now()}));
   return ok?(auto?"auto":"pend"):""}
 function myPast(){const seen=new Set();return S.products.filter(p=>p.sellerId===S.uid&&p.cat!=="가공품"&&p.status!=="반려").sort((a,b)=>b.createdAt-a.createdAt).filter(p=>{const k=p.item+"|"+p.name;if(seen.has(k))return false;seen.add(k);return true}).slice(0,4)}
 function wzCat(){if(WZ.cat&&WZ.cat!=="가공품"&&CATS.includes(WZ.cat))return WZ.cat;return WZ.herb&&CATS.includes(mcat(WZ.herb.cat))&&mcat(WZ.herb.cat)!=="가공품"?mcat(WZ.herb.cat):"뿌리 약초"}
@@ -2628,11 +2686,14 @@ function renderAucExtras(){
   if($("#aucExtra"))$("#aucExtra").innerHTML=row+upNextHTML()+(lv?winsHTML(5):"");
   if(S.owner&&$("#alertCounts")){const m={};(S.alerts||[]).filter(a=>a.kind==="auction").forEach(a=>m[a.key]=(m[a.key]||0)+1);const rows=Object.entries(m).sort((a,b)=>b[1]-a[1]);
     $("#alertCounts").innerHTML=rows.length?rows.map(([c,k])=>`<div class="item sunk"><div class="itop"><b>${esc(c)}</b><span class="num">${k}명 대기</span></div></div>`).join(""):`<div class="empty">아직 경매 알림을 신청한 손님이 없습니다.</div>`;
-    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
+    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();if(!["cfgVideo","cfgReview","cfgProof"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
     $("#cfgNote").textContent=`다음 마감: ${satLabel(nextSat(Date.now()))}`}
 }
 $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:00:00+09:00");if(!an||new Date(an+9*3600e3).getUTCDay()!==6){toast("기준 경매일은 토요일로 골라 주세요");return}
-  const v={aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,updatedAt:Date.now()};
+  const vw=+$("#cfgVideo").value,rw=+$("#cfgReview").value,pw=+$("#cfgProof").value;
+  if(!(vw>=10000&&rw>=10000&&pw>=10000)){toast("기준 금액은 1만 원 이상으로 적어 주세요");return}
+  if(vw>rw){toast("인증 영상 기준은 직접 승인 기준보다 낮아야 합니다");return}
+  const v={aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,videoWon:vw,reviewWon:rw,proofWon:pw,updatedAt:Date.now()};
   if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),"운영 설정을 저장했습니다. 경매 주기는 새로 올라오는 경매부터 적용됩니다")){S.site={...(S.site||{}),...v};render()}};
 
 /* ---------- 판매 마법사 (사진 → 품목 → 방식 → 값 → 확인) ---------- */
@@ -2761,7 +2822,8 @@ function renderSell(){
      <label class="fld"><span>${auc_?"캔 곳":"산지"}</span><input id="wzRegion" value="${esc(WZ.region)}" placeholder="예: 경북 봉화"></label>
      <label class="fld"><span>채취 근거</span><select id="wzPermit">${PERMITS.map(p=>`<option ${WZ.permit===p?"selected":""}>${p}</option>`).join("")}</select></label>
      ${!auc_&&need==="cert"&&!isCert({grow:WZ.grow})?`<label class="fld"><span>생산신고번호 또는 합격증 번호 (필수)</span><input id="wzCertNo" value="${esc(WZ.certNo)}" placeholder="예: 산양삼 생산신고 제00호"></label>`:""}
-     <div class="hint">${PROOF_TXT[need]}</div>
+     ${mySites().length?`<label class="fld"><span>확인된 내 채취지에서 캤나요?</span><select id="wzSite"><option value="">아니요 (아래에서 근거 내기)</option>${mySites().map(x=>`<option value="${esc(x.id)}" ${WZ.site===x.id?"selected":""}>${esc(x.parcel)}</option>`).join("")}</select></label>`:""}
+     ${WZ.site?`<div class="hint">확인된 채취지라 채취 근거가 바로 확인됩니다.</div>`:`<div class="hint">${PROOF_TXT[need]}</div>`}
      <div class="fld"><span>채취 근거 사진 ${need==="photo"?"(정산 전까지)":"(선택)"} · 운영자만 봅니다</span>
       ${WZ.proofPh?`<div class="from"><img src="${WZ.proofPh}" alt="서류 사진"><span>서류 사진을 넣었어요. <button type="button" class="lk" id="wzProofDel" style="border:0;background:none;padding:0;font:inherit;color:var(--pine);text-decoration:underline;cursor:pointer">빼기</button></span></div>`:`<label class="addrow" style="display:block;text-align:center;cursor:pointer">📄 허가증·동의서 사진 또는 산주 동의 문자 캡처<input id="wzProofPh" type="file" accept="image/*" hidden></label>`}
       ${WZ.permit===PERMITS[0]?`<input id="wzOwnParcel" value="${esc(WZ.ownParcel||"")}" placeholder="본인 산이면 지번만 적어도 됩니다 (예: 인제군 기린면 OO리 산12)" style="margin-top:8px">`:""}</div>
@@ -2824,12 +2886,13 @@ function wzBind(){
   on("wzProofDel","click",()=>{wzKeep();WZ.proofPh="";renderSell()});
   on("wzOath","change",e=>{WZ.oath=e.target.checked});
   on("wzPermit","change",()=>{wzKeep();renderSell()});
+  on("wzSite","change",()=>{wzKeep();renderSell()});
   on("wzLand","click",()=>{wzKeep();WZ.landOpen=true;renderSell()});
   on("wzLandSend","click",async()=>{wzKeep();if(await landReq({herb:WZ.herb?.name||WZ.item,parcel:WZ.parcel,contact:WZ.contact})){WZ.landOpen=false;WZ.landSent=true;renderSell()}});
   // 품목 단계에 들어오면 사진으로 한 번 짐작
   if(WZ.step===2&&WZ.photo&&!WZ.guess&&!WZ.guessing&&S.sample)wzGuess();
 }
-function wzKeep(){const p=$("#wzPrice");if(p)WZ.price=p.value;const k=x=>$("#"+x);if(k("wzName"))WZ.name=k("wzName").value;if(k("wzRegion"))WZ.region=k("wzRegion").value;if(k("wzPermit"))WZ.permit=k("wzPermit").value;if(k("wzDesc"))WZ.desc=k("wzDesc").value;if(k("wzDate"))WZ.date=k("wzDate").value;if(k("wzCertNo"))WZ.certNo=k("wzCertNo").value;if(k("wzOath"))WZ.oath=k("wzOath").checked;if(k("wzTitleEn"))WZ.titleEn=k("wzTitleEn").value;if(k("wzTitleZh"))WZ.titleZh=k("wzTitleZh").value;if(k("wzTitleJa"))WZ.titleJa=k("wzTitleJa").value;if(k("wzParcel"))WZ.parcel=k("wzParcel").value;if(k("wzContact"))WZ.contact=k("wzContact").value;if(k("wzOwnParcel"))WZ.ownParcel=k("wzOwnParcel").value;wzKeepAuc()}
+function wzKeep(){const p=$("#wzPrice");if(p)WZ.price=p.value;const k=x=>$("#"+x);if(k("wzName"))WZ.name=k("wzName").value;if(k("wzRegion"))WZ.region=k("wzRegion").value;if(k("wzPermit"))WZ.permit=k("wzPermit").value;if(k("wzDesc"))WZ.desc=k("wzDesc").value;if(k("wzDate"))WZ.date=k("wzDate").value;if(k("wzCertNo"))WZ.certNo=k("wzCertNo").value;if(k("wzOath"))WZ.oath=k("wzOath").checked;if(k("wzTitleEn"))WZ.titleEn=k("wzTitleEn").value;if(k("wzTitleZh"))WZ.titleZh=k("wzTitleZh").value;if(k("wzTitleJa"))WZ.titleJa=k("wzTitleJa").value;if(k("wzParcel"))WZ.parcel=k("wzParcel").value;if(k("wzContact"))WZ.contact=k("wzContact").value;if(k("wzOwnParcel"))WZ.ownParcel=k("wzOwnParcel").value;if(k("wzSite"))WZ.site=k("wzSite").value;wzKeepAuc()}
 function wzKeepAuc(){const k=x=>$("#"+x);[["wzWeight","weight"],["wzStart","start"],["wzBuy","buyNow"],["wzCert","cert"],["wzVideo","video"],["wzAppr","appraise"]].forEach(([i,f])=>{if(k(i))WZ[f]=k(i).value})}
 async function wzSubmit(){
   wzKeep();const n=WZ.herb?.name||WZ.item,btn=$("#wzSubmit");
@@ -2843,19 +2906,19 @@ async function wzSubmit(){
     $("#aCat").value=cat;$("#aItem").value=cat==="기타 귀한 임산물"?n:"";$("#aGrow").value=WZ.grow.startsWith("자연산")?"자연산 (산에서 채취)":"재배";
     $("#aWeight").value=WZ.weight;$("#aForm").value=WZ.form==="생물"?"생물":"건조";$("#aRegion").value=WZ.region;$("#aDate").value=WZ.date;$("#aPermit").value=WZ.permit;
     $("#aCert").value=WZ.cert;$("#aAppraise").value=WZ.appraise;$("#aStart").value=WZ.start;$("#aBuyNow").value=WZ.buyNow;$("#aVideo").value=WZ.video;$("#aDur").value="sat";
-    $("#aTitle").value=WZ.name;$("#aDesc").value=WZ.desc;aPhoto=WZ.photo;aApPhoto=WZ.apPhoto;aProof=WZ.proofPh||"";$("#aParcel").value=WZ.permit===PERMITS[0]?(WZ.ownParcel||""):"";$("#aTitleEn").value=WZ.titleEn||"";$("#aTitleZh").value=WZ.titleZh||"";$("#aTitleJa").value=WZ.titleJa||"";$("#aOath").checked=!!WZ.oath;aucUI();
-    auto=tierOf(+WZ.start)==="기본"&&findHerb(n)?.st==="ok"&&trust(S.uid).cert&&proofNeed(n,WZ.grow,Math.max(+WZ.start||0,+WZ.buyNow||0))!=="photo";
+    $("#aTitle").value=WZ.name;$("#aDesc").value=WZ.desc;aPhoto=WZ.photo;aApPhoto=WZ.apPhoto;aProof=WZ.proofPh||"";$("#aSite").value=WZ.site||"";$("#aParcel").value=WZ.permit===PERMITS[0]?(WZ.ownParcel||""):"";$("#aTitleEn").value=WZ.titleEn||"";$("#aTitleZh").value=WZ.titleZh||"";$("#aTitleJa").value=WZ.titleJa||"";$("#aOath").checked=!!WZ.oath;aucUI();
+    auto=tierOf(+WZ.start)!=="감정"&&AUTO_ST.includes(findHerb(n)?.st);
     await $("#aucForm").onsubmit({preventDefault(){}});ok=!$("#aTitle").value;
   }else{
     $("#sCat").value=wzCat();procUI();
     $("#sItem").value=n;$("#sName").value=WZ.name;$("#sForm").value=WZ.form;$("#sUnit").value=WZ.unit;$("#sPrice").value=WZ.price;$("#sStock").value=WZ.stock;
-    $("#sRegion").value=WZ.region;$("#sGrow").value=WZ.grow;$("#sPermit").value=WZ.permit;$("#sCert").value=WZ.certNo;$("#sDesc").value=WZ.desc;sPhoto=WZ.photo;sProof=WZ.proofPh||"";$("#sParcel").value=WZ.permit===PERMITS[0]?(WZ.ownParcel||""):"";$("#sOath").checked=!!WZ.oath;S.lastProofRef="";
-    auto=findHerb(n)?.st==="ok"&&trust(S.uid).cert&&proofNeed(n,WZ.grow,+WZ.price)!=="photo";
+    $("#sRegion").value=WZ.region;$("#sGrow").value=WZ.grow;$("#sPermit").value=WZ.permit;$("#sCert").value=WZ.certNo;$("#sDesc").value=WZ.desc;sPhoto=WZ.photo;sProof=WZ.proofPh||"";$("#sSite").value=WZ.site||"";$("#sParcel").value=WZ.permit===PERMITS[0]?(WZ.ownParcel||""):"";$("#sOath").checked=!!WZ.oath;S.lastProofRef="";
+    auto=AUTO_ST.includes(findHerb(n)?.st);
     await $("#sellForm").onsubmit({preventDefault(){}});ok=!$("#sItem").value;
   }
   WZ.doneCount=1;
   if(ok&&WZ.mode!=="auc"&&WZ.more.length){btn.textContent="다른 양도 올리는 중…";
-    for(const m of WZ.more){const d={item:n,name:WZ.name.includes(WZ.unit)?WZ.name.replace(WZ.unit,m.unit):`${WZ.name} ${m.unit}`,cat:wzCat(),form:WZ.form,unit:m.unit,price:+m.price,stock:+m.stock,region:WZ.region,grow:WZ.grow,permit:WZ.permit,cert:WZ.certNo,desc:WZ.desc,proofRef:S.lastProofRef||""};
+    for(const m of WZ.more){const d={item:n,name:WZ.name.includes(WZ.unit)?WZ.name.replace(WZ.unit,m.unit):`${WZ.name} ${m.unit}`,cat:wzCat(),form:WZ.form,unit:m.unit,price:+m.price,stock:+m.stock,region:WZ.region,grow:WZ.grow,permit:WZ.permit,cert:WZ.certNo,desc:WZ.desc,proofRef:S.lastProofRef||"",siteRef:S.lastSite||"",later:true};
       const e=prodCheck(d);if(e){toast(`${m.unit}: ${e}`);continue}
       if(await prodAdd(d,WZ.photo))WZ.doneCount++}}
   if(ok){if(!S.acting)guard(()=>S.db.doc("sellers/"+S.uid).update({last:{grow:WZ.grow,permit:WZ.permit,region:WZ.region.slice(0,40)}}));WZ.done=true;WZ.doneAuto=auto;renderSell();window.scrollTo(0,0)}
@@ -3654,6 +3717,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   db.collection("herbmeta").limit(1000).onSnapshot(s=>{S.hmeta=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic()},()=>{});
   if(S.owner)db.collection("herbphotos").where("status","==","pending").limit(200).onSnapshot(s=>{S.pendPhotos=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   if(S.owner)db.collection("reports").limit(500).onSnapshot(s=>{S.reports=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
+  db.collection("sites").limit(500).onSnapshot(s=>{S.sites=s.docs.map(d=>({id:d.id,...d.data()}));renderSites();if(S.owner)renderAdmin()},()=>{});
   if(S.owner){db.collection("proofs").limit(500).onSnapshot(s=>{S.proofs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
     db.collection("landreqs").limit(500).onSnapshot(s=>{S.landreqs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{})}
   db.collection("herbinfo").limit(1000).onSnapshot(s=>{S.info=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{});
