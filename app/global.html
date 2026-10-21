@@ -181,6 +181,7 @@ const TX={
   noMkt:"No products in this category right now.",noOrd:"You have no orders yet.",signToSee:"Sign in to see your orders.",
   st:{"결제완료":"Paid · seller preparing","발송완료":"Shipped","수령확인":"Received","정산완료":"Completed","취소":"Cancelled","환불":"Refunded","분쟁":"Under review"},
   recv:"I received it",recvOk:"Thanks! The seller will be paid.",track:"Tracking",careT:"Before eating",
+  proofPend:"Harvest papers pending",
   shipA:"✈ Easy to send abroad",shipB:"Needs plant inspection abroad",shipC:"Korea delivery only",
   shipInfo:{A:"Sealed processed food. Usually clears customs when sent through a forwarding service.",B:"Dried raw herbs. Many countries (e.g. Japan) inspect plant ingredients and may ask for a plant health certificate. It may be held or destroyed at customs.",C:"Fresh produce. It spoils in transit and fresh plants are restricted abroad, so it can only be delivered within Korea."},
   dTitle:"Deliver to",dKr:"An address in Korea",dFwd:"My Korean forwarding service",dFwdNo:"Fresh items cannot go to a forwarder.",
@@ -217,6 +218,7 @@ const TX={
   noMkt:"このカテゴリーには現在商品がありません。",noOrd:"まだ注文はありません。",signToSee:"ログインすると注文履歴を確認できます。",
   st:{"결제완료":"お支払い済み・発送準備中","발송완료":"発送済み","수령확인":"受け取り済み","정산완료":"完了","취소":"キャンセル","환불":"返金済み","분쟁":"確認中"},
   recv:"受け取りました",recvOk:"ありがとうございます。出品者へ代金が支払われます。",track:"追跡番号",careT:"お召し上がりの前に",
+  proofPend:"採取書類確認中",
   shipA:"✈ 海外へ送りやすい",shipB:"輸入時に植物検査が必要",shipC:"韓国国内配送のみ",
   shipInfo:{A:"密封された加工食品です。転送サービス経由なら通常は通関できます。",B:"乾燥した原料（根・きのこ等）です。日本では植物性の原料は輸入検査の対象で、植物検疫証明書が必要な場合があります。税関で留め置き・廃棄となることがあります。",C:"生鮮品です。輸送中に傷みやすく、生の植物は海外への持ち込みが制限されるため、韓国国内のみの配送です。"},
   dTitle:"お届け先",dKr:"韓国国内の住所",dFwd:"韓国の転送サービス（配送代行）",dFwdNo:"生鮮品は転送サービスへ送れません。",
@@ -283,6 +285,7 @@ const TX={
   noMkt:"此分类目前没有商品。",noOrd:"您还没有订单。",signToSee:"登录后可查看订单。",
   st:{"결제완료":"已付款・卖家准备中","발송완료":"已发货","수령확인":"已收货","정산완료":"已完成","취소":"已取消","환불":"已退款","분쟁":"处理中"},
   recv:"我已收到",recvOk:"谢谢！款项将结算给卖家。",track:"物流单号",careT:"食用前",
+  proofPend:"采挖文件审核中",
   shipA:"✈ 方便寄往海外",shipB:"入境需植物检疫",shipC:"仅限韩国境内配送",
   shipInfo:{A:"密封加工食品，通过转运公司寄送通常可以清关。",B:"干燥原料（根、菌菇等）。许多国家会对植物性原料进行检疫，可能需要植物检疫证书，在海关可能被扣留或销毁。",C:"生鲜产品，运输途中易变质，且生鲜植物入境受限，因此只能在韩国境内配送。"},
   dTitle:"配送至",dKr:"韩国境内地址",dFwd:"我的韩国转运公司",dFwdNo:"生鲜商品不能寄往转运公司。",
@@ -389,7 +392,7 @@ document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{window.NM_LAN
 $("#filters").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;S.filter=b.dataset.f;paintStatic()};
 
 /* ---------- list ---------- */
-function chips(a){return [a.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:"",String(a.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:`<span class="chip">${esc(kind(a)==="forest"?t("farmChip"):t("farmG"))}</span>`,a.cert?`<span class="chip gold">${esc(t("certChip"))}</span>`:"",a.appraise?`<span class="chip gold">${esc(t("apprChip"))}</span>`:""].join("")}
+function chips(a){return [a.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:a.proofNeed==="photo"?`<span class="chip">${esc(t("proofPend"))}</span>`:"",String(a.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:`<span class="chip">${esc(kind(a)==="forest"?t("farmChip"):t("farmG"))}</span>`,a.cert?`<span class="chip gold">${esc(t("certChip"))}</span>`:"",a.appraise?`<span class="chip gold">${esc(t("apprChip"))}</span>`:""].join("")}
 function card(a){const x=auc(a),open=a.status==="진행중"&&!x.ended;
   return `<button type="button" class="card" data-aid="${esc(a.id)}"><div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}" loading="lazy">`:""}<div class="tl">${chips(a)}</div><span class="clock">${open?esc(leftTxt(x.end-Date.now())):esc(t("ended"))}</span></div>
    <div class="cbody"><h3>${esc(ftitle(a)||itemName(a))}</h3>${ftitle(a)?`<div class="meta">${esc(itemName(a))}</div>`:""}<div class="ko" lang="ko">${esc(a.title)}</div>

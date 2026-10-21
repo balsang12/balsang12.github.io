@@ -56,54 +56,56 @@ async function open(b, pre, shot) {
   const nf = await p.evaluate(() => guard(() => S.db.doc('products/nope').update({ stock: 1 })));
   ok(nf === false && await p.evaluate(() => S.canWrite) !== false, 'missing doc does not lock the app');
   await p.evaluate(() => go('admin')); await p.waitForTimeout(400); await p.screenshot({ path: 'shot_admin_tab.png' });
-  // 3) 채취 증빙 단계
+  // 3) 채취 증빙: 출품 먼저, 근거는 정산 전
   const pf = await p.evaluate(async () => {
-    const r = {};
+    const r = {}, ups = () => window.__calls.filter(c => c[0] === 'upsert');
     r.basic = proofNeed('더덕', '자연산 (산에서 채취)', 30000);
     r.wild = proofNeed('산삼', '자연산 (산에서 채취)', 200000);
     r.cult = proofNeed('장뇌삼', '재배 (인증 없음)', 200000);
     r.big = proofNeed('천마', '재배 (인증 없음)', 1500000);
     r.noOath = proofCheck({ item: '더덕', grow: '재배 (인증 없음)', price: 1, oath: false });
-    r.noPhoto = proofCheck({ item: '산삼', grow: '자연산 (산에서 채취)', price: 1, oath: true });
-    r.okBasic = proofCheck({ item: '더덕', grow: '재배 (인증 없음)', price: 1, oath: true });
-    // 경매 출품: 자연산 산삼, 서류 사진 없음 → 막힘
+    r.okWild = proofCheck({ item: '산삼', grow: '자연산 (산에서 채취)', price: 1, oath: true });
     S.sellers[S.uid] = S.sellers[S.uid] || { shopName: '테스트', role: '심마니 (자연산 채취)', region: '강원' };
     $('#aCat').value = '산삼'; $('#aGrow').value = '자연산 (산에서 채취)'; $('#aTitle').value = '산삼 1뿌리'; $('#aWeight').value = '1뿌리'; $('#aRegion').value = '강원 인제'; $('#aStart').value = '200000'; $('#aBuyNow').value = '';
-    aPhoto = 'data:image/png;base64,AAAA'; $('#aOath').checked = true; aucUI(); proofUI();
+    aPhoto = 'data:image/png;base64,AAAA'; aProof = ''; $('#aParcel').value = ''; $('#aOath').checked = true; aucUI(); proofUI();
     r.lbl = $('#aProofLbl').textContent;
-    const before = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'auctions').length;
     await $('#aucForm').onsubmit({ preventDefault() {} });
-    r.blocked = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'auctions').length === before;
-    aProof = 'data:image/png;base64,BBBB'; aPhoto = 'data:image/png;base64,AAAA';
-    await $('#aucForm').onsubmit({ preventDefault() {} });
-    const ups = window.__calls.filter(c => c[0] === 'upsert');
-    const pr = ups.filter(c => c[1] === 'proofs').pop(), au = ups.filter(c => c[1] === 'auctions').pop();
-    r.proofSaved = !!pr && pr[3].photo.includes('BBBB') && pr[3].status === '대기';
-    r.aucRef = au && au[3].proofRef === pr[2] && au[3].proofNeed === 'photo' && au[3].status === '검수대기' && !('photo' in au[3] && au[3].photo.includes('BBBB'));
-    r.noProofInAuc = au && !JSON.stringify(au[3]).includes('BBBB');
-    // 운영자: 승인 전 증빙 확인 필요 → 확인 → 배지
+    const au = ups().filter(c => c[1] === 'auctions').pop();
+    r.listed = au && au[3].proofNeed === 'photo' && !au[3].proofRef && au[3].proofDue > Date.now() + 13 * 864e5;
     await new Promise(z => setTimeout(z, 700));
-    const a = S.auctions.find(x => x.id === au[2]);
-    await ACT.approveA(a.id); r.gate = S.auctions.find(x => x.id === a.id).status === '검수대기';
+    const id = au[2];
+    await ACT.approveA(id); await new Promise(z => setTimeout(z, 500));
+    r.approved = S.auctions.find(x => x.id === id).status === '진행중';
+    r.pendChip = aucCard(S.auctions.find(x => x.id === id)).includes('채취 증빙 확인 중');
+    await S.db.doc('auctions/' + id).update({ deal: '수령확인' }); await new Promise(z => setTimeout(z, 500));
+    await ACT.payoutA(id); await new Promise(z => setTimeout(z, 400));
+    r.payBlocked = S.auctions.find(x => x.id === id).deal === '수령확인';
+    go('seller'); renderSeller(); await new Promise(z => setTimeout(z, 200));
+    r.sellerBox = !!document.querySelector('#pp-' + id);
+    document.querySelector('#pp-' + id).value = '인제군 기린면 OO리 산12';
+    await ACT.proofLater('auctions:' + id); await new Promise(z => setTimeout(z, 500));
+    const pr = ups().filter(c => c[1] === 'proofs').pop();
+    r.parcelProof = pr && pr[3].parcel.includes('산12') && pr[3].photo === '';
+    r.linked = S.auctions.find(x => x.id === id).proofRef === pr[2];
     S.proofs = [{ id: pr[2], ...pr[3] }]; go('admin'); renderAdmin();
-    r.queue = document.querySelectorAll('#proofQueue [data-pfok]').length;
+    r.queueParcel = document.querySelector('#proofQueue').innerText.includes('산12');
     document.querySelector('#proofQueue [data-pfok]').click(); await new Promise(z => setTimeout(z, 900));
-    r.badge = !!S.auctions.find(x => x.id === a.id).proofOk;
-    r.card = aucCard(S.auctions.find(x => x.id === a.id)).includes('채취 증빙 확인');
-    // 산주 찾기
+    r.badge = !!S.auctions.find(x => x.id === id).proofOk;
+    await ACT.payoutA(id); await new Promise(z => setTimeout(z, 500));
+    r.paid = S.auctions.find(x => x.id === id).deal === '정산완료';
     r.land = await landReq({ herb: '산삼', parcel: '강원 인제군 기린면 산12', contact: '010' });
-    r.landDoc = window.__calls.some(c => c[0] === 'upsert' && c[1] === 'landreqs' && c[3].by === S.uid);
     return r;
   });
   console.log(JSON.stringify(pf));
   ok(pf.basic === 'basic' && pf.wild === 'photo' && pf.cult === 'cert' && pf.big === 'photo', 'proof tiers by item and price');
-  ok(pf.noOath && pf.noPhoto && pf.okBasic === '', 'proof checks');
-  ok(pf.lbl.includes('필수'), 'proof photo marked required for wild ginseng');
-  ok(pf.blocked, 'wild ginseng without papers is blocked');
-  ok(pf.proofSaved && pf.aucRef && pf.noProofInAuc, 'papers stored apart from the public listing');
-  ok(pf.gate, 'approval waits for proof check');
-  ok(pf.queue >= 1 && pf.badge && pf.card, 'operator confirms papers and badge shows');
-  ok(pf.land && pf.landDoc, 'landowner lookup request saved');
+  ok(pf.noOath && pf.okWild === '', 'oath still required, papers not required to list');
+  ok(pf.lbl.includes('정산 전'), 'label says papers due before payout');
+  ok(pf.listed, 'wild ginseng listed without papers, 14-day due date');
+  ok(pf.approved && pf.pendChip, 'operator can approve; buyers see papers pending');
+  ok(pf.payBlocked, 'payout blocked until papers are checked');
+  ok(pf.sellerBox && pf.parcelProof && pf.linked, 'seller sends own-land parcel number later');
+  ok(pf.queueParcel && pf.badge && pf.paid, 'operator checks parcel, badge, then payout');
+  ok(pf.land, 'landowner lookup request still works');
   // 4) 해외 제목
   const it = await p.evaluate(async () => {
     const r = {};
