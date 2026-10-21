@@ -111,6 +111,14 @@ dt{color:var(--muted)}dd{margin:0}
 .field{display:grid;gap:4px;font-size:14px}.field input{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);min-height:44px}
 .ord{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:4px}
 .warn{background:var(--berry-soft);border-radius:12px;padding:10px 12px;font-size:14px}
+.recobtn{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0 0;padding:14px 16px;border-radius:14px;border:1px solid var(--gold);background:var(--gold-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.recobtn b{font-size:17px;color:var(--gold)}.recobtn span{font-size:14px;color:var(--muted)}.recobtn i{font-style:normal;font-size:26px}
+.reco{display:grid;gap:14px;padding:18px}.reco .prog{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}.reco .prog i{display:block;height:100%;background:var(--gold)}
+.reco .opts{display:grid;gap:8px}.reco .opts button{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:inherit;font-size:16px;text-align:left;padding:10px 14px;cursor:pointer}
+.reco .opts button[aria-pressed="true"]{border-color:var(--pine);background:var(--pine-soft);font-weight:700}.reco .opts button.any{color:var(--muted)}
+.reco .rc{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface);text-align:left;font:inherit;cursor:pointer;width:100%}
+.reco .rc img,.reco .rc .ph{width:72px;height:72px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}.reco .rc b{display:block}
+.medn{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:8px 10px}
 footer{margin-top:40px;border-top:1px solid var(--line);padding:18px 0 40px;font-size:13px;color:var(--muted)}
 footer a{color:var(--pine)}
 </style>
@@ -129,6 +137,7 @@ footer a{color:var(--pine)}
     <p id="lead"></p>
   </section>
   <nav class="tabs" id="tabs" role="tablist"></nav>
+  <button type="button" class="recobtn" id="recoBtn" data-reco="1"><i aria-hidden="true">🧺</i><div><b id="recoB"></b><br><span id="recoS"></span></div></button>
   <div class="notice" id="beta" hidden></div>
   <div class="notice err" id="conn" hidden></div>
   <section id="secAuc">
@@ -379,7 +388,7 @@ function paintStatic(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===window.NM_LANG));
   $("#filters").innerHTML=["all","wild","forest","other"].map(k=>`<button type="button" class="filter" data-f="${k}" aria-pressed="${S.filter===k}">${esc(t(k))}</button>`).join("");
   $("#tabs").innerHTML=[["auc","tabAuc"],["mkt","tabMkt"],["ord","tabOrd"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${esc(t(l))}</button>`).join("");
-  $("#mktNote").textContent=t("mktNote");$("#abroadT").textContent=t("abroadT");$("#abroadL").innerHTML=t("abroad").map(x=>`<li>${esc(x)}</li>`).join("");
+  $("#mktNote").textContent=t("mktNote");$("#recoB").textContent=RL().b;$("#recoS").textContent=RL().sub;$("#recoBtn").hidden=S.tab==="ord";$("#abroadT").textContent=t("abroadT");$("#abroadL").innerHTML=t("abroad").map(x=>`<li>${esc(x)}</li>`).join("");
   $("#mfilters").innerHTML=Object.keys(t("cats")).map(k=>`<button type="button" class="filter" data-mc="${esc(k)}" aria-pressed="${S.mcat===k}">${esc(t("cats")[k])}</button>`).join("");
   ["auc","mkt","ord"].forEach(k=>$("#sec"+{auc:"Auc",mkt:"Mkt",ord:"Ord"}[k]).hidden=S.tab!==k);
   paintWho();render()}
@@ -388,7 +397,7 @@ $("#mfilters").onclick=e=>{const b=e.target.closest("[data-mc]");if(!b)return;S.
 function paintWho(){$("#who").innerHTML=S.uid?`<button type="button" class="btn sm" id="out">${esc(t("signOut"))}</button>`:`<button type="button" class="btn sm pri" id="in">${esc(t("signIn"))}</button>`;
   $("#in")&&($("#in").onclick=()=>nmAuth.open(t("needLogin")));$("#out")&&($("#out").onclick=()=>nmAuth.signOut())}
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{window.NM_LANG=b.dataset.lang;try{localStorage.setItem("nm_lang",window.NM_LANG)}catch(e){}
-  const u=new URL(location.href);u.searchParams.set("lang",window.NM_LANG);history.replaceState(null,"",u);paintStatic();if($("#dlg").open)(S.dlgKind==="p"?openP:openA)(S.open)});
+  const u=new URL(location.href);u.searchParams.set("lang",window.NM_LANG);history.replaceState(null,"",u);paintStatic();if($("#dlg").open)S.dlgKind==="r"?recoRender():(S.dlgKind==="p"?openP:openA)(S.open)});
 $("#filters").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;S.filter=b.dataset.f;paintStatic()};
 
 /* ---------- list ---------- */
@@ -406,6 +415,151 @@ function render(){
   $("#list").innerHTML=open.length?open.map(card).join(""):`<div class="empty">${esc(t("none"))}</div>`;
   $("#hDone").hidden=!done.length;$("#hDone").textContent=t("closed");$("#done").innerHTML=done.map(card).join("");
   $("#beta").hidden=!BETA();$("#beta").textContent=t("beta");renderMkt();renderOrd()}
+/* ---------- recommendation helper ---------- */
+/* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
+const RECO_Q=[
+ {k:"who",o:["me","parents","holiday","biz"]},
+ {k:"how",o:["namul","soup","tea","infuse","raw"]},
+ {k:"budget",o:["20","50","100","999"]},
+ {k:"keep",o:["fresh","store"]},
+ {k:"prep",when:a=>a.how==="namul"||a.how==="soup",o:["easy","ok"]},
+ {k:"taste",when:a=>a.who==="parents"||a.who==="holiday",o:["rare","daily","new"]},
+ {k:"auc",when:a=>a.how==="raw"||a.taste==="rare",o:["no","yes"]},
+ {k:"size",when:a=>a.who==="me",o:["s","m","l"]},
+ {k:"must",multi:true,o:["wild","cert","proof","review","season"]},
+ {k:"region",o:["강원","경상","전라","충청","제주"]}
+];
+const RECO_BAND={"20":[0,20000],"50":[20000,50000],"100":[50000,100000],"999":[100000,1e12]};
+const RECO_REG={"강원":["강원"],"경상":["경북","경남","경상"],"전라":["전북","전남","전라"],"충청":["충북","충남","충청"],"제주":["제주"]};
+const RECO_GIFT=["산양삼","산삼","장뇌삼","천마","송이","능이","하수오","상황","상황버섯","영지","겨우살이","복령","꽃송이버섯"];
+const RECO_COMMON=["도라지","더덕","둥굴레","오미자","표고","대추","칡","구기자","결명자","생강","우엉","돼지감자","고사리","곰취","취나물","참나물","느타리"];
+const RECO_UNIT_G={"300g":300,"500g":500,"1kg":1000,"근(600g)":600,"5kg":5000};
+function recoQuestions(a){return RECO_Q.filter(q=>!q.when||q.when(a))}
+function recoSeason(cat,m){m=m||new Date().getMonth()+1;return cat==="산나물"?m>=3&&m<=6:cat==="버섯"?m>=8&&m<=10:cat==="열매"?m>=6&&m<=10:cat==="뿌리 약초"?(m>=10||m<=4):false}
+/* ctx: {products, auctions, aucCur(a)->number|null (null = closed), mcat(c), prep(item)->bool, rating(id)->{avg,n}} */
+function recoRun(a,ctx){
+  const items=[];
+  ctx.products.forEach(p=>{if(p.status==="판매중"&&p.stock>0&&!p.demo)items.push({kind:"p",x:p,cat:ctx.mcat(p.cat),price:(+p.price||0)+(p.form==="생물"?5000:3500)})});
+  if(a.auc==="yes")ctx.auctions.forEach(x=>{const c=ctx.aucCur(x);if(c!=null&&!x.demo)items.push({kind:"a",x,cat:"뿌리 약초",price:c})});
+  const proc=i=>i.kind==="p"&&i.x.cat==="가공품",form=i=>i.x.form||"";
+  const how={namul:i=>i.cat==="산나물"&&!proc(i),
+    soup:i=>["산나물","버섯","뿌리 약초"].includes(i.cat)&&!proc(i)&&i.kind==="p",
+    tea:i=>i.cat==="말린 약초·차"||(["건조","덖음·차"].includes(form(i))&&i.cat!=="산나물")||(proc(i)&&/차/.test(form(i))),
+    infuse:i=>((i.cat==="열매"||i.cat==="뿌리 약초")&&form(i)==="생물"&&i.kind==="p")||(proc(i)&&/청|잼/.test(form(i))),
+    raw:i=>i.kind==="a"||i.cat==="뿌리 약초"||i.cat==="열매"||proc(i)};
+  const must={wild:i=>String(i.x.grow||"").startsWith("자연산"),cert:i=>/인증/.test(i.x.grow||""),proof:i=>!!i.x.proofOk,
+    review:i=>{if(i.kind!=="p")return false;const r=ctx.rating(i.x.id);return r.n>0&&r.avg>=4},season:i=>recoSeason(i.cat)};
+  const fresh=i=>i.kind==="a"||form(i)==="생물";
+  const regOk=i=>{const r=RECO_REG[a.region];return !r||r.some(x=>String(i.x.region||"").startsWith(x))};
+  const bandHi=b=>(RECO_BAND[b]||[0,1e12])[1];
+  const tries=[{},{region:1},{region:1,must:1},{region:1,must:1,budget:1},{region:1,must:1,budget:1,keep:1}];
+  let out=[],relaxed={},strict=null;
+  for(const r of tries){
+    const hi=a.budget?(r.budget?bandHi({"20":"50","50":"100","100":"999","999":"999"}[a.budget]):bandHi(a.budget)):1e12;
+    out=items.filter(i=>(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
+    if(!strict)strict=new Set(out.map(i=>i.x.id));relaxed=r;if(out.length>=3)break}
+  if(out.length===strict.size)relaxed={};
+  const lo=a.budget?(RECO_BAND[a.budget]||[0])[0]:0;
+  out.forEach(i=>{let s=0;const why=[];const it=i.x.item||i.x.cat||"";
+    if(a.who==="parents"||a.who==="holiday"){if(!fresh(i)){s+=2;why.push("keeps")}if(RECO_GIFT.includes(it)){s+=3;why.push("gift")}if(i.x.proofOk)s+=1}
+    if(a.who==="biz"&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=1000){s+=2;why.push("bulk")}if(i.x.stock>=5)s+=1}
+    if(a.taste==="rare"&&(RECO_GIFT.includes(it)||String(i.x.grow||"").startsWith("자연산")||i.price>=50000)){s+=3;why.push("rare")}
+    if(a.taste==="daily"&&["산나물","말린 약초·차"].includes(i.cat)){s+=2}
+    if(a.taste==="new"&&!RECO_COMMON.includes(it)){s+=3;why.push("new")}
+    if(a.size&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if((a.size==="s"&&g&&g<=500)||(a.size==="m"&&g>=600&&g<=1000)||(a.size==="l"&&g>=1000)){s+=2;why.push("size")}}
+    if(a.prep==="easy"&&ctx.prep(it)){s-=4}
+    if(ctx.prep(it))why.push("prep");
+    if(i.price>=lo)s+=1;if(strict.has(i.x.id))s+=6;else why.unshift("wider");
+    if(String(i.x.grow||"").startsWith("자연산")){s+=1;why.push("wild")}
+    if(/인증/.test(i.x.grow||""))why.push("cert");
+    if(i.x.proofOk){s+=1;why.push("proof")}
+    if(recoSeason(i.cat)){s+=1;why.push("season")}
+    if(i.kind==="p"){const r=ctx.rating(i.x.id);if(r.n){s+=r.avg/2;why.push("review")}}
+    if(i.kind==="a")why.push("auction");
+    i.score=s;i.why=why});
+  out.sort((x,y)=>y.score-x.score||x.price-y.price);
+  return {list:out.slice(0,5),relaxed,total:out.length}}
+
+const RECO_L={
+ en:{b:"Not sure what to buy? We’ll pick for you",sub:"Answer a few questions about how you’ll use it and your budget",step:(i,n)=>`Helper · ${i} / ${n}`,any:"No preference",next:"Next",skip:"No preference, next",back:"Back",
+  res:"You might like these",none:"Nothing matches yet",wider:"We widened some conditions to find these",again:"Start again",
+  note:"We don’t recommend by health condition. If you have a health concern, please talk to a doctor or Korean medicine doctor.",
+  q:{who:["Who is it for?",{me:"For me",parents:"A gift for parents or elders",holiday:"A holiday or thank-you gift",biz:"For my shop or restaurant"}],
+   how:["How will you use it?",{namul:"Seasoned or stir-fried greens",soup:"Soups and stews",tea:"Steeped as tea",infuse:"Syrup or infused liquor",raw:"As it is"}],
+   budget:["Budget (including delivery)",{"20":"Up to ₩20,000","50":"₩20,000–50,000","100":"₩50,000–100,000","999":"Over ₩100,000"}],
+   keep:["When will you eat it?",{fresh:"Soon — fresh, please",store:"Over time — keeps well"}],
+   prep:["How much preparation is OK?",{easy:"Ready to cook",ok:"Blanching or soaking is fine"}],
+   taste:["What would they enjoy?",{rare:"Something rare (wild ginseng, pine mushroom)",daily:"Something practical (greens, tea)",new:"Something unusual"}],
+   auc:["Are auctions OK?",{no:"I want to buy now",yes:"Happy to bid for a good price"}],
+   size:["How many people?",{s:"1–2",m:"3–4",l:"5 or more"}],
+   must:["Anything you must have? (choose any)",{wild:"Wild only",cert:"Certified organic / pesticide-free",proof:"Harvest papers checked",season:"In season now"}],
+   region:["Preferred region?",{"강원":"Gangwon","경상":"Gyeongsang","전라":"Jeolla","충청":"Chungcheong","제주":"Jeju"}]},
+  why:{keeps:"Keeps well",gift:"Good gift",bulk:"Large pack",rare:"Rare find",new:"Unusual",size:"Right size",prep:"Blanch before eating",wild:"Wild",cert:"Certified",proof:"Papers checked",season:"In season",auction:"Auction",wider:"Wider match"},
+  med:"If you are pregnant, breastfeeding or taking medicine, talk to a doctor or Korean medicine doctor before eating."},
+ ja:{b:"何を買うか迷ったら、おすすめします",sub:"使い方と予算についていくつか答えるだけ",step:(i,n)=>`おすすめ ${i} / ${n}`,any:"こだわらない",next:"次へ",skip:"こだわらない・次へ",back:"戻る",
+  res:"こちらはいかがですか",none:"ぴったりの商品がまだありません",wider:"条件を少し広げて探しました",again:"最初から",
+  note:"体調に合わせたおすすめは行っていません。健康が気になる方は医師・韓医師にご相談ください。",
+  q:{who:["どなたのためですか？",{me:"自分で食べる",parents:"両親・目上の方へのギフト",holiday:"お祝い・お礼のギフト",biz:"お店・飲食店で使う"}],
+   how:["どのように召し上がりますか？",{namul:"ナムル・炒め物",soup:"スープ・鍋",tea:"お茶として",infuse:"シロップ漬け・果実酒",raw:"そのまま"}],
+   budget:["ご予算は？（送料込み）",{"20":"2万ウォン以下","50":"2〜5万ウォン","100":"5〜10万ウォン","999":"10万ウォン以上"}],
+   keep:["いつ召し上がりますか？",{fresh:"すぐ食べるので新鮮なもの",store:"長く保存できるもの"}],
+   prep:["下ごしらえはどこまでできますか？",{easy:"すぐ調理できるもの",ok:"下茹で・アク抜きは大丈夫"}],
+   taste:["贈る方のお好みは？",{rare:"希少なもの（天然山参・マツタケ）",daily:"実用的なもの（山菜・お茶）",new:"珍しいもの"}],
+   auc:["オークションでも大丈夫ですか？",{no:"すぐ買いたい",yes:"オークションでお得に"}],
+   size:["何人分ですか？",{s:"1〜2人",m:"3〜4人",l:"5人以上"}],
+   must:["必須の条件は？（複数選択可）",{wild:"天然のみ",cert:"無農薬・有機認証",proof:"採取書類確認済み",season:"今が旬"}],
+   region:["産地の希望は？",{"강원":"江原道","경상":"慶尚道","전라":"全羅道","충청":"忠清道","제주":"済州"}]},
+  why:{keeps:"長期保存",gift:"ギフト向き",bulk:"たっぷり",rare:"希少",new:"珍しい",size:"ちょうどいい量",prep:"下茹でが必要",wild:"天然",cert:"認証栽培",proof:"書類確認済み",season:"旬",auction:"オークション",wider:"条件を広げて表示"},
+  med:"妊娠中・授乳中の方、薬を服用中の方は、召し上がる前に医師・韓医師にご相談ください。"},
+ "zh-Hans":{b:"不知道买什么？我们帮您挑",sub:"回答几个关于用途和预算的问题即可",step:(i,n)=>`推荐助手 ${i} / ${n}`,any:"都可以",next:"下一步",skip:"都可以，下一步",back:"上一步",
+  res:"为您推荐",none:"暂时没有合适的商品",wider:"已适当放宽条件",again:"重新选择",
+  note:"我们不根据身体状况推荐。如有健康方面的担心，请咨询医生或韩医师。",
+  q:{who:["买给谁？",{me:"自己吃",parents:"送给父母或长辈",holiday:"节日或答谢礼物",biz:"店铺或餐厅使用"}],
+   how:["打算怎么吃？",{namul:"凉拌或炒菜",soup:"煲汤或炖菜",tea:"泡茶",infuse:"做果酱或泡酒",raw:"直接食用"}],
+   budget:["预算（含运费）",{"20":"2万韩元以下","50":"2〜5万韩元","100":"5〜10万韩元","999":"10万韩元以上"}],
+   keep:["什么时候吃？",{fresh:"马上吃，要新鲜的",store:"慢慢吃，要耐储存的"}],
+   prep:["能接受多少处理步骤？",{easy:"买来就能做",ok:"焯水或浸泡都可以"}],
+   taste:["对方喜欢什么？",{rare:"珍贵的（野山参、松茸）",daily:"实用的（山野菜、茶）",new:"少见的"}],
+   auc:["可以参加拍卖吗？",{no:"想直接购买",yes:"想通过拍卖买到好价格"}],
+   size:["几个人吃？",{s:"1〜2人",m:"3〜4人",l:"5人以上"}],
+   must:["必须满足的条件？（可多选）",{wild:"只要野生",cert:"无农药或有机认证",proof:"采挖文件已审核",season:"当季"}],
+   region:["希望的产地？",{"강원":"江原道","경상":"庆尚道","전라":"全罗道","충청":"忠清道","제주":"济州"}]},
+  why:{keeps:"耐储存",gift:"适合送礼",bulk:"量大",rare:"珍贵",new:"少见",size:"份量合适",prep:"需焯水",wild:"野生",cert:"认证栽培",proof:"文件已审核",season:"当季",auction:"拍卖中",wider:"放宽条件"},
+  med:"孕期、哺乳期或正在服药的人士，食用前请咨询医生或韩医师。"}};
+const RL=()=>RECO_L[window.NM_LANG]||RECO_L.en;
+const MED_ITEMS=["산삼","산양삼","장뇌삼","인삼","천마","하수오","백수오","영지","상황","상황버섯","차가버섯","동충하초","복령","겨우살이","당귀","황기","감초","천궁","익모초","삼지구엽초","오가피","엄나무","헛개","꾸지뽕"];
+function medNote(item,cat){const c=mcat(cat||"");return (["뿌리 약초","말린 약초·차"].includes(c)||MED_ITEMS.includes(item))?`<div class="medn">${esc(RL().med)}</div>`:""}
+const RC={a:{},i:0};
+function recoCtx(){return {products:S.products,auctions:S.auctions.filter(a=>a.status==="진행중"),aucCur:a=>{const x=auc(a);return x.ended?null:x.cur},mcat,prep:it=>!!CARE[it],rating:()=>({avg:0,n:0})}}
+function recoOpen(){RC.a={};RC.i=0;recoRender();const d=$("#dlg");S.dlgKind="r";if(!d.open)d.showModal()}
+function recoRender(){const d=$("#dlg"),L=RL(),qs=recoQuestions(RC.a),note=`<p class="meta" style="margin:0">${esc(L.note)}</p>`;
+  if(RC.i<qs.length){const q=qs[RC.i],[title,labels]=L.q[q.k],cur=RC.a[q.k],opts=q.o.filter(v=>labels[v]);
+    d.innerHTML=`<div class="reco"><button class="x" type="button" aria-label="Close" id="dx">×</button>
+      <div class="prog" aria-hidden="true"><i style="width:${Math.round(RC.i/qs.length*100)}%"></i></div>
+      <div class="meta">${esc(L.step(RC.i+1,qs.length))}</div><h2 style="font-size:22px">${esc(title)}</h2>
+      <div class="opts">${opts.map(v=>`<button type="button" data-rv="${esc(v)}" aria-pressed="${q.multi?(cur||[]).includes(v):cur===v}">${esc(labels[v])}</button>`).join("")}${q.multi?"":`<button type="button" class="any" data-rv="">${esc(L.any)}</button>`}</div>
+      <div style="display:flex;gap:8px">${RC.i?`<button class="btn" type="button" id="rcBack">${esc(L.back)}</button>`:""}${q.multi?`<button class="btn pri" type="button" id="rcNext">${esc((cur||[]).length?L.next:L.skip)}</button>`:""}</div>${note}</div>`;
+    d.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{const v=b.dataset.rv;
+      if(q.multi){const a=new Set(RC.a[q.k]||[]);a.has(v)?a.delete(v):a.add(v);RC.a[q.k]=[...a];recoRender();return}
+      if(v)RC.a[q.k]=v;else delete RC.a[q.k];RECO_Q.forEach(x=>{if(x.when&&!x.when(RC.a))delete RC.a[x.k]});RC.i++;recoRender()});
+  }else{const r=recoRun(RC.a,recoCtx()),lab=k=>RC.a[k]?L.q[k][1][RC.a[k]]:"";
+    d.innerHTML=`<div class="reco"><button class="x" type="button" aria-label="Close" id="dx">×</button>
+      <h2 style="font-size:22px">${esc(r.list.length?L.res:L.none)}</h2>
+      <div class="meta">${[lab("who"),lab("how"),lab("budget"),lab("keep")].filter(Boolean).map(esc).join(" · ")}</div>
+      ${Object.keys(r.relaxed).length&&r.list.length?`<div class="notice" style="margin:0">${esc(L.wider)}</div>`:""}
+      <div style="display:grid;gap:10px">${r.list.map(i=>{const x=i.x,name=i.kind==="a"?(ftitle(x)||itemName(x)):pname(x);
+        const why=[lab("how"),...i.why.map(w=>L.why[w])].filter(Boolean).slice(0,5);
+        return `<button type="button" class="rc" data-rcp="${i.kind}:${esc(x.id)}">${x.photo?`<img src="${esc(x.photo)}" alt="">`:`<span class="ph"></span>`}<div><b>${esc(name)}</b>
+          <span class="meta num">${won(i.price)} <span class="approx">${esc(approx(i.price))}</span></span>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${why.map(w=>`<span class="chip">${esc(w)}</span>`).join("")}</div></div></button>`}).join("")}</div>
+      <div><button class="btn" type="button" id="rcAgain">${esc(L.again)}</button></div>${note}</div>`;
+    d.querySelectorAll("[data-rcp]").forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.rcp.split(":");k==="a"?openA(id):openP(id)});
+    $("#rcAgain").onclick=()=>{RC.a={};RC.i=0;recoRender()}}
+  $("#dx").onclick=()=>d.close();
+  const bk=$("#rcBack");if(bk)bk.onclick=()=>{RC.i=Math.max(0,RC.i-1);recoRender()};
+  const nx=$("#rcNext");if(nx)nx.onclick=()=>{RC.i++;recoRender()}}
+document.addEventListener("click",e=>{if(e.target.closest("[data-reco]"))recoOpen()});
+
 /* ---------- market ---------- */
 function pcard(p){return `<button type="button" class="card" data-pid="${esc(p.id)}"><div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}" loading="lazy">`:""}<div class="tl">${shipChip(p)}${String(p.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:""}${p.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:""}</div>${p.stock>0?"":`<span class="clock">${esc(t("soldOut"))}</span>`}</div>
   <div class="cbody"><h3>${esc(pname(p))}</h3><div class="ko" lang="ko">${esc(p.name)}</div><div class="meta">${esc(region(p.region))}${p.form?" · "+esc(p.form==="건조"?t("dried"):p.form==="생물"?t("fresh"):p.form):""}</div>
@@ -419,6 +573,7 @@ function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;
    <h2 style="font-size:24px">${esc(pname(p))}</h2><div class="ko" lang="ko">${esc(p.name)}</div>
    <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div>
    ${care?`<div class="warn"><b>${esc(t("careT"))}:</b> ${esc(care[LI()])}</div>`:""}
+   ${medNote(p.item,p.cat)}
    <div class="notice" style="background:var(--sunk);margin:0">${shipChip(p)} ${esc(t("shipInfo")[shipClass(p)])}</div>
    <dl>
     ${herbT(p.item)?`<dt>${esc(t("item"))}</dt><dd>${esc(herbT(p.item))}</dd>`:""}
@@ -469,7 +624,7 @@ function renderOrd(){const el=$("#olist");if(!S.uid){el.innerHTML=`<div class="e
     ${o.status==="발송완료"?`<div><button type="button" class="btn sm pri" data-recv="${esc(o.id)}">${esc(t("recv"))}</button></div>`:""}</div>`}).join("");
   el.querySelectorAll("[data-recv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await S.db.doc("orders/"+b.dataset.recv).update({status:"수령확인",receivedAt:Date.now()});toast(t("recvOk"))}catch(e){toast(t("fail"));b.disabled=false}})}
 document.addEventListener("click",e=>{const c=e.target.closest("[data-aid]");if(c){openA(c.dataset.aid);return}const q=e.target.closest("[data-pid]");if(q)openP(q.dataset.pid)});
-setInterval(()=>{render();if($("#dlg").open&&S.dlgKind!=="p")paintBoard()},30000);
+setInterval(()=>{render();if($("#dlg").open&&S.dlgKind==="a")paintBoard()},30000);
 $("#dlg").onclick=e=>{if(e.target===$("#dlg"))$("#dlg").close()};
 
 /* ---------- one auction ---------- */
@@ -478,6 +633,7 @@ function openA(id){const a=S.auctions.find(x=>x.id===id);if(!a)return;S.open=id;
   d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button>
    <div class="thumb">${a.photo?`<img src="${esc(a.photo)}" alt="${esc(itemName(a))}">`:""}</div>
    <div style="display:flex;gap:4px;flex-wrap:wrap">${chips(a)}</div>
+   ${medNote(a.item||a.cat,"뿌리 약초")}
    <h2 style="font-size:24px">${esc(ftitle(a)||itemName(a))}</h2>
    <dl><dt>${esc(t("item"))}</dt><dd>${esc(itemName(a))}</dd></dl>
    <dl>
@@ -527,7 +683,7 @@ async function bid(id){if(!S.uid){nmAuth.open(t("needLogin"));return}
   const user=await use("user"),db=await use("db");
   if(!db){$("#conn").hidden=false;$("#conn").textContent=t("conn");return}
   S.db=db;if(user){const me=await user.me();S.uid=me.id||null}paintWho();
-  const sub=(c,f)=>db.collection(c).limit(1000).onSnapshot(s=>{f(s.docs.map(d=>({id:d.id,...d.data()})));render();if($("#dlg").open&&S.dlgKind!=="p")paintBoard()},()=>{});
+  const sub=(c,f)=>db.collection(c).limit(1000).onSnapshot(s=>{f(s.docs.map(d=>({id:d.id,...d.data()})));render();if($("#dlg").open&&S.dlgKind==="a")paintBoard()},()=>{});
   sub("auctions",v=>S.auctions=v);
   sub("bids",v=>{S.bids=v;S.bidMap={};v.forEach(b=>(S.bidMap[b.auctionId]=S.bidMap[b.auctionId]||[]).push(b))});
   sub("sellers",v=>{S.sellers=Object.fromEntries(v.filter(x=>!x.id.startsWith("_")).map(x=>[x.id,x]))});

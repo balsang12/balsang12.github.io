@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:844},serviceWorkers:'block',locale:'ko-KR'});const p=await ctx.newPage();const errs=[];
+p.on('pageerror',e=>errs.push(String(e)));
+await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));
+await p.addInitScript('window.__SESSION={user:{id:"me"}};\n'+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1200);
+ok(await p.locator('.recobtn').first().isVisible(),'home recommender button');
+await p.locator('.recobtn').first().click();await p.waitForTimeout(150);
+ok((await p.locator('.reco h2').innerText()).includes('누구'),'first question');
+await p.click('text=내가 먹을 것');await p.click('text=나물 무침·볶음');await p.click('text=2~5만 원');await p.click('text=바로 먹을 거라 신선하게');
+ok((await p.locator('.reco h2').innerText()).includes('손질'),'branch: handling question for greens');
+await p.click('text=바로 요리할 수 있는 것');ok((await p.locator('.reco h2').innerText()).includes('몇 분'),'branch: household size');
+await p.click('text=1~2명');await p.click('#rcNext');await p.click('.reco .any');await p.waitForTimeout(150);
+const res=await p.locator('.reco').innerText();await p.screenshot({path:'reco_result.png'});
+ok(/이런 상품|딱 맞는/.test(res),'results screen: '+res.split('\n').slice(0,4).join(' | '));
+ok(!/당뇨|면역|혈압|효능/.test(res),'no health wording');
+const n=await p.locator('.rc').count();ok(n>=1,'has recommendations: '+n);
+if(n){await p.locator('.rc').first().click();await p.waitForTimeout(200);ok(await p.locator('#dlg .dinfo h2').count()>0,'opens product')}
+await p.evaluate(()=>go('shop'));await p.waitForTimeout(150);ok(await p.locator('#useBar [data-reco]').isVisible(),'market button');
+// medNote
+const mn=await p.evaluate(()=>[medNote("도라지","뿌리·줄기"),medNote("곰취","산나물"),medNote("산삼","뿌리 약초")].map(x=>!!x).join(','));ok(mn==='true,false,true','consult note on medicinal items only: '+mn);
+ok(errs.length===0,'no errors '+errs.join('|'));await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();

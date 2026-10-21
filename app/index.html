@@ -422,6 +422,14 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .upnext{border:1px dashed var(--gold);border-radius:14px;padding:10px 14px;font-size:14.5px;background:color-mix(in srgb,var(--gold) 6%,var(--surface))}
 .alertrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:var(--surface)}
 #aucExtra,#homeWins{display:grid;gap:10px;margin-top:12px}#aucExtra:empty,#homeWins:empty{display:none}
+.recobtn{display:flex;align-items:center;gap:12px;width:100%;max-width:640px;margin-top:12px;padding:14px 16px;border-radius:14px;border:1px solid var(--gold);background:var(--gold-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.recobtn b{font-size:17px;color:var(--gold-deep,var(--gold))}.recobtn span{font-size:14px;color:var(--muted)}.recobtn i{font-style:normal;font-size:26px}
+.reco{display:grid;gap:14px;padding:20px 18px 22px;grid-column:1/-1}.reco .prog{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}.reco .prog i{display:block;height:100%;background:var(--gold)}
+.reco h2{font-size:22px}.reco .opts{display:grid;gap:8px}.reco .opts button{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:inherit;font-size:16px;text-align:left;padding:10px 14px;cursor:pointer}
+.reco .opts button[aria-pressed="true"]{border-color:var(--pine);background:var(--pine-soft);font-weight:700}.reco .opts button.any{color:var(--muted)}
+.reco .res{display:grid;gap:10px}.reco .rc{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface);text-align:left;font:inherit;cursor:pointer;width:100%}
+.reco .rc img,.reco .rc .ph{width:72px;height:72px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}.reco .rc b{display:block;font-size:16px}.reco .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.medn{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:8px 10px}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -708,6 +716,7 @@ label.btn{display:inline-block}
     <h1>어떤 약초를<br>찾으세요?</h1>
     <p class="hsub">심마니가 산에서 캔 약초부터 농부가 밭에서 키운 약초까지</p>
     <form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 약초 이름을 적어 주세요" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form>
+    <button type="button" class="recobtn" data-reco="1"><i aria-hidden="true">🧺</i><div><b>뭘 살지 모르겠다면, 골라 드릴게요</b><br><span>몇 가지만 답하면 쓰임새와 예산에 맞는 상품을 추천해 드려요</span></div></button>
     <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" data-go="herbs">약초 사전에서 찾아보기</button><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
     <form class="askbox" id="askBox" hidden>
       <label for="askQ"><b>어떤 약초인지 기억나는 대로 적어 주세요</b></label>
@@ -2068,6 +2077,7 @@ function fillAuction(id,refresh){
    <div class="dinfo">
     <div class="actions">${proofChip(a)}${a.grow?.startsWith("자연산")?'<span class="chip solid">심마니 자연산</span>':'<span class="chip ok">재배</span>'}<span class="chip ok">${esc(a.permit)}</span>${a.cert?`<span class="chip ok">산양삼 합격증 ${esc(a.cert)}</span>`:""}${a.appraise?`<span class="chip gold">${esc(a.appraise)}</span>`:""}${a.video?'<span class="chip ok">영상 인증</span>':""}${a.demo?'<span class="chip">예시</span>':""}</div>
     <h2 style="font-size:24px">${esc(a.title)}</h2>
+    ${medNote(a.item||a.cat,"뿌리 약초")}
     ${sellerRow(a.sellerId,a.title+" 문의")}
     <div class="board num">
       <div class="now"><span class="meta">${x.count?"현재가":"시작가"}</span><b>${won(x.cur)}</b></div>
@@ -2133,6 +2143,7 @@ function openProduct(id){
     ${sellerRow(p.sellerId,p.name+" 문의")}
     ${p.desc?`<p style="margin:0">${esc(p.desc)}</p>`:""}
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
+    ${medNote(p.item,p.cat)}
     <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${won(ship)}</dd><dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
     ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`:own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
    </div>
@@ -2455,10 +2466,14 @@ function healthQ(q){
   const cue=HEALTH_CUE.test(q);if(cue&&!kws.size)kws.add("효능·효과 질문");
   const KN={"간에":"간","눈에":"눈","폐에":"폐","잠이":"잠","열이":"열","살빼":"다이어트","머리아픈":"두통","몸에좋은":"몸에 좋은","장건강":"장 건강","간기능":"간","혈액 순환":"혈액순환"},out=[...new Set([...kws].map(k=>KN[k]||k))];
   return {hit:out.length>0,kws:out,herbs:[...new Set(herbs)]}}
+const MED_ITEMS=["산삼","산양삼","장뇌삼","인삼","천마","하수오","백수오","영지","상황","상황버섯","차가버섯","동충하초","복령","겨우살이","당귀","황기","감초","천궁","익모초","삼지구엽초","오가피","엄나무","헛개","꾸지뽕"];
+function medNote(item,cat){const h=findHerb(item||""),c=mcat(cat||"");
+  return (["뿌리 약초","말린 약초·차"].includes(c)||MED_ITEMS.includes(item)||(h&&["check","hanyak"].includes(h.st)))?'<div class="medn">임신·수유 중이거나 약을 드시는 분은 드시기 전에 의사·한의사와 상의하세요.</div>':""}
 function healthCard(hq){
   return `<div class="hnote" role="note"><b>몸 상태에 맞는 약초는 골라 드릴 수 없어요</b>
     <p>농마니에서 파는 약초와 산나물은 식품이라서, 어떤 증상에 좋은지 알려 드리거나 몸 상태에 맞춰 추천해 드릴 수 없습니다. 증상이 있으시면 의사나 한의사와 먼저 상담해 주세요.</p>
     ${hq.herbs.length?`<p class="meta">검색어에 들어 있는 품목 이름(${hq.herbs.map(esc).join(", ")})으로 찾은 상품만 아래에 보여 드립니다.</p>`:`<p class="meta">찾는 약초 이름을 알고 계시면 이름으로 검색해 주세요. 예: 도라지, 더덕, 오미자</p>`}
+    <button type="button" class="recobtn" data-reco="1" style="margin:4px 0 8px"><i aria-hidden="true">🧺</i><div><b>쓰임새로 골라 드릴게요</b><br><span>누구에게, 어떻게 드실지, 예산만 알려 주세요</span></div></button>
     <div><div class="meta" style="margin-bottom:6px">드시는 방법이나 받으실 분으로 골라 보시겠어요?</div><div class="usel">${USES.map(u=>`<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span></button>`).join("")}</div></div></div>`}
 const loggedQ=new Set();
 function logHealth(q){const hq=healthQ(q);if(!hq.hit||!S.db)return;const k=hq.kws.sort().join("|");if(loggedQ.has(k))return;loggedQ.add(k);
@@ -2467,6 +2482,116 @@ function renderHealthAdmin(){const el=$("#hqList");if(!el)return;const since=Dat
   S.healthQ.filter(x=>(x.at||0)>=since).forEach(x=>(x.kws||[]).forEach(k=>c.set(k,(c.get(k)||0)+1)));
   const top=[...c.entries()].sort((a,b)=>b[1]-a[1]).slice(0,15);
   el.innerHTML=top.length?top.map(([k,n])=>`<div><span>${esc(k)}</span><b class="num">${n}회</b></div>`).join(""):`<div class="empty">아직 기록이 없습니다.</div>`}
+
+/* ---------- 추천 도우미 ---------- */
+/* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
+const RECO_Q=[
+ {k:"who",o:["me","parents","holiday","biz"]},
+ {k:"how",o:["namul","soup","tea","infuse","raw"]},
+ {k:"budget",o:["20","50","100","999"]},
+ {k:"keep",o:["fresh","store"]},
+ {k:"prep",when:a=>a.how==="namul"||a.how==="soup",o:["easy","ok"]},
+ {k:"taste",when:a=>a.who==="parents"||a.who==="holiday",o:["rare","daily","new"]},
+ {k:"auc",when:a=>a.how==="raw"||a.taste==="rare",o:["no","yes"]},
+ {k:"size",when:a=>a.who==="me",o:["s","m","l"]},
+ {k:"must",multi:true,o:["wild","cert","proof","review","season"]},
+ {k:"region",o:["강원","경상","전라","충청","제주"]}
+];
+const RECO_BAND={"20":[0,20000],"50":[20000,50000],"100":[50000,100000],"999":[100000,1e12]};
+const RECO_REG={"강원":["강원"],"경상":["경북","경남","경상"],"전라":["전북","전남","전라"],"충청":["충북","충남","충청"],"제주":["제주"]};
+const RECO_GIFT=["산양삼","산삼","장뇌삼","천마","송이","능이","하수오","상황","상황버섯","영지","겨우살이","복령","꽃송이버섯"];
+const RECO_COMMON=["도라지","더덕","둥굴레","오미자","표고","대추","칡","구기자","결명자","생강","우엉","돼지감자","고사리","곰취","취나물","참나물","느타리"];
+const RECO_UNIT_G={"300g":300,"500g":500,"1kg":1000,"근(600g)":600,"5kg":5000};
+function recoQuestions(a){return RECO_Q.filter(q=>!q.when||q.when(a))}
+function recoSeason(cat,m){m=m||new Date().getMonth()+1;return cat==="산나물"?m>=3&&m<=6:cat==="버섯"?m>=8&&m<=10:cat==="열매"?m>=6&&m<=10:cat==="뿌리 약초"?(m>=10||m<=4):false}
+/* ctx: {products, auctions, aucCur(a)->number|null (null = closed), mcat(c), prep(item)->bool, rating(id)->{avg,n}} */
+function recoRun(a,ctx){
+  const items=[];
+  ctx.products.forEach(p=>{if(p.status==="판매중"&&p.stock>0&&!p.demo)items.push({kind:"p",x:p,cat:ctx.mcat(p.cat),price:(+p.price||0)+(p.form==="생물"?5000:3500)})});
+  if(a.auc==="yes")ctx.auctions.forEach(x=>{const c=ctx.aucCur(x);if(c!=null&&!x.demo)items.push({kind:"a",x,cat:"뿌리 약초",price:c})});
+  const proc=i=>i.kind==="p"&&i.x.cat==="가공품",form=i=>i.x.form||"";
+  const how={namul:i=>i.cat==="산나물"&&!proc(i),
+    soup:i=>["산나물","버섯","뿌리 약초"].includes(i.cat)&&!proc(i)&&i.kind==="p",
+    tea:i=>i.cat==="말린 약초·차"||(["건조","덖음·차"].includes(form(i))&&i.cat!=="산나물")||(proc(i)&&/차/.test(form(i))),
+    infuse:i=>((i.cat==="열매"||i.cat==="뿌리 약초")&&form(i)==="생물"&&i.kind==="p")||(proc(i)&&/청|잼/.test(form(i))),
+    raw:i=>i.kind==="a"||i.cat==="뿌리 약초"||i.cat==="열매"||proc(i)};
+  const must={wild:i=>String(i.x.grow||"").startsWith("자연산"),cert:i=>/인증/.test(i.x.grow||""),proof:i=>!!i.x.proofOk,
+    review:i=>{if(i.kind!=="p")return false;const r=ctx.rating(i.x.id);return r.n>0&&r.avg>=4},season:i=>recoSeason(i.cat)};
+  const fresh=i=>i.kind==="a"||form(i)==="생물";
+  const regOk=i=>{const r=RECO_REG[a.region];return !r||r.some(x=>String(i.x.region||"").startsWith(x))};
+  const bandHi=b=>(RECO_BAND[b]||[0,1e12])[1];
+  const tries=[{},{region:1},{region:1,must:1},{region:1,must:1,budget:1},{region:1,must:1,budget:1,keep:1}];
+  let out=[],relaxed={},strict=null;
+  for(const r of tries){
+    const hi=a.budget?(r.budget?bandHi({"20":"50","50":"100","100":"999","999":"999"}[a.budget]):bandHi(a.budget)):1e12;
+    out=items.filter(i=>(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
+    if(!strict)strict=new Set(out.map(i=>i.x.id));relaxed=r;if(out.length>=3)break}
+  if(out.length===strict.size)relaxed={};
+  const lo=a.budget?(RECO_BAND[a.budget]||[0])[0]:0;
+  out.forEach(i=>{let s=0;const why=[];const it=i.x.item||i.x.cat||"";
+    if(a.who==="parents"||a.who==="holiday"){if(!fresh(i)){s+=2;why.push("keeps")}if(RECO_GIFT.includes(it)){s+=3;why.push("gift")}if(i.x.proofOk)s+=1}
+    if(a.who==="biz"&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=1000){s+=2;why.push("bulk")}if(i.x.stock>=5)s+=1}
+    if(a.taste==="rare"&&(RECO_GIFT.includes(it)||String(i.x.grow||"").startsWith("자연산")||i.price>=50000)){s+=3;why.push("rare")}
+    if(a.taste==="daily"&&["산나물","말린 약초·차"].includes(i.cat)){s+=2}
+    if(a.taste==="new"&&!RECO_COMMON.includes(it)){s+=3;why.push("new")}
+    if(a.size&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if((a.size==="s"&&g&&g<=500)||(a.size==="m"&&g>=600&&g<=1000)||(a.size==="l"&&g>=1000)){s+=2;why.push("size")}}
+    if(a.prep==="easy"&&ctx.prep(it)){s-=4}
+    if(ctx.prep(it))why.push("prep");
+    if(i.price>=lo)s+=1;if(strict.has(i.x.id))s+=6;else why.unshift("wider");
+    if(String(i.x.grow||"").startsWith("자연산")){s+=1;why.push("wild")}
+    if(/인증/.test(i.x.grow||""))why.push("cert");
+    if(i.x.proofOk){s+=1;why.push("proof")}
+    if(recoSeason(i.cat)){s+=1;why.push("season")}
+    if(i.kind==="p"){const r=ctx.rating(i.x.id);if(r.n){s+=r.avg/2;why.push("review")}}
+    if(i.kind==="a")why.push("auction");
+    i.score=s;i.why=why});
+  out.sort((x,y)=>y.score-x.score||x.price-y.price);
+  return {list:out.slice(0,5),relaxed,total:out.length}}
+
+const RECO_KO={who:["누구를 위한 건가요?",{me:"내가 먹을 것",parents:"부모님·어르신 선물",holiday:"명절·감사 선물",biz:"가게·식당에서 쓸 것"}],
+ how:["어떻게 드실 건가요?",{namul:"나물 무침·볶음",soup:"국·찌개·전골",tea:"차로 우려 마시기",infuse:"청·담금주 담그기",raw:"그대로·생으로"}],
+ budget:["예산은 얼마인가요? (배송비 포함)",{"20":"2만 원 이하","50":"2~5만 원","100":"5~10만 원","999":"10만 원 이상"}],
+ keep:["언제 드실 건가요?",{fresh:"바로 먹을 거라 신선하게",store:"두고두고 먹을 거라 오래 보관"}],
+ prep:["손질은 어디까지 하실 수 있나요?",{easy:"바로 요리할 수 있는 것",ok:"데치거나 우려내는 건 괜찮아요"}],
+ taste:["받는 분이 어떤 걸 좋아하세요?",{rare:"귀한 것 (산삼·송이)",daily:"실용적인 것 (나물·차)",new:"처음 보는 특별한 것"}],
+ auc:["경매도 괜찮으세요?",{no:"바로 사고 싶어요",yes:"경매로 좋은 값에 사고 싶어요"}],
+ size:["몇 분이 드시나요?",{s:"1~2명",m:"3~4명",l:"5명 이상"}],
+ must:["꼭 원하는 게 있나요? (여러 개 고를 수 있어요)",{wild:"자연산만",cert:"무농약·유기농 인증",proof:"채취 증빙 확인된 것",review:"후기 좋은 것",season:"지금 제철인 것"}],
+ region:["원하는 산지가 있나요?",{"강원":"강원","경상":"경상","전라":"전라","충청":"충청","제주":"제주"}]};
+const RECO_WHY_KO={keeps:"오래 보관",gift:"선물하기 좋은 품목",bulk:"넉넉한 양",rare:"귀한 품목",new:"흔치 않은 품목",size:"식구 수에 맞는 양",prep:"데쳐서 드세요",wild:"자연산",cert:"인증 재배",proof:"채취 증빙 확인",season:"지금 제철",review:"후기 좋음",auction:"경매 중",wider:"조건을 넓혀 찾음"};
+const RC={a:{},i:0};
+function recoOpen(){RC.a={};RC.i=0;recoRender();const d=$("#dlg");if(!d.open)d.showModal();d.scrollTop=0}
+function recoCtx(){return {products:S.products,auctions:liveAucs(),aucCur:a=>{const x=auc(a);return x.phase==="진행중"?x.cur:null},mcat,prep:it=>findHerb(it)?.st==="caution",rating:ratingOf}}
+function recoRender(){const d=$("#dlg"),qs=recoQuestions(RC.a),note=`<p class="meta" style="margin:0">건강 상태에 맞춘 추천은 하지 않아요. 건강이 걱정되면 의사·한의사와 상의하세요.</p>`;
+  if(RC.i<qs.length){const q=qs[RC.i],[title,labels]=RECO_KO[q.k],cur=RC.a[q.k];
+    d.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button><div class="reco">
+      <div class="prog" aria-hidden="true"><i style="width:${Math.round(RC.i/qs.length*100)}%"></i></div>
+      <div class="meta">추천 도우미 · ${RC.i+1} / ${qs.length}</div><h2>${esc(title)}</h2>
+      <div class="opts">${q.o.map(v=>`<button type="button" data-rv="${esc(v)}" aria-pressed="${q.multi?(cur||[]).includes(v):cur===v}">${esc(labels[v])}</button>`).join("")}${q.multi?"":`<button type="button" class="any" data-rv="">상관없음</button>`}</div>
+      <div class="actions">${RC.i?`<button class="btn" type="button" id="rcBack">이전</button>`:""}${q.multi?`<button class="btn primary" type="button" id="rcNext">${(cur||[]).length?"다음":"상관없음, 다음"}</button>`:""}</div>${note}</div></div>`;
+    d.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{const v=b.dataset.rv;
+      if(q.multi){const a=new Set(RC.a[q.k]||[]);a.has(v)?a.delete(v):a.add(v);RC.a[q.k]=[...a];recoRender();return}
+      if(v)RC.a[q.k]=v;else delete RC.a[q.k];
+      RECO_Q.forEach(x=>{if(x.when&&!x.when(RC.a))delete RC.a[x.k]});RC.i++;recoRender()});
+  }else{const r=recoRun(RC.a,recoCtx()),lab=k=>RC.a[k]?RECO_KO[k][1][RC.a[k]]:"";
+    const rel=[r.relaxed.region&&RC.a.region?"산지":"",r.relaxed.must&&(RC.a.must||[]).length?"꼭 원하는 조건":"",r.relaxed.budget&&RC.a.budget?"예산":"",r.relaxed.keep&&RC.a.keep?"보관 방식":""].filter(Boolean);
+    d.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button><div class="reco">
+      <h2>${r.list.length?"이런 상품은 어떠세요?":"딱 맞는 상품이 아직 없어요"}</h2>
+      <div class="meta">${[lab("who"),lab("how"),lab("budget"),lab("keep")].filter(Boolean).map(esc).join(" · ")||"조건 없이 골랐어요"}</div>
+      ${rel.length&&r.list.length?`<div class="notice">조건을 조금 넓혀서 찾았어요: ${esc(rel.join(", "))}</div>`:""}
+      <div class="res">${r.list.map(i=>{const x=i.x,name=i.kind==="a"?x.title:x.name;
+        const why=[lab("how"),...i.why.map(w=>RECO_WHY_KO[w])].filter(Boolean);
+        return `<button type="button" class="rc" data-rcp="${i.kind}:${esc(x.id)}">${x.photo?`<img src="${esc(x.photo)}" alt="">`:`<span class="ph"></span>`}<div><b>${esc(name)}</b>
+          <span class="meta num">${esc(shopName(x.sellerId))} · ${i.kind==="a"?`현재가 ${won(i.price)}`:`${won(x.price)}/${esc(x.unit)} · 배송비 포함 ${won(i.price)}`}</span>
+          <div class="why">${why.slice(0,5).map(w=>`<span class="chip ${w==="데쳐서 드세요"?"gold":"ok"}">${esc(w)}</span>`).join("")}</div></div></button>`}).join("")}</div>
+      ${r.list.length?"":`<p style="margin:0">심마니와 농부에게 직접 구해 달라고 요청할 수 있어요.</p>`}
+      <div class="actions"><button class="btn" type="button" id="rcAgain">다시 고르기</button><button class="btn ${r.list.length?"":"primary"}" type="button" id="rcReq">채취 의뢰하기</button></div>${note}</div></div>`;
+    d.querySelectorAll("[data-rcp]").forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.rcp.split(":");k==="a"?openAuction(id):openProduct(id)});
+    $("#rcAgain").onclick=()=>{RC.a={};RC.i=0;recoRender()};$("#rcReq").onclick=()=>{d.close();go("request")}}
+  d.querySelector(".close").onclick=()=>d.close();
+  const bk=$("#rcBack");if(bk)bk.onclick=()=>{RC.i=Math.max(0,RC.i-1);recoRender()};
+  const nx=$("#rcNext");if(nx)nx.onclick=()=>{RC.i++;recoRender()}}
+document.addEventListener("click",e=>{if(e.target.closest("[data-reco]"))recoOpen()});
 
 /* ---------- 생활로 고르기 · 입고 알림 ---------- */
 const USE_FOOD=["더덕","도라지","잔대","마","우엉","연근","곰취","두릅","참나물","취나물","고사리","표고","송이","능이","느타리"];
@@ -2479,7 +2604,7 @@ const USES=[
   {k:"first",t:"약초가 처음이라면",d:"식탁에서 익숙한 품목을 부담 없는 양으로",f:p=>USE_FIRST.includes(p.item)&&(UNIT_G[p.unit]||1000)<=1000}];
 const useList=k=>{const u=USES.find(x=>x.k===k);return u?live().filter(p=>p.stock>0&&u.f(p)):[]};
 function renderUses(){const el=$("#homeUses");if(!el)return;el.innerHTML=USES.map(u=>{const n=useList(u.k).length;return `<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span><em class="num${n?"":" soon"}">${n?`상품 ${n}개 보기 →`:"상품 준비 중"}</em></button>`}).join("")}
-function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<span class="lbl">어떻게 드세요?</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
+function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<button type="button" data-reco="1" style="font-weight:700;border-color:var(--gold);background:var(--gold-soft)">🧺 추천받기</button><span class="lbl">어떻게 드세요?</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
 const soonIco=(h,soon)=>soon?h.replace('class="ico"','class="ico soon"').replace(/<\/button>$/,"<small>준비 중</small></button>"):h;
 const myAlert=(key,kind)=>S.alerts.find(a=>a.uid===S.uid&&a.key===key&&a.kind===kind);
 const alertBtn=(key,kind)=>!key?"":myAlert(key,kind)?`<button class="btn" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 알림 신청됨 · 끄기</button>`:`<button class="btn primary" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 들어오면 알려 주세요</button>`;
