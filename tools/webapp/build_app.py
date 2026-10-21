@@ -35,6 +35,11 @@ patch("</head><body>", HEAD + "</head><body>\n<script src=\"vendor/supabase.js\"
 
 patch('<div class="logo"><b>', '<div class="logo" translate="no"><b>', "logo no-translate")
 
+# language switch at the top for overseas visitors
+patch('<div class="who" id="who"></div>',
+      '<a class="nmlang" href="global.html" translate="no" lang="en" aria-label="English, 中文">🌐 EN · 中文</a>\n    <div class="who" id="who"></div>', "lang switch")
+patch(".who{display:flex;", ".nmlang{border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:700;color:var(--pine);text-decoration:none;white-space:nowrap;line-height:1.3}.nmlang:hover{border-color:var(--pine)}@media(max-width:480px){.logo small{display:none}.nmlang{padding:4px 9px}}\n.who{display:flex;", "lang css")
+
 # signed-out visitors can browse; writing opens the sign-in sheet instead of a dead button
 patch('function applyWrite(){document.querySelectorAll(".needWrite").forEach(b=>{b.disabled=!S.canWrite||!S.uid;b.title=b.disabled?"로그인과 참여 권한이 필요합니다":""})}',
       'function applyWrite(){document.querySelectorAll(".needWrite").forEach(b=>{b.disabled=!!S.uid&&!S.canWrite;b.title=b.disabled?"이 계정은 이 작업을 할 수 없습니다":""})}',
