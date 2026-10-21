@@ -1044,6 +1044,18 @@ label.btn{display:inline-block}
     <div class="col">
       <div class="panel"><h3>문제 신고</h3><div class="list" id="disputes"></div></div>
       <div class="panel"><h3>약초 사진 확인 대기</h3><div class="list" id="photoQueue"></div><div class="actions" style="margin-top:8px"><button class="btn sm" type="button" id="thumbFill">승인된 사진으로 사전 목록 사진 채우기</button><span class="meta" id="thumbNote"></span></div></div>
+      <div class="panel"><h3>정식 오픈 전 할 일</h3><p class="meta" style="margin:0 0 8px">운영자에게만 보입니다.</p>
+        <ul style="margin:0;padding-left:18px;display:grid;gap:4px">
+          <li><s>상표 출원</s> · ‘농마니’ 35류·31류 출원 완료 (제40-2026-0219569호), 심사 진행 중</li>
+          <li><b>사업자등록·통신판매업 신고:</b> 전자상거래 소매 중개업(525103)으로 등록 후 통신판매업 신고</li>
+          <li><b>결제:</b> 지금은 테스트 결제. PG 에스크로와 지급대행(판매자·산주 정산), 해외 카드 결제</li>
+          <li><b>입찰 검증:</b> 지금은 브라우저에서 계산. 정식 오픈 전 서버 시간 기준 검증으로 바꾸기</li>
+          <li><b>본인 확인:</b> 입찰 전 휴대폰 본인 인증, 미결제 횟수에 따른 입찰 제한</li>
+          <li><b>카카오 로그인:</b> 카카오 개발자 앱 등록 후 Supabase에 연결</li>
+          <li><b>자동 번역:</b> 번역 API 키 발급 후 상품 설명·메시지 번역</li>
+          <li><b>감정서 원칙:</b> 자연산 산삼 민간 감정서를 어디까지 믿을지 운영 원칙 정하기</li>
+          <li><b>베타 끄기:</b> 위 결제·사업자 준비가 끝나면 설정에서 베타를 끄면 실제 주문·입찰이 열림</li>
+        </ul></div>
       <div class="panel"><h3>채취 증빙 확인</h3><p class="meta" style="margin:0 0 8px">서류 사진은 운영자만 봅니다. 이름·지번이 출품 정보와 맞는지 보고 확인해 주세요.</p><div class="list" id="proofQueue"></div></div>
       <div class="panel"><h3>산주 찾기 요청</h3><p class="meta" style="margin:0 0 8px">산림조합에 지번으로 산주를 문의하고, 동의서를 받도록 연결합니다.</p><div class="list" id="landQueue"></div></div>
       <div class="panel"><h3>약초 사전 오류 신고</h3><div class="list" id="herbReports"></div></div>
@@ -1085,6 +1097,16 @@ label.btn{display:inline-block}
       <div class="tbl" style="margin-top:12px"><table><thead><tr><th>현재가</th><th class="r">최소 입찰 단위</th></tr></thead><tbody id="incTable"></tbody></table></div>
     </div>
     <div>
+      <h3>채취 근거</h3>
+      <ul>
+        <li>모든 출품에는 "법을 지켜 채취·생산했습니다" 확인이 필요합니다. 남의 산에서 허락 없이 캔 것은 팔 수 없습니다.</li>
+        <li>산양삼·장뇌삼은 생산신고번호나 품질검사 합격증 번호가 있어야 합니다.</li>
+        <li>자연산 산삼과 100만 원 이상 상품은 먼저 올리고, <b>정산 전 14일 안</b>에 채취 근거를 내면 됩니다. 허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다.</li>
+        <li>근거가 확인되면 "채취 증빙 확인" 배지가 붙고 목록 앞쪽에 보입니다. 기한 안에 근거가 없으면 구매자에게 환불됩니다.</li>
+        <li>산주를 모르면 출품 화면의 "산주 찾기"로 요청하세요. 산림조합을 통해 연결해 드립니다.</li>
+      </ul>
+    </div>
+    <div>
       <h3>검수 방법</h3>
       <div class="tbl"><table><thead><tr><th>시작가</th><th>판매자가 낼 것</th><th>확인</th></tr></thead><tbody>
         <tr><td>30만 원 미만 (마켓 상품 포함)</td><td>실물 사진, 채취 근거</td><td>AI 1차 검수 뒤 운영자가 훑어봄. 인증 판매자는 검수 없이 바로 등록</td></tr>
@@ -1113,31 +1135,6 @@ label.btn{display:inline-block}
     <div>
       <h3>판매자가 실제로 받는 돈</h3>
       <div class="tbl"><table><thead><tr><th>예시</th><th class="r">판매 금액</th><th class="r">빠지는 돈 합계</th><th class="r">판매자 수령액</th></tr></thead><tbody id="exTable"></tbody></table></div>
-    </div>
-    <div>
-      <h3>숨고·크몽과 다른 점</h3>
-      <div class="tbl"><table>
-        <thead><tr><th>항목</th><th>숨고</th><th>크몽</th><th>농마니</th></tr></thead>
-        <tbody>
-          <tr><td>판매 방식</td><td>요청서 → 견적</td><td>판매자 상품 판매</td><td>경매 + 마켓 + 채취 의뢰 견적</td></tr>
-          <tr><td>견적 보낼 때</td><td>견적마다 비용 (고수 체감 건당 약 1,600~8,000원)</td><td>해당 없음</td><td>무료. 거래가 성사될 때만 수수료</td></tr>
-          <tr><td>판매자 수수료</td><td>건별 견적 비용 중심</td><td>16.4%(70만 원 이하) + 결제 3.3% + 부가세</td><td>마켓 10% + 결제 3.3%, 경매 낙찰 8%부터 단계 인하</td></tr>
-          <tr><td>구매자 수수료</td><td>없음</td><td>주문 금액의 3.5% (최소 300원, 최대 105,000원)</td><td>없음 (낙찰가 + 배송비만)</td></tr>
-          <tr><td>가격이 정해지는 방식</td><td>고수가 부름</td><td>판매자가 정함</td><td>희소 품목은 경매로 시장이 정함</td></tr>
-          <tr><td>신뢰 장치</td><td>후기·고수 정보</td><td>후기·안전결제</td><td>채취 근거·합격증 검수, 사진 필수, 안전결제, 공개 입찰 기록</td></tr>
-        </tbody>
-      </table></div>
-      <p class="meta" style="margin-top:8px">숨고 견적 비용은 공식 요금표가 아니라 판매자 후기 기준이고, 크몽 요율은 2026년 정리 자료 기준입니다. 정식 오픈 전에 다시 확인하세요.</p>
-    </div>
-    <div>
-      <h3>정식 서비스 전에 할 일</h3>
-      <ul>
-        <li><b>이름:</b> 정식 이름 "농부와 심마니", 애칭 "농마니"로 키프리스 검색과 변리사 상담 후 로고와 함께 출원하세요. "농심"이라는 줄임말은 라면 회사의 유명 상표와 겹치니 어디에도 쓰지 않습니다.</li>
-        <li><b>결제:</b> 지금은 테스트 결제입니다. PG 에스크로(토스페이먼츠·포트원)와 통신판매중개업 신고가 필요합니다.</li>
-        <li><b>입찰 검증:</b> 지금은 브라우저에서 입찰 금액과 마감을 계산합니다. 정식 서비스는 서버 시간 기준으로 입찰을 검증해야 합니다.</li>
-        <li><b>본인 확인:</b> 입찰 전 휴대폰 본인 인증, 낙찰 후 미결제 횟수에 따른 입찰 제한.</li>
-        <li><b>산양삼·자연산 산삼:</b> 산양삼은 품질검사 합격증이 있어야 유통할 수 있습니다. 자연산 산삼 감정은 민간 감정이라 감정서의 신뢰도를 운영 원칙으로 정해야 합니다.</li>
-      </ul>
     </div>
   </div>
 </section>
