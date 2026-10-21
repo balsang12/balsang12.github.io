@@ -3,3 +3,4 @@
 -- proofOk 배지는 운영자만 바꿀 수 있음 (마이그레이션 proof_badge_admin_only, 트리거 docs_proof_guard)
 -- v66: sites(내 채취지) inbox, actor 'by'. nm_proof_guard: proofOk는 운영자 또는 판매자 본인의 확인된·유효한 채취지(siteRef)일 때만,
 --      bizOk(가공품 영업 신고 번호 확인)는 운영자만, 판매자가 채취지를 고치면 다시 '대기'. (마이그레이션 harvest_sites_and_biz_check, site_edits_need_review)
+-- v68: flags(직거래 유도 신고) inbox. nm_suspend_guard: sellerchecks.suspended 판매자는 상품·경매를 새로 올리거나 다시 열 수 없음 (마이그레이션 leak_flags, suspended_sellers_cannot_list)

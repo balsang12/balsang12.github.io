@@ -430,6 +430,7 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .reco .res{display:grid;gap:10px}.reco .rc{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface);text-align:left;font:inherit;cursor:pointer;width:100%}
 .reco .rc img,.reco .rc .ph{width:72px;height:72px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}.reco .rc b{display:block;font-size:16px}.reco .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 .medn{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:8px 10px}
+.cguard{font-size:13px;color:var(--muted);background:var(--sunk);padding:8px 12px;border-bottom:1px solid var(--line)}.cguard button{border:0;background:none;padding:0 0 0 4px;font:inherit;font-weight:700;color:var(--berry);text-decoration:underline;cursor:pointer}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -1071,6 +1072,7 @@ label.btn{display:inline-block}
           <li><b>감정서 원칙:</b> 자연산 산삼 민간 감정서를 어디까지 믿을지 운영 원칙 정하기</li>
           <li><b>베타 끄기:</b> 위 결제·사업자 준비가 끝나면 설정에서 베타를 끄면 실제 주문·입찰이 열림</li>
         </ul></div>
+      <div class="panel"><h3>직거래 유도 신고</h3><div class="list" id="flagQueue"></div></div>
       <div class="panel"><h3>새로 올라온 것 (사후 확인)</h3><p class="meta" style="margin:0 0 8px">바로 판매가 시작된 상품·경매입니다. 위험한 것이 위에 옵니다. 문제가 있으면 내리세요.</p><div class="actions" style="margin-bottom:8px"><button class="btn sm" type="button" id="postAll">가공품 빼고 모두 확인함</button></div><div class="list" id="postQueue"></div></div>
       <div class="panel"><h3>채취지 확인</h3><p class="meta" style="margin:0 0 8px">판매자가 등록한 산입니다. 한 번 확인하면 그 산에서 캔 산삼은 근거가 자동으로 확인됩니다.</p><div class="list" id="siteQueue"></div></div>
       <div class="panel"><h3>채취 증빙 확인</h3><p class="meta" style="margin:0 0 8px">서류 사진은 운영자만 봅니다. 이름·지번이 출품 정보와 맞는지 보고 확인해 주세요.</p><div class="list" id="proofQueue"></div></div>
@@ -1112,6 +1114,16 @@ label.btn{display:inline-block}
         <li>입찰자가 없으면 유찰이고, 같은 물건은 출품료 없이 다음 경매에 한 번 다시 올릴 수 있습니다.</li>
       </ol>
       <div class="tbl" style="margin-top:12px"><table><thead><tr><th>현재가</th><th class="r">최소 입찰 단위</th></tr></thead><tbody id="incTable"></tbody></table></div>
+    </div>
+    <div>
+      <h3>거래 원칙</h3>
+      <ul>
+        <li>결제는 농마니 안전결제로만 합니다. 물건이 안 오거나 상하면 대금을 돌려받을 수 있는 것은 안전결제뿐입니다.</li>
+        <li>대화에서는 전화번호·계좌번호·링크·다른 메신저 아이디를 보낼 수 없습니다.</li>
+        <li>농마니 밖 거래를 권하면 신고할 수 있습니다. 확인되면 경고하고, 다시 신고되면 판매가 정지됩니다.</li>
+        <li>후기, 인증 판매자 등급, 채취 증빙 배지는 농마니에서 한 거래로만 쌓입니다.</li>
+        <li><b>단골 혜택:</b> 같은 손님이 같은 판매자에게 3번째로 주문하는 것부터 판매 수수료가 10%에서 7%로 내려갑니다.</li>
+      </ul>
     </div>
     <div>
       <h3>채취 근거</h3>
@@ -1222,7 +1234,10 @@ async function betaStop(key,kind){toast("지금은 베타 기간이라 실제 �
 const WIN_TIERS=[[1000000,0.08],[5000000,0.05],[Infinity,0.03]];
 function winFee(h){let fee=0,prev=0;for(const [cap,r] of WIN_TIERS){if(h>prev){fee+=(Math.min(h,cap)-prev)*r}prev=cap}return Math.round(fee)}
 function aucNet(h){const wf=winFee(h),vat=Math.round(wf*VAT),pg=Math.round(h*PG);return {wf,vat,pg,net:h-wf-vat-pg}}
-function shopNet(total){const f=Math.round(total*FEE),vat=Math.round(f*VAT),pg=Math.round(total*PG);return {f,vat,pg,net:total-f-vat-pg}}
+const REPEAT_FEE=0.07,REPEAT_FROM=3;
+/* 같은 손님이 같은 판매자에게 3번째 주문부터 판매 수수료 7% (주문 기록으로 계산하므로 누가 고칠 수 없음) */
+function ordRate(o){if(!o)return FEE;const prior=S.orders.filter(x=>x.id!==o.id&&x.buyerId===o.buyerId&&x.sellerId===o.sellerId&&(x.createdAt||0)<(o.createdAt||0)&&!["취소","환불"].includes(x.status)).length;return prior>=REPEAT_FROM-1?REPEAT_FEE:FEE}
+function shopNet(total,rate){const f=Math.round(total*(rate??FEE)),vat=Math.round(f*VAT),pg=Math.round(total*PG);return {f,vat,pg,net:total-f-vat-pg}}
 const AUC_DOW=6,AUC_HOUR=20,MIN_LEAD=6*3600*1000;
 const DEF_ANCHOR=Date.parse("2026-10-31T20:00:00+09:00");
 function aucCfg(){let s={};try{s=S.site||{}}catch(e){}return {cycle:s.aucCycle==="weekly"?"weekly":"biweekly",anchor:+s.aucAnchor||DEF_ANCHOR}}
@@ -1678,7 +1693,7 @@ function auc(a){
   const offerAt=Math.max(a.offerAt||0,end);
   return {valid,top,end,ended,minNext,ranked,winner,letters,phase,buyNowHit,cur:top?top.amount:a.start,count:valid.length,bidders:ranked.length,payBy:offerAt+PAY_LIMIT};
 }
-const liveAucs=()=>S.auctions.filter(a=>a.status==="진행중"&&!auc(a).ended);
+const liveAucs=()=>S.auctions.filter(a=>a.status==="진행중"&&!auc(a).ended&&!(S.checks?.[a.sellerId]?.suspended));
 const bidderLabel=(x,id)=>id===S.uid?"나":"입찰자 "+(x.letters[id]||"?");
 
 /* ---------- 신뢰·수령 확인 ---------- */
@@ -1766,7 +1781,8 @@ function card(p){
     <div class="seller"><span>${esc(shopName(p.sellerId))}${certChip(p.sellerId)}</span><span class="num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} (${r.n})`:"후기 없음"}</span></div>
    </div></button>`;
 }
-const live=()=>S.products.filter(p=>p.status==="판매중");
+const suspended=id=>!!S.checks?.[id]?.suspended;
+const live=()=>S.products.filter(p=>p.status==="판매중"&&!suspended(p.sellerId));
 function emptyBox(msg,btns){return `<div class="empty" style="grid-column:1/-1">${msg}${btns?`<div class="actions" style="justify-content:center;margin-top:10px">${btns}</div>`:""}</div>`}
 function statusChip(s){const ok=["정산완료","판매중","선택됨","진행중","낙찰"],bad=["취소","반려","유찰","패찰"];return `<span class="chip ${ok.includes(s)?"ok":bad.includes(s)?"hot":"gold"}">${esc(s)}</span>`}
 function flow(status){const i=OSTEPS.indexOf(status);return `<div class="flow">${OSTEPS.map((s,j)=>`<span class="${j<=i?"on":""}">${s}</span>`).join("")}</div>`}
@@ -1910,14 +1926,16 @@ function renderSeller(){renderSites();
   const myA=S.auctions.filter(a=>a.sellerId===S.uid);
   const aucDone=myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");
   const sales=myO.filter(o=>!["취소","환불"].includes(o.status)).reduce((s,o)=>s+o.total,0)+aucDone.reduce((s,o)=>s+o.x.winner.amount,0);
-  const pend=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total).net,0)+aucDone.filter(o=>dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
-  const done=myO.filter(o=>o.status==="정산완료").reduce((s,o)=>s+shopNet(o.total).net,0)+aucDone.filter(o=>o.a.deal==="정산완료").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
+  const pend=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+aucDone.filter(o=>dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
+  const done=myO.filter(o=>o.status==="정산완료").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+aucDone.filter(o=>o.a.deal==="정산완료").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
   $("#sellerStats").innerHTML=`<div class="stat"><span class="meta">총 판매 (경매 포함)</span><b class="num">${won(sales)}</b></div><div class="stat"><span class="meta">진행 중 경매</span><b class="num">${myA.filter(a=>auc(a).phase==="진행중").length}건</b></div><div class="stat"><span class="meta">정산 예정 (수수료 제외)</span><b class="num">${won(pend)}</b></div><div class="stat"><span class="meta">정산 완료</span><b class="num">${won(done)}</b></div>`;
   $("#sellerAucs").innerHTML=S.uid?sellerAucHTML():`<div class="empty">로그인하면 내 경매가 보입니다.</div>`;
   $("#sellerOrders").innerHTML=myO.length?myO.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
     <div class="meta num">${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}</div>
     ${o.delivery==="fwd"?`<div class="notice">해외 손님 · <b>배송대행지</b>로 보내는 주문입니다. 아래 메모의 대행업체 회원번호(사서함 번호)를 받는 분 이름 옆에 꼭 적어 주세요.</div>`:o.lang?`<div class="meta">해외 손님 주문 (한국 내 배송)</div>`:""}
     ${o.memo?`<div class="meta">배송 메모: ${esc(o.memo)}</div>`:""}
+    ${ordRate(o)<FEE?`<div class="meta"><span class="chip ok">단골 주문</span> 이 손님의 ${REPEAT_FROM}번째 이상 주문이라 수수료가 7%입니다.</div>`:""}
+    ${o.status==="결제완료"?`<div class="meta">송장에는 개인 휴대폰 대신 택배사 <b>안심번호</b>를 적어 주세요.</div>`:""}
     ${o.status==="결제완료"?`<div class="actions"><select id="cr-${o.id}" aria-label="택배사"><option>CJ대한통운</option><option>우체국택배</option><option>한진택배</option><option>롯데택배</option></select><input id="tr-${o.id}" placeholder="송장번호" aria-label="송장번호"><button class="btn sm primary" data-act="ship" data-id="${o.id}">발송 처리</button></div>`:o.tracking?`<div class="meta">송장 ${esc(o.courier)} ${esc(o.tracking)}</div>`:""}
     </div>`).join(""):`<div class="empty">아직 받은 주문이 없습니다.</div>`;
   const open=S.requests.filter(r=>r.status==="모집중"&&r.buyerId!==S.uid).sort((a,b)=>b.createdAt-a.createdAt);
@@ -1947,7 +1965,7 @@ function renderAdmin(){
   const aucDeals=S.auctions.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");
   const winIncome=aucDeals.reduce((s,o)=>s+winFee(o.x.winner.amount),0);
   const shopGmv=S.orders.filter(o=>o.status!=="취소").reduce((s,o)=>s+o.total,0);
-  $("#adminStats").innerHTML=`<div class="stat"><span class="meta">출품료 수입</span><b class="num">${won(listIncome)}</b></div><div class="stat"><span class="meta">낙찰 수수료 (부가세 제외)</span><b class="num">${won(winIncome)}</b></div><div class="stat"><span class="meta">마켓 수수료 (10%)</span><b class="num">${won(shopGmv*FEE)}</b></div><div class="stat"><span class="meta">진행 중 경매 / 판매자</span><b class="num">${liveAucs().length}건 / ${Object.keys(S.sellers).length}명</b></div>`;
+  $("#adminStats").innerHTML=`<div class="stat"><span class="meta">출품료 수입</span><b class="num">${won(listIncome)}</b></div><div class="stat"><span class="meta">낙찰 수수료 (부가세 제외)</span><b class="num">${won(winIncome)}</b></div><div class="stat"><span class="meta">마켓 수수료 (10%, 단골 7%)</span><b class="num">${won(S.orders.filter(o=>o.status!=="취소").reduce((s,o)=>s+o.total*ordRate(o),0))}</b></div><div class="stat"><span class="meta">진행 중 경매 / 판매자</span><b class="num">${liveAucs().length}건 / ${Object.keys(S.sellers).length}명</b></div>`;
   $("#pendAuc").innerHTML=pendA.length?pendA.map(a=>{const flag=CLAIMS.filter(w=>(a.title+a.desc).includes(w));
     return `<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b><span class="meta">${esc(shopName(a.sellerId))}</span></div>
     ${a.photo?`<img src="${esc(a.photo)}" alt="출품 사진" style="max-height:160px;width:auto;border-radius:8px;justify-self:start">`:'<div class="meta">사진 없음 (예시 데이터)</div>'}
@@ -1966,10 +1984,10 @@ function renderAdmin(){
     ${aiNote(p.aiCheck)}${S.sample?`<div class="actions"><button class="btn sm" data-act="aiP" data-id="${p.id}">${p.aiCheck?"AI 다시 검수":"AI 1차 검수"}</button></div>`:""}
     <div class="actions"><button class="btn sm primary" data-act="approve" data-id="${p.id}">승인</button><input id="rj-${p.id}" placeholder="반려 사유" aria-label="반려 사유"><button class="btn sm danger" data-act="reject" data-id="${p.id}">반려</button></div></div>`}).join(""):`<div class="empty">검수할 상품이 없습니다.</div>`;
   const payO=S.orders.filter(o=>ordEff(o)==="수령확인"),payA=aucDeals.filter(o=>dealEff(o.a)==="수령확인");
-  $("#payouts").innerHTML=(payA.length||payO.length)?payA.map(({a,x})=>{const n=aucNet(x.winner.amount);return `<div class="item win"><div class="itop"><b>${esc(shopName(a.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">경매 · ${esc(a.title)} · 낙찰 ${won(x.winner.amount)} · 낙찰수수료 ${won(n.wf)} · 부가세 ${won(n.vat)} · 결제 ${won(n.pg)}</div><div class="actions"><button class="btn sm primary" data-act="payoutA" data-id="${a.id}">정산 완료 처리</button></div></div>`}).join("")+payO.map(o=>{const n=shopNet(o.total);return `<div class="item sunk"><div class="itop"><b>${esc(shopName(o.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">마켓 · ${esc(o.productName)} · 주문 ${won(o.total)} · 수수료 ${won(n.f)} · 부가세 ${won(n.vat)} · 결제 ${won(n.pg)}</div><div class="actions"><button class="btn sm primary" data-act="payout" data-id="${o.id}">정산 완료 처리</button></div></div>`}).join(""):`<div class="empty">정산할 거래가 없습니다.</div>`;
+  $("#payouts").innerHTML=(payA.length||payO.length)?payA.map(({a,x})=>{const n=aucNet(x.winner.amount);return `<div class="item win"><div class="itop"><b>${esc(shopName(a.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">경매 · ${esc(a.title)} · 낙찰 ${won(x.winner.amount)} · 낙찰수수료 ${won(n.wf)} · 부가세 ${won(n.vat)} · 결제 ${won(n.pg)}</div><div class="actions"><button class="btn sm primary" data-act="payoutA" data-id="${a.id}">정산 완료 처리</button></div></div>`}).join("")+payO.map(o=>{const n=shopNet(o.total,ordRate(o));return `<div class="item sunk"><div class="itop"><b>${esc(shopName(o.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">마켓 · ${esc(o.productName)} · 주문 ${won(o.total)} · 수수료 ${won(n.f)} · 부가세 ${won(n.vat)} · 결제 ${won(n.pg)}</div><div class="actions"><button class="btn sm primary" data-act="payout" data-id="${o.id}">정산 완료 처리</button></div></div>`}).join(""):`<div class="empty">정산할 거래가 없습니다.</div>`;
   const dA=S.auctions.filter(a=>a.deal==="분쟁"),dO=S.orders.filter(o=>o.status==="분쟁");
   $("#disputes").innerHTML=(dA.length||dO.length)?dA.map(a=>`<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b><span class="meta">${esc(shopName(a.sellerId))}</span></div><div class="meta">신고: ${esc(a.disputeReason)} · ${day(a.disputeAt)}</div><div class="actions"><button class="btn sm" data-act="resolveA" data-id="${a.id}">문제 없음, 정산 진행</button><button class="btn sm danger" data-act="refundA" data-id="${a.id}">판매자 책임, 환불</button></div></div>`).join("")+dO.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b><span class="meta">${esc(shopName(o.sellerId))}</span></div><div class="meta">신고: ${esc(o.disputeReason)} · ${day(o.disputeAt)}</div><div class="actions"><button class="btn sm" data-act="resolveO" data-id="${o.id}">문제 없음, 정산 진행</button><button class="btn sm danger" data-act="refundO" data-id="${o.id}">판매자 책임, 환불</button></div></div>`).join(""):`<div class="empty">신고된 거래가 없습니다.</div>`;
-  $("#sellerTrust").innerHTML=Object.keys(S.sellers).length?Object.entries(S.sellers).map(([id,sl])=>{const t=trust(id);return `<div class="item sunk"><div class="itop"><b>${esc(sl.shopName)}</b>${t.cert?'<span class="chip ok">인증 판매자</span>':t.lost?'<span class="chip hot">환불 이력</span>':'<span class="chip">일반</span>'}</div><div class="meta num">${esc(sl.role||"")} · 완료 거래 ${t.done}건 · 판매자 책임 환불 ${t.lost}건</div>${sl.regNo?`<div class="meta">${esc(sl.regType||"경영체")} ${esc(sl.regNo)}${S.checks[id]?.regOk?" · 확인됨":" · 확인 대기"}</div>`:""}${sl.biz?`<div class="meta">${esc(sl.biz)}</div>`:""}<div class="actions"><button class="btn sm" data-act="verify" data-id="${esc(id)}">${S.checks[id]?.verified?"조합 확인 인증 해제":"조합·작목반 확인서로 인증"}</button>${sl.regNo?`<button class="btn sm" data-act="regOk" data-id="${esc(id)}">${S.checks[id]?.regOk?"경영체 확인 해제":"경영체 번호 확인함"}</button>`:""}</div></div>`}).join(""):`<div class="empty">아직 판매자가 없습니다.</div>`;
+  $("#sellerTrust").innerHTML=Object.keys(S.sellers).length?Object.entries(S.sellers).map(([id,sl])=>{const t=trust(id);return `<div class="item sunk"><div class="itop"><b>${esc(sl.shopName)}</b>${t.cert?'<span class="chip ok">인증 판매자</span>':t.lost?'<span class="chip hot">환불 이력</span>':'<span class="chip">일반</span>'}</div><div class="meta num">${esc(sl.role||"")} · 완료 거래 ${t.done}건 · 판매자 책임 환불 ${t.lost}건</div>${sl.regNo?`<div class="meta">${esc(sl.regType||"경영체")} ${esc(sl.regNo)}${S.checks[id]?.regOk?" · 확인됨":" · 확인 대기"}</div>`:""}${sl.biz?`<div class="meta">${esc(sl.biz)}</div>`:""}<div class="actions"><button class="btn sm" data-act="verify" data-id="${esc(id)}">${S.checks[id]?.verified?"조합 확인 인증 해제":"조합·작목반 확인서로 인증"}</button><button class="btn sm ${S.checks[id]?.suspended?"":"danger"}" data-act="suspend" data-id="${esc(id)}">${S.checks[id]?.suspended?"판매 정지 해제":"판매 정지"}</button>${sl.regNo?`<button class="btn sm" data-act="regOk" data-id="${esc(id)}">${S.checks[id]?.regOk?"경영체 확인 해제":"경영체 번호 확인함"}</button>`:""}</div></div>`}).join(""):`<div class="empty">아직 판매자가 없습니다.</div>`;
   const pq=(S.pendPhotos||[]).sort((a,b)=>a.createdAt-b.createdAt);
   $("#photoQueue").innerHTML=pq.length?pq.map(p=>`<div class="item sunk"><div class="itop"><b><button class="lk" type="button" data-dict="${esc(p.herb)}" style="border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline">${esc(p.herb)}</button> · ${esc(p.part||"")}</b><span class="meta">${esc(p.credit||"")} · ${esc(p.source||"")}</span></div>
     ${/^data:image\//.test(p.data||"")?`<img src="${esc(p.data)}" alt="${esc(p.herb)} 사진" style="max-height:180px;width:auto;border-radius:8px;justify-self:start">`:""}${p.caption?`<div class="meta">${esc(p.caption)}</div>`:""}
@@ -2015,6 +2033,14 @@ function renderAdmin(){
     guard(()=>c==="auctions"?S.db.doc("auctions/"+id).update({status:"반려",rejectReason:"운영자 사후 확인에서 내림",reviewedAt:Date.now()}):S.db.doc("products/"+id).update({status:"판매중지",reviewedAt:Date.now()}),"내렸습니다")});
   $("#postAll").onclick=async()=>{const list=post.filter(([c,x])=>x.cat!=="가공품");if(!list.length){toast("한꺼번에 확인할 것이 없습니다");return}
     await guard(async()=>{for(const [c,x] of list)await pOk(c,x.id)},`${list.length}건을 확인했습니다`)};
+  const fq=(S.flags||[]).filter(x=>x.status==="접수").sort((a,b)=>a.createdAt-b.createdAt);
+  $("#flagQueue").innerHTML=fq.length?fq.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(nameOf(x.target))}</b><span class="meta">신고: ${esc(nameOf(x.by))} · ${day(x.createdAt)}</span></div><div>${esc(x.text||"")}</div>
+    <div class="meta">이전 신고 ${(S.flags||[]).filter(y=>y.target===x.target&&y.id!==x.id).length}건${suspended(x.target)?" · 판매 정지 중":""}</div>
+    <div class="actions"><button class="btn sm" type="button" data-fw="${esc(x.id)}">경고 보내기</button>${S.sellers[x.target]?`<button class="btn sm danger" type="button" data-fs="${esc(x.id)}">판매 정지</button>`:""}<button class="btn sm" type="button" data-fn="${esc(x.id)}">문제 없음</button></div></div>`).join(""):`<div class="empty">들어온 신고가 없습니다.</div>`;
+  const fDone=(id,st)=>S.db.doc("flags/"+id).update({status:st,doneAt:Date.now()});
+  $("#flagQueue").querySelectorAll("[data-fw]").forEach(b=>b.onclick=()=>{const f=fq.find(x=>x.id===b.dataset.fw);guard(async()=>{await S.db.collection("messages").add({members:[S.uid,f.target].sort(),from:S.uid,to:f.target,text:"[농마니 운영자] 대화에서 농마니 밖 거래를 권했다는 신고가 들어왔습니다. 거래와 결제는 농마니 안에서만 해 주세요. 다시 신고되면 판매가 정지될 수 있습니다.",createdAt:Date.now()});await fDone(f.id,"경고")},"경고를 보냈습니다")});
+  $("#flagQueue").querySelectorAll("[data-fs]").forEach(b=>b.onclick=()=>{const f=fq.find(x=>x.id===b.dataset.fs);guard(async()=>{await S.db.doc("sellerchecks/"+f.target).set({...(S.checks[f.target]||{}),suspended:true,suspendedAt:Date.now()});await fDone(f.id,"정지")},"판매를 정지했습니다")});
+  $("#flagQueue").querySelectorAll("[data-fn]").forEach(b=>b.onclick=()=>guard(()=>fDone(b.dataset.fn,"기각"),"신고를 닫았습니다"));
   const sq=(S.sites||[]).filter(x=>x.status==="대기").sort((a,b)=>a.createdAt-b.createdAt);
   $("#siteQueue").innerHTML=sq.length?sq.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.parcel)}</b><span class="meta">${esc(shopName(x.by))} · ${day(x.createdAt)}</span></div>
     <div class="meta">${esc(x.permit)}${x.until?" · "+day(x.until)+"까지":" · 기간 없음"}</div>
@@ -2022,7 +2048,7 @@ function renderAdmin(){
     <div class="actions"><button class="btn sm primary" type="button" data-sok="${esc(x.id)}">확인함</button><input id="sr-${x.id}" placeholder="부족한 점" aria-label="부족한 점"><button class="btn sm danger" type="button" data-sno="${esc(x.id)}">부족함</button></div></div>`).join(""):`<div class="empty">확인할 채취지가 없습니다.</div>`;
   $("#siteQueue").querySelectorAll("[data-sok]").forEach(b=>b.onclick=()=>guard(()=>S.db.doc("sites/"+b.dataset.sok).update({status:"확인",doneAt:Date.now()}),"확인했습니다. 판매자가 이 산을 고르면 근거가 바로 확인됩니다"));
   $("#siteQueue").querySelectorAll("[data-sno]").forEach(b=>b.onclick=()=>{const id=b.dataset.sno,why=$("#sr-"+id).value.trim();if(!why){toast("부족한 점을 적어 주세요");return}guard(()=>S.db.doc("sites/"+id).update({status:"부족",reason:why.slice(0,200),doneAt:Date.now()}),"판매자에게 보완을 요청했습니다")});
-  const n=pendA.length+pendP.length+payO.length+payA.length+dA.length+dO.length+rps.length+pq.length+pfs.length+lrs.filter(r=>r.status==="접수").length+post.filter(([c,x])=>x.cat==="가공품").length+sq.length;$("#dotAdmin").innerHTML=n?`<span class="dot">${n}</span>`:"";
+  const n=pendA.length+pendP.length+payO.length+payA.length+dA.length+dO.length+rps.length+pq.length+pfs.length+lrs.filter(r=>r.status==="접수").length+post.filter(([c,x])=>x.cat==="가공품").length+sq.length+fq.length;$("#dotAdmin").innerHTML=n?`<span class="dot">${n}</span>`:"";
 }
 function renderHerbs(){
   const q=($("#herbQ").value||"").trim(),f=$("#herbF").value;
@@ -2039,7 +2065,7 @@ function renderGuide(){
   $("#feeTable").innerHTML=`
    <tr><td>경매 출품료</td><td>출품하는 판매자</td><td>시작가 10만 원 미만 ${won(3000)} · 10만~100만 원 ${won(5000)} · 100만 원 이상 ${won(20000)}(운영자 직접 확인 포함). 반려 시 환불, 유찰 시 1회 무료 재출품</td></tr>
    <tr><td>경매 낙찰 수수료</td><td>낙찰된 판매자</td><td>낙찰가 중 100만 원까지 8%, 100만~500만 원 구간 5%, 500만 원 넘는 구간 3%</td></tr>
-   <tr><td>마켓 판매 수수료</td><td>판매자</td><td>판매 금액의 10%</td></tr>
+   <tr><td>마켓 판매 수수료</td><td>판매자</td><td>판매 금액의 10%. 같은 손님의 3번째 주문부터는 <b>단골 수수료 7%</b></td></tr>
    <tr><td>채취 의뢰 견적</td><td>판매자</td><td>견적 발송 무료. 성사되면 마켓와 같은 10%</td></tr>
    <tr><td>결제 수수료</td><td>판매자</td><td>결제 금액의 3.3%</td></tr>
    <tr><td>구매자 수수료</td><td>구매자</td><td>없음</td></tr>`;
@@ -2216,6 +2242,8 @@ const ACT={
   async refundA(id){await guard(()=>S.db.doc("auctions/"+id).update({deal:"환불",disputeResult:"판매자 책임"}),"환불 처리했습니다. 판매자 기록에 남습니다")},
   async resolveO(id){await guard(()=>S.db.doc("orders/"+id).update({status:"수령확인",disputeResult:"판매자 정상"}),"정산 대기로 옮겼습니다")},
   async refundO(id){await guard(()=>S.db.doc("orders/"+id).update({status:"환불",disputeResult:"판매자 책임"}),"환불 처리했습니다. 판매자 기록에 남습니다")},
+  async suspend(id){const v=!S.checks[id]?.suspended;if(v&&!confirm(`${shopName(id)}의 판매를 정지할까요? 상품과 경매가 손님에게 보이지 않게 됩니다.`))return;
+    await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),suspended:v,suspendedAt:v?Date.now():0}),v?"판매를 정지했습니다":"판매 정지를 풀었습니다")},
   async verify(id){const v=!S.checks[id]?.verified;await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),verified:v,at:Date.now()}),v?"인증 판매자로 지정했습니다":"인증을 해제했습니다")},
   async regOk(id){const v=!S.checks[id]?.regOk;await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),regOk:v,regNo:S.sellers[id]?.regNo||"",at:Date.now()}),v?"경영체 등록을 확인했습니다. 인증 배지가 붙습니다":"경영체 확인을 해제했습니다")},
   async payAuc(id){const a=A(id),x=auc(a);if(!x.winner||x.winner.bidderId!==S.uid)return;await guard(()=>S.db.doc("auctions/"+id).update({deal:"결제완료",buyerId:S.uid,hammer:x.winner.amount,paidAt:Date.now()}),"테스트 결제를 마쳤습니다. 판매자가 발송을 준비합니다")},
@@ -2354,7 +2382,7 @@ $("#sItem").addEventListener("input",()=>{const h=herbNote($("#sItemNote"),$("#s
 $("#herbList").innerHTML=HERBS.filter(h=>!isBlocked(h.st)).flatMap(h=>[h.name,...h.alias]).map(n=>`<option value="${esc(n)}"></option>`).join("");$("#sGrow").addEventListener("change",shopUI);
 
 $("#shopForm").onsubmit=e=>{e.preventDefault();const rt=$("#shRegType").value,rn=rt?$("#shRegNo").value.replace(/[^0-9-]/g,"").slice(0,30):"";if(rt&&rn.length<6){toast("등록확인서의 번호를 정확히 넣어 주세요");return}guard(()=>S.db.doc("sellers/"+S.uid).set({shopName:$("#shName").value.trim().slice(0,40),role:$("#shRole").value,region:$("#shRegion").value.trim().slice(0,40),bio:$("#shBio").value.slice(0,300),regType:rt,regNo:rn,biz:$("#shBiz").value,updatedAt:Date.now()}),"상점 정보를 저장했습니다")};
-$("#aucForm").onsubmit=async e=>{e.preventDefault();
+$("#aucForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast("직거래 유도 신고로 판매가 정지되었습니다. 운영자에게 문의해 주세요");return}
   if(!S.sellers[S.uid]){toast("위에서 상점 정보를 먼저 저장해 주세요");return}
   const cat=$("#aCat").value,st=+$("#aStart").value,bn=+$("#aBuyNow").value||0;
   if(!aPhoto){toast("실물 사진 1장을 올려 주세요");return}
@@ -2374,7 +2402,7 @@ $("#aucForm").onsubmit=async e=>{e.preventDefault();
   const tEn=$("#aTitleEn").value.trim().slice(0,80),tZh=$("#aTitleZh").value.trim().slice(0,60),tJa=$("#aTitleJa").value.trim().slice(0,60),ci=claimIntl(tEn+" "+tZh+" "+tJa);if(ci.length){toast(`해외 제목에서 효능 표현을 빼 주세요: ${ci.join(", ")}`);return}
   const fee0=feeFor(S.uid,st);const ok=await guard(()=>S.db.collection("auctions").add({title:$("#aTitle").value.trim().slice(0,60),titleEn:tEn,titleZh:tZh,titleJa:tJa,cat,grow:$("#aGrow").value,weight:$("#aWeight").value.trim().slice(0,40),form:$("#aForm").value,region:$("#aRegion").value.trim().slice(0,40),date:$("#aDate").value,permit:$("#aPermit").value,cert:cat==="산양삼"?$("#aCert").value.trim().slice(0,40):"",appraise:$("#aAppraise").value.trim().slice(0,60),start:st,buyNow:bn,schedule:$("#aDur").value==="sat"?"sat":"test",duration:$("#aDur").value==="sat"?0:+$("#aDur").value,ship:$("#aForm").value==="생물"?7000:4000,item:hh?hh.name:item.slice(0,30),itemStatus:ist,photo:aPhoto,apPhoto:tier==="감정"?aApPhoto:"",video:tier==="기본"?"":video.slice(0,300),tier,desc:$("#aDesc").value.slice(0,1000),...proofFields(pNeed,pRef,aSiteId),listFee:fee0,sellerId:S.uid,status:auto?"진행중":"검수대기",startedAt:auto?now:0,endsAt:auto?(sched==="sat"?nextSat(now):now+(+sched)):0,autoApproved:auto,createdAt:now}),auto?`바로 ${sched==="sat"?satLabel(nextSat(now)):"시험용"} 경매에 올렸습니다`:(fee0?`출품료 ${won(fee0)}를 테스트 결제하고 검수를 요청했습니다`:"첫 출품 무료로 검수를 요청했습니다"));
   if(ok){await sharePhoto("a",aPhoto,item,$("#aTitle").value.trim()+" · "+$("#aRegion").value.trim());$("#aTitle").value="";$("#aDesc").value="";$("#aVideo").value="";aPhoto="";aApPhoto="";aProof="";$("#aTitleEn").value="";$("#aTitleZh").value="";$("#aTitleJa").value="";$("#aParcel").value="";$("#aSite").value="";$("#aPhoto").value="";$("#aApPhoto").value="";$("#aProof").value="";$("#aPhotoPrev").hidden=true;$("#aApPhotoPrev").hidden=true;$("#aProofPrev").hidden=true;$("#aOath").checked=false;aucUI()}};
-$("#sellForm").onsubmit=async e=>{e.preventDefault();
+$("#sellForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast("직거래 유도 신고로 판매가 정지되었습니다. 운영자에게 문의해 주세요");return}
   if(!S.sellers[S.uid]){toast("위에서 상점 정보를 먼저 저장해 주세요");return}
   const g=$("#sGrow").value,t=$("#sName").value+$("#sDesc").value,itemRaw=$("#sItem").value.trim(),hp=findHerb(itemRaw),pst=hp?hp.st:"unknown";
   if(!itemRaw){toast("품목을 적어 주세요");return}
@@ -3019,7 +3047,7 @@ function wzBind(){
 }
 function wzKeep(){const p=$("#wzPrice");if(p)WZ.price=p.value;const k=x=>$("#"+x);if(k("wzName"))WZ.name=k("wzName").value;if(k("wzRegion"))WZ.region=k("wzRegion").value;if(k("wzPermit"))WZ.permit=k("wzPermit").value;if(k("wzDesc"))WZ.desc=k("wzDesc").value;if(k("wzDate"))WZ.date=k("wzDate").value;if(k("wzCertNo"))WZ.certNo=k("wzCertNo").value;if(k("wzOath"))WZ.oath=k("wzOath").checked;if(k("wzTitleEn"))WZ.titleEn=k("wzTitleEn").value;if(k("wzTitleZh"))WZ.titleZh=k("wzTitleZh").value;if(k("wzTitleJa"))WZ.titleJa=k("wzTitleJa").value;if(k("wzParcel"))WZ.parcel=k("wzParcel").value;if(k("wzContact"))WZ.contact=k("wzContact").value;if(k("wzOwnParcel"))WZ.ownParcel=k("wzOwnParcel").value;if(k("wzSite"))WZ.site=k("wzSite").value;wzKeepAuc()}
 function wzKeepAuc(){const k=x=>$("#"+x);[["wzWeight","weight"],["wzStart","start"],["wzBuy","buyNow"],["wzCert","cert"],["wzVideo","video"],["wzAppr","appraise"]].forEach(([i,f])=>{if(k(i))WZ[f]=k(i).value})}
-async function wzSubmit(){
+async function wzSubmit(){if(suspended(S.uid)){toast("직거래 유도 신고로 판매가 정지되었습니다. 운영자에게 문의해 주세요");return}
   wzKeep();const n=WZ.herb?.name||WZ.item,btn=$("#wzSubmit");
   if(!WZ.name.trim()){toast("상품 이름을 적어 주세요");return}
   if(!WZ.region.trim()){toast("산지를 적어 주세요");return}
@@ -3061,7 +3089,7 @@ function todoData(){
   const rej=S.products.filter(p=>p.sellerId===S.uid&&p.status==="반려").length+myA.filter(a=>a.status==="반려").length;
   const out=S.products.filter(p=>p.sellerId===S.uid&&p.status==="판매중"&&p.stock<=0).length;
   const reqs=(S.requests||[]).filter(r=>r.status==="모집중"&&r.buyerId!==S.uid&&!(S.quotes||[]).some(q=>q.requestId===r.id&&q.sellerId===S.uid)).length;
-  const pay=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total).net,0)+myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
+  const pay=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
   return {ship,liveA:liveA.length,bids,top,pend,rej,out,reqs,pay};
 }
 function renderTodo(){
@@ -3714,7 +3742,8 @@ S.msgs=[];S.chatWith=null;
 LS.read=LS.read||{};
 const nameOf=id=>S.sellers[id]?.shopName||S.names[id]||(id===S.uid?"나":"구매자");
 const tkey=other=>[S.uid,other].sort().join("~");
-const PII=/(01[016789][-\s.]?\d{3,4}[-\s.]?\d{4})|(\d{3,6}-\d{2,6}-\d{2,8})|(카톡|카카오톡|오픈채팅|계좌|입금해)/;
+const PII=/(0\s*1\s*[016789](?:[\s.\-_/]*\d){7,8})|((?:\d[\s.\-_/]*){10,})|(\d{3,6}-\d{2,6}-\d{2,8})|((?:[공영일이삼사오육륙칠팔구][\s.\-]*){8,})|(카톡|카카오\s*톡|오픈\s*채팅|open\.kakao|계좌|입금해|무통장|텔레그램|telegram|t\.me\/|밴드\s*(주소|초대)|band\.us|위챗|wechat|라인\s*(아이디|id)|https?:\/\/|www\.)/i;
+const LEAK_WARN=/(전화|통화|문자\s*(주|줘|보내|드릴|할게)|연락처|번호\s*(알려|좀|주|드릴)|직접\s*거래|직거래|따로\s*(연락|거래|만나|보내)|만나서|현금|수수료\s*(없이|빼고|아끼))/;
 function threadsList(){
   const m={};S.msgs.forEach(x=>{const o=x.from===S.uid?x.to:x.from;(m[o]=m[o]||[]).push(x)});
   if(S.chatWith&&!m[S.chatWith])m[S.chatWith]=[];
@@ -3741,13 +3770,17 @@ function openThread(other,prefill){
   S.chatWith=other;
   const box=$("#chatbox");box.hidden=false;$("#chatwrap").classList.add("open");
   box.innerHTML=`<div class="chead"><button class="back" type="button" id="cBack" aria-label="대화 목록">‹</button>${avaHTML(other,"sm")}<div><b>${esc(nameOf(other))}</b><div class="meta">${S.sellers[other]?esc((S.sellers[other].role||"")+" · "+(S.sellers[other].region||"")):"구매자"}</div></div>${S.sellers[other]?`<button class="btn sm" type="button" data-profile="${esc(other)}">프로필</button>`:""}</div>
+   <div class="cguard">🔒 농마니 안전결제로 거래해야 물건이 안 오거나 상하면 환불받을 수 있어요. <button type="button" id="cFlag">직거래 유도 신고</button></div>
    <div class="msgs" id="msgs" aria-live="polite"></div>
    <form class="compose" id="compose"><textarea id="cText" rows="1" maxlength="500" placeholder="메시지 입력" aria-label="메시지"></textarea><button class="btn primary needWrite" type="submit">보내기</button></form>`;
+  $("#cFlag").onclick=async()=>{const why=prompt("어떤 일이 있었나요? (예: 계좌로 따로 입금하라고 함)");if(why==null)return;
+    await guard(()=>S.db.collection("flags").add({by:S.uid,target:other,text:String(why).slice(0,300),status:"접수",createdAt:Date.now()}),"신고를 받았습니다. 운영자가 확인합니다")};
   $("#cBack").onclick=()=>{S.chatWith=null;box.hidden=true;$("#chatwrap").classList.remove("open");renderChat()};
   const ta=$("#cText");if(prefill)ta.value=`[${prefill}] `;
   ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();$("#compose").requestSubmit()}};
   $("#compose").onsubmit=async e=>{e.preventDefault();const text=ta.value.trim();if(!text)return;
-    if(PII.test(text)){toast("전화번호·계좌·메신저 아이디는 보낼 수 없어요. 결제는 안전결제로만 해 주세요");return}
+    if(PII.test(text)){toast(/송장/.test(text)?"송장번호는 내 거래의 ‘발송 처리’에 넣어 주세요. 대화로는 숫자를 길게 보낼 수 없어요":"전화번호·계좌·링크·다른 메신저는 보낼 수 없어요. 결제는 안전결제로만 해 주세요");return}
+    if(LEAK_WARN.test(text)&&ta.dataset.warned!==text){ta.dataset.warned=text;toast("농마니 밖에서 거래하면 물건이 안 오거나 상해도 환불 보호를 받을 수 없어요. 그래도 보내려면 한 번 더 누르세요");return}
     const ok=await guard(()=>S.db.collection("messages").add({members:[S.uid,other].sort(),from:S.uid,to:other,text:text.slice(0,500),...(S.acting?{via:S.realUid}:{}),createdAt:Date.now()}));
     if(ok){ta.value="";ta.focus()}};
   if(S.view!=="chat")go("chat");else renderChat();
@@ -3843,6 +3876,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   if(S.owner)db.collection("herbphotos").where("status","==","pending").limit(200).onSnapshot(s=>{S.pendPhotos=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   if(S.owner)db.collection("reports").limit(500).onSnapshot(s=>{S.reports=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   db.collection("sites").limit(500).onSnapshot(s=>{S.sites=s.docs.map(d=>({id:d.id,...d.data()}));renderSites();if(S.owner)renderAdmin()},()=>{});
+  if(S.owner)db.collection("flags").limit(500).onSnapshot(s=>{S.flags=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   if(S.owner){db.collection("proofs").limit(500).onSnapshot(s=>{S.proofs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
     db.collection("landreqs").limit(500).onSnapshot(s=>{S.landreqs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{})}
   db.collection("herbinfo").limit(1000).onSnapshot(s=>{S.info=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{});

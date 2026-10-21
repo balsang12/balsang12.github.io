@@ -156,6 +156,33 @@ async function open(b, pre, shot) {
   ok(rv.procLive && rv.payHeld && rv.feed && rv.bizOk && rv.paid, 'processed food sells now, payout after business number check');
   ok(rv.allChecked, 'bulk check clears the post-review feed');
   ok(rv.siteSaved && rv.siteOk && rv.siteOption && rv.siteAuction, 'verified harvest site gives instant proof');
+  // 6) 직거래 막기·단골 수수료
+  const lk = await p.evaluate(async () => {
+    const r = {}, wait = ms => new Promise(z => setTimeout(z, ms));
+    const base = Date.now() - 1e7, mk = (i, st) => ({ id: 'rp' + i, buyerId: 'b9', sellerId: S.uid, total: 10000, status: st || '정산완료', createdAt: base + i });
+    S.orders = S.orders.concat([mk(1), mk(2, '취소'), mk(3), mk(4)]);
+    r.rates = ['rp1', 'rp3', 'rp4'].map(id => ordRate(S.orders.find(o => o.id === id))).join(',');
+    r.net = shopNet(100000, 0.07).f === 7000;
+    openThread('s1'); await wait(100);
+    r.guard = !!document.querySelector('.cguard');
+    const ta = document.querySelector('#cText'), n0 = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'messages').length;
+    ta.value = '공일공 일이삼사 오육칠팔'; await $('#compose').onsubmit({ preventDefault() {} });
+    ta.value = '전화 주세요'; await $('#compose').onsubmit({ preventDefault() {} });
+    const n1 = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'messages').length;
+    r.blockedAndWarned = n1 === n0;
+    ta.value = '전화 주세요'; await $('#compose').onsubmit({ preventDefault() {} }); await wait(200);
+    r.secondSends = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'messages').length === n0 + 1;
+    window.prompt = () => '계좌로 입금하라고 함'; document.querySelector('#cFlag').click(); await wait(400);
+    const fl = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'flags').pop(); r.flag = fl && fl[3].target === 's1';
+    S.flags = [{ id: fl[2], ...fl[3] }]; go('admin'); renderAdmin(); await wait(100);
+    document.querySelector(`#flagQueue [data-fs="${fl[2]}"]`).click(); await wait(700);
+    r.suspended = suspended('s1') && !live().some(p => p.sellerId === 's1');
+    return r;
+  });
+  console.log(JSON.stringify(lk));
+  ok(lk.rates === '0.1,0.1,0.07' && lk.net, 'repeat-customer fee 7% from the 3rd valid order');
+  ok(lk.guard && lk.blockedAndWarned && lk.secondSends, 'chat blocks contacts, warns on off-platform words');
+  ok(lk.flag && lk.suspended, 'leak report leads to suspension; listings hidden');
   // 4) 해외 제목
   const it = await p.evaluate(async () => {
     const r = {};

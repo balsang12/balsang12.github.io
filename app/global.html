@@ -409,7 +409,7 @@ function card(a){const x=auc(a),open=a.status==="진행중"&&!x.ended;
    <div><span class="meta">${esc(open?(x.top?t("live"):t("start")):(x.top?t("sold"):t("unsold")))}</span><div class="price num">${won(x.cur)} <span class="approx">${esc(approx(x.cur))}</span></div></div>
    <div class="meta">${esc(t("bids")(x.valid.length))}</div></div></button>`}
 function render(){
-  const live=S.auctions.filter(a=>a.status==="진행중"&&!a.demo).filter(a=>S.filter==="all"||kind(a)===S.filter);
+  const live=S.auctions.filter(a=>a.status==="진행중"&&!a.demo&&!(S.susp&&S.susp.has(a.sellerId))).filter(a=>S.filter==="all"||kind(a)===S.filter);
   const open=live.filter(a=>!auc(a).ended).sort((a,b)=>(!!b.proofOk)-(!!a.proofOk)||auc(a).end-auc(b).end);
   const done=live.filter(a=>auc(a).ended&&Date.now()-auc(a).end<14*864e5).sort((a,b)=>auc(b).end-auc(a).end).slice(0,8);
   $("#list").innerHTML=open.length?open.map(card).join(""):`<div class="empty">${esc(t("none"))}</div>`;
@@ -530,7 +530,7 @@ const RL=()=>RECO_L[window.NM_LANG]||RECO_L.en;
 const MED_ITEMS=["산삼","산양삼","장뇌삼","인삼","천마","하수오","백수오","영지","상황","상황버섯","차가버섯","동충하초","복령","겨우살이","당귀","황기","감초","천궁","익모초","삼지구엽초","오가피","엄나무","헛개","꾸지뽕"];
 function medNote(item,cat){const c=mcat(cat||"");return (["뿌리 약초","말린 약초·차"].includes(c)||MED_ITEMS.includes(item))?`<div class="medn">${esc(RL().med)}</div>`:""}
 const RC={a:{},i:0};
-function recoCtx(){return {products:S.products,auctions:S.auctions.filter(a=>a.status==="진행중"),aucCur:a=>{const x=auc(a);return x.ended?null:x.cur},mcat,prep:it=>!!CARE[it],rating:()=>({avg:0,n:0})}}
+function recoCtx(){const ok=x=>!(S.susp&&S.susp.has(x.sellerId));return {products:S.products.filter(ok),auctions:S.auctions.filter(a=>a.status==="진행중"&&ok(a)),aucCur:a=>{const x=auc(a);return x.ended?null:x.cur},mcat,prep:it=>!!CARE[it],rating:()=>({avg:0,n:0})}}
 function recoOpen(){RC.a={};RC.i=0;recoRender();const d=$("#dlg");S.dlgKind="r";if(!d.open)d.showModal()}
 function recoRender(){const d=$("#dlg"),L=RL(),qs=recoQuestions(RC.a),note=`<p class="meta" style="margin:0">${esc(L.note)}</p>`;
   if(RC.i<qs.length){const q=qs[RC.i],[title,labels]=L.q[q.k],cur=RC.a[q.k],opts=q.o.filter(v=>labels[v]);
@@ -564,7 +564,7 @@ document.addEventListener("click",e=>{if(e.target.closest("[data-reco]"))recoOpe
 function pcard(p){return `<button type="button" class="card" data-pid="${esc(p.id)}"><div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}" loading="lazy">`:""}<div class="tl">${shipChip(p)}${String(p.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:""}${p.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:""}</div>${p.stock>0?"":`<span class="clock">${esc(t("soldOut"))}</span>`}</div>
   <div class="cbody"><h3>${esc(pname(p))}</h3><div class="ko" lang="ko">${esc(p.name)}</div><div class="meta">${esc(region(p.region))}${p.form?" · "+esc(p.form==="건조"?t("dried"):p.form==="생물"?t("fresh"):p.form):""}</div>
   <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div></div></button>`}
-function renderMkt(){const ps=S.products.filter(p=>p.status==="판매중"&&!p.demo).filter(p=>S.mcat==="전체"||mcat(p.cat)===S.mcat).sort((a,b)=>(b.stock>0)-(a.stock>0)||(!!b.proofOk)-(!!a.proofOk)||b.createdAt-a.createdAt);
+function renderMkt(){const ps=S.products.filter(p=>p.status==="판매중"&&!p.demo&&!(S.susp&&S.susp.has(p.sellerId))).filter(p=>S.mcat==="전체"||mcat(p.cat)===S.mcat).sort((a,b)=>(b.stock>0)-(a.stock>0)||(!!b.proofOk)-(!!a.proofOk)||b.createdAt-a.createdAt);
   $("#mlist").innerHTML=ps.length?ps.map(pcard).join(""):`<div class="empty">${esc(t("noMkt"))}</div>`}
 function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;S.dlgKind="p";const d=$("#dlg"),ship=p.form==="생물"?5000:3500;let qty=1;
   const care=CARE[p.item],gv=t("growV")[p.grow];
@@ -689,6 +689,7 @@ async function bid(id){if(!S.uid){nmAuth.open(t("needLogin"));return}
   sub("sellers",v=>{S.sellers=Object.fromEntries(v.filter(x=>!x.id.startsWith("_")).map(x=>[x.id,x]))});
   sub("settings",v=>{S.site=(v.find(x=>x.id==="site")||{})});
   sub("products",v=>S.products=v);
+  sub("sellerchecks",v=>{S.susp=new Set(v.filter(x=>x.suspended).map(x=>x.id))});
   if(S.uid){sub("alerts",v=>S.alerts=v);sub("orders",v=>S.orders=v)}
 })();
 </script>
