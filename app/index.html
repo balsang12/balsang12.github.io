@@ -2361,6 +2361,7 @@ function renderCredits(){
   const box=$("#credBox");
   if(box){
     if(!S.uid||!S.sellers[S.uid]){box.innerHTML=""}
+    else if(!credCost()&&!credBal(S.uid).bal&&!S.credReqs.some(r=>r.sellerId===S.uid&&r.status==="요청")){box.innerHTML=`<p class="meta" style="margin:4px 0 12px"><span class="chip free">무료</span> 채취 의뢰 견적은 몇 건이든 무료로 보낼 수 있습니다. 거래가 성사될 때만 수수료가 붙습니다.</p>`}
     else{const c=credCost(),b=credBal(S.uid),pend=S.credReqs.filter(r=>r.sellerId===S.uid&&r.status==="요청"&&+r.won);
       box.innerHTML=`<div class="crd"><div><div class="eyebrow">내 견적 충전금</div><div class="bal num">${won(b.bal)}</div></div>
         <div class="why">${c?`채취 의뢰에 견적을 보낼 때 <b>1건에 ${won(c)}</b>의 이용료가 충전금에서 빠집니다. 손님이 내 견적을 고르면 이용료를 돌려드리고, 고르지 않은 견적은 돌려드리지 않습니다.`:`<span class="chip free">오픈 기념 무료</span> 지금은 견적을 몇 건이든 무료로 보낼 수 있습니다. 이용료가 생기면 미리 알려 드립니다.`}${pend.length?`<br><span class="chip gold num">충전 요청 ${won(pend.reduce((a,r)=>a+(+r.won||0),0))} 확인 중</span>`:""}</div>
