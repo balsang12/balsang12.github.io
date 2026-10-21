@@ -140,6 +140,7 @@ footer a{color:var(--pine)}
   </section>
   <section id="secMkt" hidden>
     <div class="notice" id="mktNote" style="background:var(--pine-soft)"></div>
+    <details class="notice" id="abroad" style="background:var(--surface);border:1px solid var(--line)"><summary style="cursor:pointer;font-weight:700" id="abroadT"></summary><ul id="abroadL" style="margin:8px 0 0;padding-left:20px;display:grid;gap:4px"></ul></details>
     <div class="bar" id="mfilters" role="group"></div>
     <div class="grid" id="mlist" aria-live="polite"></div>
   </section>
@@ -180,6 +181,12 @@ const TX={
   noMkt:"No products in this category right now.",noOrd:"You have no orders yet.",signToSee:"Sign in to see your orders.",
   st:{"결제완료":"Paid · seller preparing","발송완료":"Shipped","수령확인":"Received","정산완료":"Completed","취소":"Cancelled","환불":"Refunded","분쟁":"Under review"},
   recv:"I received it",recvOk:"Thanks! The seller will be paid.",track:"Tracking",careT:"Before eating",
+  shipA:"✈ Easy to send abroad",shipB:"Needs plant inspection abroad",shipC:"Korea delivery only",
+  shipInfo:{A:"Sealed processed food. Usually clears customs when sent through a forwarding service.",B:"Dried raw herbs. Many countries (e.g. Japan) inspect plant ingredients and may ask for a plant health certificate. It may be held or destroyed at customs.",C:"Fresh produce. It spoils in transit and fresh plants are restricted abroad, so it can only be delivered within Korea."},
+  dTitle:"Deliver to",dKr:"An address in Korea",dFwd:"My Korean forwarding service",dFwdNo:"Fresh items cannot go to a forwarder.",
+  fwdPh:"Forwarder name and your member / suite number",fwdNeed:"Please enter the forwarder name and your member number.",
+  fwdOk:"I understand my country’s import rules apply and the item may not clear customs.",fwdAgree:"Please tick the box to confirm.",
+  abroadT:"Sending abroad",abroad:["You can use a Korean forwarding (package-consolidation) service: we deliver to its address in Korea and it sends the parcel to you.","Processed foods travel best. Dried raw herbs may need a plant health certificate. Fresh items and anything with soil cannot be sent.","United States: food shipped commercially needs an FDA Prior Notice. Most forwarders handle this; ask yours first."],
   tag:"Korean wild herbs · auction & market",h1:"Wild mountain ginseng, straight from the Korean simmani who dug it",
   lead:"Simmani are Korea's traditional wild-ginseng hunters. Each root is listed by the person who found it, with photos, weight and where it grew. Roots marked “Harvest papers checked” come with a permit or landowner consent that our team has reviewed.",
   steps:[["Bid","Sign in with your email and place a bid in Korean won."],["Win","When the auction closes, we contact the winner within 24 hours."],["Pay & collect in Korea","Pay, then collect in Seoul or have it delivered to your hotel in Korea. Overseas shipping is not available yet."]],
@@ -210,6 +217,12 @@ const TX={
   noMkt:"このカテゴリーには現在商品がありません。",noOrd:"まだ注文はありません。",signToSee:"ログインすると注文履歴を確認できます。",
   st:{"결제완료":"お支払い済み・発送準備中","발송완료":"発送済み","수령확인":"受け取り済み","정산완료":"完了","취소":"キャンセル","환불":"返金済み","분쟁":"確認中"},
   recv:"受け取りました",recvOk:"ありがとうございます。出品者へ代金が支払われます。",track:"追跡番号",careT:"お召し上がりの前に",
+  shipA:"✈ 海外へ送りやすい",shipB:"輸入時に植物検査が必要",shipC:"韓国国内配送のみ",
+  shipInfo:{A:"密封された加工食品です。転送サービス経由なら通常は通関できます。",B:"乾燥した原料（根・きのこ等）です。日本では植物性の原料は輸入検査の対象で、植物検疫証明書が必要な場合があります。税関で留め置き・廃棄となることがあります。",C:"生鮮品です。輸送中に傷みやすく、生の植物は海外への持ち込みが制限されるため、韓国国内のみの配送です。"},
+  dTitle:"お届け先",dKr:"韓国国内の住所",dFwd:"韓国の転送サービス（配送代行）",dFwdNo:"生鮮品は転送サービスへ送れません。",
+  fwdPh:"転送サービス名と会員番号（私書箱番号）",fwdNeed:"転送サービス名と会員番号を入力してください。",
+  fwdOk:"日本の輸入規則が適用され、通関できない場合があることを理解しました。",fwdAgree:"チェックを入れて確認してください。",
+  abroadT:"海外へ送る場合",abroad:["韓国の転送サービス（配送代行）をご利用いただけます。転送会社の韓国内倉庫へお届けし、そこから日本へ発送されます。","加工食品が最も送りやすいです。乾燥した原料は植物検査・植物検疫証明書が必要になる場合があります。生鮮品・土の付いたものは送れません。","日本では、植物（香辛料・生薬原料を含む）は郵便・宅配でも検査の対象です。土の付いた植物は輸入禁止です。"],
   tag:"韓国の山野草・オークションとマーケット",h1:"韓国のシンマニが自ら掘り出した天然山参",
   lead:"シンマニは、山に入って天然の山参を探す韓国の伝統的な採取人です。一本一本、見つけた本人が写真・重さ・採れた場所を添えて出品します。「採取書類確認済み」の表示がある品は、採取許可証または山林所有者の同意書を運営チームが確認しています。",
   steps:[["入札","メールアドレスでログインし、韓国ウォンで入札します。"],["落札","オークション終了後、24時間以内に落札者へご連絡します。"],["韓国で支払い・受け取り","お支払い後、ソウルで受け取るか、韓国内のホテルへお届けします。海外発送はまだ行っていません。"]],
@@ -270,6 +283,12 @@ const TX={
   noMkt:"此分类目前没有商品。",noOrd:"您还没有订单。",signToSee:"登录后可查看订单。",
   st:{"결제완료":"已付款・卖家准备中","발송완료":"已发货","수령확인":"已收货","정산완료":"已完成","취소":"已取消","환불":"已退款","분쟁":"处理中"},
   recv:"我已收到",recvOk:"谢谢！款项将结算给卖家。",track:"物流单号",careT:"食用前",
+  shipA:"✈ 方便寄往海外",shipB:"入境需植物检疫",shipC:"仅限韩国境内配送",
+  shipInfo:{A:"密封加工食品，通过转运公司寄送通常可以清关。",B:"干燥原料（根、菌菇等）。许多国家会对植物性原料进行检疫，可能需要植物检疫证书，在海关可能被扣留或销毁。",C:"生鲜产品，运输途中易变质，且生鲜植物入境受限，因此只能在韩国境内配送。"},
+  dTitle:"配送至",dKr:"韩国境内地址",dFwd:"我的韩国转运公司",dFwdNo:"生鲜商品不能寄往转运公司。",
+  fwdPh:"转运公司名称与您的会员号（仓库编号）",fwdNeed:"请填写转运公司名称和会员号。",
+  fwdOk:"我了解需遵守本国进口规定，商品可能无法清关。",fwdAgree:"请勾选确认。",
+  abroadT:"寄往海外",abroad:["您可以使用韩国转运（集运）公司：我们送到其韩国仓库，再由其寄给您。","加工食品最方便寄送。干燥原料可能需要植物检疫证书。生鲜商品及带土物品不能寄送。","中国大陆：个人邮递物品单次限值为2,000元人民币，超出需按货物报关或退运；植物及其产品入境限制严格。"],
   tag:"韩国野生草本・拍卖与商店",h1:"韩国采参人亲手采挖的野山参",
   lead:"“심마니”是韩国传统的野山参采挖人。每支参都由发现它的人亲自上架，附上照片、重量与生长地。标有“采挖文件已审核”的商品，附有经我们审核的采集许可或山主同意书。",
   steps:[["出价","用电子邮箱登录，以韩元出价。"],["中标","拍卖结束后，我们会在 24 小时内联系中标者。"],["在韩国付款取货","付款后可在首尔取货，或送到您在韩国的酒店。暂不提供海外配送。"]],
@@ -309,6 +328,8 @@ try{const h=location.hash.slice(1);if(["auc","mkt","ord"].includes(h))S.tab=h}ca
 const CATMAP={"뿌리·줄기":"뿌리 약초","약초":"말린 약초·차","잎·꽃·차":"말린 약초·차"},mcat=c=>CATMAP[c]||c;
 const UNITS={"근(600g)":["geun (600 g)","斤（600克）","斤（600克）","斤（600g）"],"1병":["bottle","瓶","瓶","瓶"],"1봉":["bag","袋","袋","袋"],"1박스":["box","盒","盒","箱"],"1세트":["set","組","组","セット"]};
 const unitT=u=>UNITS[u]?UNITS[u][LI()]:u;
+function shipClass(p){if(p.cat==="가공품")return "A";if(p.form==="생물")return "C";return "B"}
+function shipChip(p){const c=shipClass(p);return `<span class="chip ${c==="A"?"solid":c==="B"?"gold":""}">${esc(t("ship"+c))}</span>`}
 /* preparation notes for buyers (lookalike notes stay with the operator) */
 const CARE={"고사리":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。","よく茹でてアク抜きしてからお召し上がりください。生では食べられません。"],"고비":["Boil well and soak before eating; do not eat raw.","須充分煮熟並浸泡後食用，不可生食。","须充分煮熟并浸泡后食用，不可生食。","よく茹でてアク抜きしてからお召し上がりください。生では食べられません。"],
  "두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。","下茹でしてからお召し上がりください。"],"엄나무순":["Blanch before eating.","請汆燙後食用。","请焯水后食用。","下茹でしてからお召し上がりください。"],"땅두릅":["Blanch before eating.","請汆燙後食用。","请焯水后食用。","下茹でしてからお召し上がりください。"],
@@ -355,7 +376,7 @@ function paintStatic(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===window.NM_LANG));
   $("#filters").innerHTML=["all","wild","forest","other"].map(k=>`<button type="button" class="filter" data-f="${k}" aria-pressed="${S.filter===k}">${esc(t(k))}</button>`).join("");
   $("#tabs").innerHTML=[["auc","tabAuc"],["mkt","tabMkt"],["ord","tabOrd"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${esc(t(l))}</button>`).join("");
-  $("#mktNote").textContent=t("mktNote");
+  $("#mktNote").textContent=t("mktNote");$("#abroadT").textContent=t("abroadT");$("#abroadL").innerHTML=t("abroad").map(x=>`<li>${esc(x)}</li>`).join("");
   $("#mfilters").innerHTML=Object.keys(t("cats")).map(k=>`<button type="button" class="filter" data-mc="${esc(k)}" aria-pressed="${S.mcat===k}">${esc(t("cats")[k])}</button>`).join("");
   ["auc","mkt","ord"].forEach(k=>$("#sec"+{auc:"Auc",mkt:"Mkt",ord:"Ord"}[k]).hidden=S.tab!==k);
   paintWho();render()}
@@ -383,7 +404,7 @@ function render(){
   $("#hDone").hidden=!done.length;$("#hDone").textContent=t("closed");$("#done").innerHTML=done.map(card).join("");
   $("#beta").hidden=!BETA();$("#beta").textContent=t("beta");renderMkt();renderOrd()}
 /* ---------- market ---------- */
-function pcard(p){return `<button type="button" class="card" data-pid="${esc(p.id)}"><div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}" loading="lazy">`:""}<div class="tl">${String(p.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:""}${p.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:""}</div>${p.stock>0?"":`<span class="clock">${esc(t("soldOut"))}</span>`}</div>
+function pcard(p){return `<button type="button" class="card" data-pid="${esc(p.id)}"><div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}" loading="lazy">`:""}<div class="tl">${shipChip(p)}${String(p.grow||"").startsWith("자연산")?`<span class="chip">${esc(t("wildChip"))}</span>`:""}${p.proofOk?`<span class="chip solid">✓ ${esc(t("proof"))}</span>`:""}</div>${p.stock>0?"":`<span class="clock">${esc(t("soldOut"))}</span>`}</div>
   <div class="cbody"><h3>${esc(pname(p))}</h3><div class="ko" lang="ko">${esc(p.name)}</div><div class="meta">${esc(region(p.region))}${p.form?" · "+esc(p.form==="건조"?t("dried"):p.form==="생물"?t("fresh"):p.form):""}</div>
   <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div></div></button>`}
 function renderMkt(){const ps=S.products.filter(p=>p.status==="판매중"&&!p.demo).filter(p=>S.mcat==="전체"||mcat(p.cat)===S.mcat).sort((a,b)=>(b.stock>0)-(a.stock>0)||(!!b.proofOk)-(!!a.proofOk)||b.createdAt-a.createdAt);
@@ -395,6 +416,7 @@ function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;
    <h2 style="font-size:24px">${esc(pname(p))}</h2><div class="ko" lang="ko">${esc(p.name)}</div>
    <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div>
    ${care?`<div class="warn"><b>${esc(t("careT"))}:</b> ${esc(care[LI()])}</div>`:""}
+   <div class="notice" style="background:var(--sunk);margin:0">${shipChip(p)} ${esc(t("shipInfo")[shipClass(p)])}</div>
    <dl>
     ${herbT(p.item)?`<dt>${esc(t("item"))}</dt><dd>${esc(herbT(p.item))}</dd>`:""}
     <dt>${esc(t("origin"))}</dt><dd>${esc(t("originV")(region(p.region)||"-"))} <span class="ko" lang="ko">(${esc(p.region)})</span></dd>
@@ -407,17 +429,28 @@ function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;
    </dl>
    ${p.stock>0&&p.sellerId!==S.uid?`<div style="display:grid;gap:10px;background:var(--sunk);border-radius:14px;padding:14px">
      <div class="qty"><span>${esc(t("qty"))}</span><button type="button" id="qm" aria-label="−">−</button><b class="num" id="qv">1</b><button type="button" id="qp" aria-label="+">+</button><span class="meta">× ${esc(unitT(p.unit))}</span></div>
-     ${BETA()?"":`<label class="field">${esc(t("memo"))}<input id="oMemo" maxlength="300" placeholder="${esc(t("memoPh"))}"></label>`}
+     ${BETA()?"":`<fieldset class="field" style="border:0;padding:0;margin:0"><legend style="font-size:14px;margin-bottom:4px">${esc(t("dTitle"))}</legend>
+       <label style="display:flex;gap:8px;align-items:center;min-height:36px"><input type="radio" name="dl" value="kr" checked> ${esc(t("dKr"))}</label>
+       <label style="display:flex;gap:8px;align-items:center;min-height:36px;${shipClass(p)==="C"?"opacity:.5":""}"><input type="radio" name="dl" value="fwd" ${shipClass(p)==="C"?"disabled":""}> ${esc(t("dFwd"))}</label>
+       ${shipClass(p)==="C"?`<span class="meta">${esc(t("dFwdNo"))}</span>`:""}</fieldset>
+       <label class="field"><span id="memoL">${esc(t("memo"))}</span><input id="oMemo" maxlength="300" placeholder="${esc(t("memoPh"))}"></label>
+       <label id="fwdOkL" hidden style="display:flex;gap:8px;align-items:flex-start;font-size:14px"><input type="checkbox" id="fwdOk" style="width:20px;height:20px;flex:none;margin-top:2px"> <span>${esc(t("fwdOk"))}</span></label>`}
      <button type="button" class="btn ${BETA()?"gold":"pri"}" id="buy"></button></div>`:p.stock>0?"":`<div class="notice">${esc(t("soldOut"))}</div>`}
   </div>`;
   $("#dx").onclick=()=>d.close();
+  d.querySelectorAll('input[name="dl"]').forEach(r=>r.onchange=()=>{const f=r.value==="fwd"&&r.checked;$("#oMemo").placeholder=f?t("fwdPh"):t("memoPh");$("#fwdOkL").hidden=!f;$("#fwdOkL").style.display=f?"flex":"none"});
+  if($("#fwdOkL"))$("#fwdOkL").style.display="none";
   const b=$("#buy");if(b){const upd=()=>{$("#qv").textContent=qty;b.textContent=BETA()?t("notifyMkt"):`${t("buy")} · ${t("total")} ${won(p.price*qty+ship)}`};upd();
     $("#qm").onclick=()=>{if(qty>1){qty--;upd()}};$("#qp").onclick=()=>{if(qty<p.stock){qty++;upd()}};
     b.onclick=async()=>{if(!S.uid){nmAuth.open(t("needLogin"));return}
       if(BETA()){await notifyKey(String(p.item||p.name).slice(0,30),"market");return}
+      const dl=d.querySelector('input[name="dl"]:checked')?.value||"kr",memo=($("#oMemo")?.value||"").trim();
+      if(dl==="fwd"&&shipClass(p)==="C")return;
+      if(dl==="fwd"&&memo.length<3){toast(t("fwdNeed"));$("#oMemo").focus();return}
+      if(dl==="fwd"&&!$("#fwdOk").checked){toast(t("fwdAgree"));return}
       b.disabled=true;
       try{const fresh=(await S.db.doc("products/"+p.id).get()).data();if(!fresh||fresh.stock<qty){toast(t("noStock"));return}
-        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:p.price*qty+ship,buyerId:S.uid,sellerId:p.sellerId,memo:($("#oMemo")?.value||"").slice(0,300),lang:window.NM_LANG,status:"결제완료",createdAt:Date.now()});
+        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:p.price*qty+ship,buyerId:S.uid,sellerId:p.sellerId,memo:memo.slice(0,300),delivery:dl,lang:window.NM_LANG,status:"결제완료",createdAt:Date.now()});
         await S.db.doc("products/"+p.id).update({stock:fresh.stock-qty});
         toast(t("ordered"));d.close();S.tab="ord";history.replaceState(null,"","#ord");paintStatic()}
       catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}finally{b.disabled=false}}}

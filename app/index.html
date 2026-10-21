@@ -1223,6 +1223,9 @@ const CATMAP={"뿌리·줄기":"뿌리 약초","약초":"말린 약초·차","�
 const RAW_FORMS=["생물","건조","덖음·차"],PROC_FORMS=["청·잼","즙·액상차","차(티백·잎차)","분말·환","절임·장아찌","기타 가공품"];
 const RAW_UNITS=["300g","500g","1kg","근(600g)","5kg"],PROC_UNITS=["1병","1봉","1박스","1세트","300g","500g","1kg"];
 const isProc=p=>p.cat==="가공품";
+/* 해외 손님 화면의 배송 표시: A 가공품은 해외로 보내기 쉬움, B 건조 원물은 수입국 식물검역 필요, C 생물은 한국 내 배송만 */
+function shipClass(p){if(p.cat==="가공품")return "A";if(p.form==="생물")return "C";return "B"}
+const SHIP_KO={A:"해외 화면 표시: ✈ 해외로 보내기 쉬운 가공품",B:"해외 화면 표시: 수입국 식물검역이 필요한 건조 원물",C:"해외 화면 표시: 한국 내 배송만 (생물)"};
 const ASEASON={"송이":[9,10],"능이":[9,10],"꽃송이버섯":[7,8,9],"겨우살이":[11,12,1,2,3]};
 const nowM=()=>new Date().getMonth()+1;
 const aucOpen=c=>!ASEASON[c]||ASEASON[c].includes(nowM());
@@ -1889,6 +1892,8 @@ function renderSeller(){
   $("#sellerAucs").innerHTML=S.uid?sellerAucHTML():`<div class="empty">로그인하면 내 경매가 보입니다.</div>`;
   $("#sellerOrders").innerHTML=myO.length?myO.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
     <div class="meta num">${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}</div>
+    ${o.delivery==="fwd"?`<div class="notice">해외 손님 · <b>배송대행지</b>로 보내는 주문입니다. 아래 메모의 대행업체 회원번호(사서함 번호)를 받는 분 이름 옆에 꼭 적어 주세요.</div>`:o.lang?`<div class="meta">해외 손님 주문 (한국 내 배송)</div>`:""}
+    ${o.memo?`<div class="meta">배송 메모: ${esc(o.memo)}</div>`:""}
     ${o.status==="결제완료"?`<div class="actions"><select id="cr-${o.id}" aria-label="택배사"><option>CJ대한통운</option><option>우체국택배</option><option>한진택배</option><option>롯데택배</option></select><input id="tr-${o.id}" placeholder="송장번호" aria-label="송장번호"><button class="btn sm primary" data-act="ship" data-id="${o.id}">발송 처리</button></div>`:o.tracking?`<div class="meta">송장 ${esc(o.courier)} ${esc(o.tracking)}</div>`:""}
     </div>`).join(""):`<div class="empty">아직 받은 주문이 없습니다.</div>`;
   const open=S.requests.filter(r=>r.status==="모집중"&&r.buyerId!==S.uid).sort((a,b)=>b.createdAt-a.createdAt);
@@ -2738,6 +2743,7 @@ function renderSell(){
       ${S.sample?`<button type="button" class="addrow" id="wzTr" style="margin-top:8px">상품 이름으로 자동 번역</button>`:""}</details>`:""}
      <div class="fld"><span>어떻게 얻었나요?</span><div class="chips" data-wzk="grow">${(auc_?GROWS.slice(0,2):GROWS).map(g=>`<button type="button" data-v="${g}" aria-pressed="${WZ.grow===g}">${g.replace(" (산에서 채취)","").replace(" (인증 없음)","")}</button>`).join("")}</div></div>
      ${!auc_&&isCert({grow:WZ.grow})?`<label class="fld"><span>친환경 인증번호 (필수)</span><input id="wzCertNo" value="${esc(WZ.certNo)}" placeholder="예: 제00-00-0-000호"></label>`:""}
+     ${!auc_?`<p class="meta" style="margin:0">${esc(SHIP_KO[shipClass({cat:wzCat(),form:WZ.form})])}</p>`:""}
      <label class="fld"><span>${auc_?"캔 곳":"산지"}</span><input id="wzRegion" value="${esc(WZ.region)}" placeholder="예: 경북 봉화"></label>
      <label class="fld"><span>채취 근거</span><select id="wzPermit">${PERMITS.map(p=>`<option ${WZ.permit===p?"selected":""}>${p}</option>`).join("")}</select></label>
      ${!auc_&&need==="cert"&&!isCert({grow:WZ.grow})?`<label class="fld"><span>생산신고번호 또는 합격증 번호 (필수)</span><input id="wzCertNo" value="${esc(WZ.certNo)}" placeholder="예: 산양삼 생산신고 제00호"></label>`:""}
