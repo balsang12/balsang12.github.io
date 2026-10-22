@@ -755,7 +755,7 @@ label.btn{display:inline-block}
     <div class="eyebrow hdirect">농부와 심마니 <b>직거래</b> 장터 · 안전결제</div>
     <h1>산과 밭에서 온 것, <br>무엇을 찾으세요?</h1>
     <p class="hsub hseason" id="hSeason"></p>
-    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="약초·산나물 이름으로 찾기" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="골라 주세요">🧺<span>골라 주세요</span></button></div>
+    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="약초·산나물 이름으로 찾기" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="쇼핑도우미">🧺<span>쇼핑도우미</span></button></div>
     <button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>약초·산나물 알아보기</b><br><span>약초·산나물 300여 가지의 생김새, 옛 문헌 기록, 최근 연구를 사전에서 읽어 보세요</span></div><em aria-hidden="true">›</em></button>
     <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
     <form class="askbox" id="askBox" hidden>
@@ -2791,7 +2791,7 @@ const USES=[
   {k:"first",t:"약초가 처음이라면",d:"식탁에서 익숙한 품목을 부담 없는 양으로",f:p=>USE_FIRST.includes(p.item)&&(UNIT_G[p.unit]||1000)<=1000}];
 const useList=k=>{const u=USES.find(x=>x.k===k);return u?live().filter(p=>p.stock>0&&u.f(p)):[]};
 function renderUses(){const el=$("#homeUses");if(!el)return;el.innerHTML=USES.map(u=>{const n=useList(u.k).length;return `<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span><em class="num${n?"":" soon"}">${n?`상품 ${n}개 보기 →`:"상품 준비 중"}</em></button>`}).join("")}
-function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<button type="button" data-reco="1" style="font-weight:700;border-color:var(--gold);background:var(--gold-soft)">🧺 골라 주세요</button><span class="lbl">어떻게 드세요?</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
+function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<button type="button" data-reco="1" style="font-weight:700;border-color:var(--gold);background:var(--gold-soft)">🧺 쇼핑도우미</button><span class="lbl">어떻게 드세요?</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
 const soonIco=(h,soon)=>soon?h.replace('class="ico"','class="ico soon"').replace(/<\/button>$/,"<small>준비 중</small></button>"):h;
 const myAlert=(key,kind)=>S.alerts.find(a=>a.uid===S.uid&&a.key===key&&a.kind===kind);
 const alertBtn=(key,kind)=>!key?"":myAlert(key,kind)?`<button class="btn" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 알림 신청됨 · 끄기</button>`:`<button class="btn primary" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 들어오면 알려 주세요</button>`;
