@@ -844,6 +844,7 @@ label.btn{display:inline-block}
     <button data-go="request"><b>채취 의뢰</b><span>내 요청서와 받은 견적</span></button>
     <button data-go="seller"><b>판매자 센터<span id="dotSeller2"></span></b><span>상품·경매 등록, 주문 처리, 견적 보내기</span></button>
     <button data-go="herbs"><b>약초 사전</b><span>한국 산나물·약초 300여 가지의 생김새·구별법·고서 기록</span></button>
+    <button id="nmInstMenu" hidden type="button"><b>📲 홈 화면에 추가</b><span>앱처럼 아이콘을 눌러 바로 열기</span></button>
     <button data-go="help"><b>고객센터</b><span>자주 묻는 질문·1:1 문의·이용 안내</span></button>
     <button data-go="admin" id="adminMenu" hidden><b>운영자</b><span>검수·정산·문제 신고</span></button>
   </div>
@@ -3966,5 +3967,26 @@ addEventListener("resize",()=>{clearTimeout(paintAll.t);paintAll.t=setTimeout(pa
 var g=/^zh/.test(l)?"zh-Hans":/^ja/.test(l)?"ja":"en",T={en:["Shopping from abroad? See Nongmani in English.","English"],ja:["日本語で見ますか？","日本語版"],"zh-Hant":["想用中文瀏覽？","中文版"],"zh-Hans":["想用中文浏览？","中文版"]}[g];
 var e=document.getElementById("nmIntl");document.getElementById("nmIntlT").textContent=T[0];var a=document.getElementById("nmIntlA");a.textContent=T[1];a.href="global.html?lang="+g;e.hidden=false;e.style.display="flex";
 document.getElementById("nmIntlX").onclick=function(){e.hidden=true;e.style.display="none";try{localStorage.setItem("nm_intl_x","1")}catch(x){}}})();</script>
+<div id="nmInst" hidden style="position:fixed;left:12px;right:12px;bottom:84px;z-index:49;background:var(--surface);color:var(--ink);border:1px solid var(--pine);border-radius:14px;padding:12px 14px;gap:10px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:15px">
+<span style="font-size:24px" aria-hidden="true">📲</span><span style="flex:1">농마니를 홈 화면에 추가하면 앱처럼 바로 열 수 있어요</span><button type="button" id="nmInstGo" style="background:var(--pine);color:var(--pine-ink);border:0;border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;white-space:nowrap;cursor:pointer">추가하기</button><button type="button" id="nmInstX" aria-label="닫기" style="background:none;border:0;color:var(--muted);font-size:22px;min-width:40px;min-height:40px;cursor:pointer">×</button></div>
+<div id="nmIos" hidden role="dialog" aria-modal="true" aria-labelledby="nmIosH" style="position:fixed;inset:0;z-index:9999;background:rgba(10,20,14,.55);place-items:center;padding:16px"><div style="background:var(--surface);color:var(--ink);border-radius:18px;max-width:380px;width:100%;padding:22px 20px;display:grid;gap:12px;font-size:16px;line-height:1.6"><h2 id="nmIosH" style="margin:0;font-size:22px;color:var(--pine)">홈 화면에 추가하기</h2>
+<ol style="margin:0;padding-left:20px;display:grid;gap:8px;font-size:16px"><li>사파리 아래쪽의 <b>공유 버튼</b>(네모에 화살표 ↑)을 누르세요.</li><li>목록을 올려 <b>‘홈 화면에 추가’</b>를 누르세요.</li><li>오른쪽 위 <b>‘추가’</b>를 누르면 끝입니다.</li></ol>
+<p style="margin:0;color:var(--muted);font-size:14px">카카오톡 안에서 열었다면 오른쪽 아래 ⋯ 메뉴에서 <b>‘다른 브라우저로 열기’</b>를 먼저 눌러 주세요.</p><button type="button" id="nmIosX" style="min-height:48px;border-radius:12px;border:1px solid var(--line);background:none;font:inherit;cursor:pointer">닫기</button></div></div>
+<script>(function(){
+  var standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;if(standalone)return;
+  var ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)&&!/CriOS|FxiOS/.test(ua),ev=null,bar=document.getElementById("nmInst");
+  function get(k){try{return localStorage.getItem(k)}catch(e){return null}}function put(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  var n=(+get("nm_visits")||0)+1;put("nm_visits",n);
+  var muted=+get("nm_inst_x")||0,ready=function(){return (ev||ios)&&n>=2&&Date.now()-muted>30*864e5&&document.getElementById("nmIntl").hidden};
+  function show(){if(!ready())return;bar.hidden=false;bar.style.display="flex";var m=document.getElementById("nmInstMenu");if(m)m.hidden=false}
+  function go(){if(ev){ev.prompt();ev.userChoice.then(function(c){if(c&&c.outcome==="accepted"){bar.hidden=true;bar.style.display="none"}ev=null})}else if(ios){var d=document.getElementById("nmIos");d.hidden=false;d.style.display="grid"}}
+  addEventListener("beforeinstallprompt",function(e){e.preventDefault();ev=e;var m=document.getElementById("nmInstMenu");if(m)m.hidden=false;setTimeout(show,4000)});
+  addEventListener("appinstalled",function(){bar.hidden=true;bar.style.display="none";put("nm_inst_x",String(Date.now()+3650*864e5))});
+  document.getElementById("nmInstGo").onclick=go;
+  document.getElementById("nmInstX").onclick=function(){bar.hidden=true;bar.style.display="none";put("nm_inst_x",String(Date.now()))};
+  document.getElementById("nmIosX").onclick=function(){var d=document.getElementById("nmIos");d.hidden=true;d.style.display="none"};
+  var m=document.getElementById("nmInstMenu");if(m){m.onclick=go;if(ios)m.hidden=false}
+  window.nmInstall=go;if(ios)setTimeout(show,4000);
+})();</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body></html>
