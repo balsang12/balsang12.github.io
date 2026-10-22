@@ -33,7 +33,22 @@ async function open(b, pre, shot) {
   const r = await p.evaluate(() => guard(() => Promise.resolve()));
   ok(r === false && await p.locator('.nmauth').isVisible(), 'writing opens the sign-in sheet');
   await p.screenshot({ path: 'shot_login.png' });
-  await p.fill('#nmMail', 'hong@naver.com'); await p.click('#nmMailForm button'); await p.waitForTimeout(200);
+  // 이메일+비밀번호
+  ok(await p.locator('#nmPwMail').isVisible() && await p.locator('#nmPw').isVisible(), 'email and password fields');
+  await p.fill('#nmPwMail', 'hong@naver.com'); await p.fill('#nmPw', 'wrong-pass'); await p.click('#nmPwIn'); await p.waitForTimeout(200);
+  ok((await p.locator('#nmMsg').innerText()).includes('맞지 않아요'), 'wrong password message');
+  await p.fill('#nmPw', 'short'); await p.click('#nmPwUp'); await p.waitForTimeout(100);
+  ok((await p.locator('#nmMsg').innerText()).includes('8자'), 'short password rejected on sign-up');
+  await p.fill('#nmPw', 'new-pass-1234'); await p.click('#nmPwUp'); await p.waitForTimeout(200);
+  ok((await p.locator('#nmMsg').innerText()).includes('확인 링크'), 'sign-up asks to confirm email');
+  await p.fill('#nmPwMail', 'old@b.co'); await p.click('#nmPwUp'); await p.waitForTimeout(200);
+  ok((await p.locator('#nmMsg').innerText()).includes('이미 가입'), 'existing email detected');
+  await p.click('#nmForgot'); await p.waitForTimeout(200);
+  ok((await p.locator('#nmMsg').innerText()).includes('old@b.co'), 'password reset link sent');
+  await p.fill('#nmPwMail', 'hong@naver.com'); await p.fill('#nmPw', 'right-pass'); await p.click('#nmPwIn'); await p.waitForTimeout(200);
+  ok(await p.evaluate(() => window.__calls.some(c => c[0] === 'pw' && c[2] === 'right-pass')) && !(await p.locator('.nmauth').isVisible()), 'password sign-in closes the sheet');
+  await p.evaluate(() => nmAuth.open()); await p.waitForTimeout(100);
+  await p.click('.nm-link summary'); await p.fill('#nmMail', 'hong@naver.com'); await p.click('#nmMailForm button'); await p.waitForTimeout(200);
   ok((await p.locator('#nmMsg').innerText()).includes('hong@naver.com'), 'email link sent message');
   await p.click('#nmKakao'); await p.waitForTimeout(200);
   ok((await p.locator('#nmMsg').innerText()).includes('이메일'), 'kakao not ready falls back politely');

@@ -57,6 +57,10 @@
           onAuthStateChange: function () { return { data: { subscription: { unsubscribe: function () {} } } }; },
           signInWithOtp: function (o) { window.__calls.push(["otp", o.email]); return Promise.resolve({ error: null }); },
           signInWithOAuth: function (o) { window.__calls.push(["oauth", o.provider]); return Promise.resolve({ error: { message: "provider not enabled" } }); },
+          signInWithPassword: function (o) { window.__calls.push(["pw", o.email, o.password]); return Promise.resolve(o.password === "right-pass" ? { data: { session: { user: { id: "u1" } } }, error: null } : { data: {}, error: { message: "Invalid login credentials" } }); },
+          signUp: function (o) { window.__calls.push(["signup", o.email]); return Promise.resolve(o.email === "old@b.co" ? { data: { user: { identities: [] } }, error: null } : { data: { user: { identities: [{}] }, session: null }, error: null }); },
+          resetPasswordForEmail: function (m) { window.__calls.push(["reset", m]); return Promise.resolve({ error: null }); },
+          updateUser: function (o) { window.__calls.push(["update", !!o.password]); return Promise.resolve({ error: null }); },
           signOut: function () { return Promise.resolve({}); }
         },
         from: function () { return new Builder(); },

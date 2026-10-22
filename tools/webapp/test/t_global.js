@@ -42,7 +42,7 @@ ok(await p.locator('#dlg[open]').count()===1,'detail opens');
 await p.click('#notify');await p.waitForTimeout(300);
 ok(await p.locator('.nmauth').isVisible()&&(await p.locator('#nmAuthH').innerText()).includes('登录'),'login sheet in chinese');
 await p.screenshot({path:'g_zh_login.png'});
-await p.fill('#nmMail','a@b.co');await p.click('#nmSend');await p.waitForTimeout(200);
+await p.fill('#nmPwMail','a@b.co');await p.fill('#nmPw','new-pass-1234');await p.click('#nmPwUp');await p.waitForTimeout(200);
 ok(await p.evaluate(()=>JSON.parse(localStorage.getItem('nm_return')).url.includes('global.html')),'return page remembered');
 ok(errs.length===0,'no errors signed out '+errs.join('|'));await ctx.close();
 ({p,errs,ctx}=await open('window.__SESSION={user:{id:"me"}};'+D(false),'/app/global.html?lang=en'));
