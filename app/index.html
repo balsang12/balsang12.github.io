@@ -432,9 +432,9 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .medn{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:8px 10px}
 .cguard{font-size:13px;color:var(--muted);background:var(--sunk);padding:8px 12px;border-bottom:1px solid var(--line)}.cguard button{border:0;background:none;padding:0 0 0 4px;font:inherit;font-weight:700;color:var(--berry);text-decoration:underline;cursor:pointer}
 .srow2{display:flex;gap:8px;align-items:stretch;max-width:640px}.srow2 .search{flex:1 1 0;min-width:0;max-width:none}.srow2 .search input{min-width:0;width:100%}
-.recomini{display:none;flex:none;border:1px solid var(--gold);background:var(--gold-soft);color:var(--gold-deep,var(--gold));border-radius:14px;padding:0 10px;font:inherit;font-weight:700;cursor:pointer;align-items:center;gap:4px;font-size:14px;white-space:nowrap;line-height:1.2}
+.recomini{display:flex;flex:none;border:1px solid var(--gold);background:var(--gold-soft);color:var(--gold-deep,var(--gold));border-radius:14px;padding:0 10px;font:inherit;font-weight:700;cursor:pointer;align-items:center;gap:4px;font-size:14px;white-space:nowrap;line-height:1.2}
 @media (max-width:700px){
-  .recomini{display:flex}.hhead .recobtn{display:none}#homeAucKinds{display:none}
+  .hhead .recobtn{display:none}#homeAucKinds{display:none}
   .hhead .hsub{display:none}.hhead>.eyebrow{font-size:13px}.hhead h1{font-size:24px}.hhead h1 br{display:none}.hhead{gap:10px}
   .betabar{font-size:12.5px;padding:6px 0}
   #connBanner{padding:8px 12px;font-size:13px;margin-block:8px}
@@ -446,6 +446,9 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .faq{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:6px}.faq summary{cursor:pointer;padding:12px 14px;font-weight:700;list-style:none}.faq summary::after{content:"＋";float:right;color:var(--muted)}.faq[open] summary::after{content:"－"}
 .faq p{margin:0;padding:0 14px 14px;color:var(--muted);font-size:15px;line-height:1.65}
 .hdirect b{color:var(--gold-deep,var(--gold))}
+.herbcard{display:flex;align-items:center;gap:12px;width:100%;max-width:640px;padding:14px 16px;border-radius:14px;border:1px solid color-mix(in srgb,var(--pine) 35%,transparent);background:color-mix(in srgb,var(--pine) 8%,var(--surface));color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.herbcard b{font-size:17px;color:var(--pine)}.herbcard span{font-size:14px;color:var(--muted)}.herbcard i{font-style:normal;font-size:26px}.herbcard em{font-style:normal;margin-left:auto;font-size:22px;color:var(--pine)}.herbcard div{flex:1}
+.dictshop{margin-top:6px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -732,8 +735,8 @@ label.btn{display:inline-block}
     <h1>어떤 약초를 <br>찾으세요?</h1>
     <p class="hsub">심마니가 산에서 캔 약초부터 농부가 밭에서 키운 약초까지</p>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="약초 이름으로 찾기" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="골라 주세요">🧺<span>골라 주세요</span></button></div>
-    <button type="button" class="recobtn" data-reco="1"><i aria-hidden="true">🧺</i><div><b>뭘 살지 모르겠다면, 골라 드릴게요</b><br><span>몇 가지만 답하면 쓰임새와 예산에 맞는 상품을 추천해 드려요</span></div></button>
-    <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" data-go="herbs">약초 사전에서 찾아보기</button><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
+    <button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>약초 알아보기</b><br><span>약초 300여 가지의 생김새, 옛 문헌 기록, 최근 연구를 약초 사전에서 읽어 보세요</span></div><em aria-hidden="true">›</em></button>
+    <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
     <form class="askbox" id="askBox" hidden>
       <label for="askQ"><b>어떤 약초인지 기억나는 대로 적어 주세요</b></label>
       <textarea id="askQ" rows="2" maxlength="200" placeholder="예: 잎이 넓고 쌉싸름한 봄 산나물 / 뿌리를 고추장에 무쳐 먹던 하얀 것"></textarea>
@@ -2545,6 +2548,7 @@ function healthCard(hq){
     <p>농마니에서 파는 약초와 산나물은 식품이라서, 어떤 증상에 좋은지 알려 드리거나 몸 상태에 맞춰 추천해 드릴 수 없습니다. 증상이 있으시면 의사나 한의사와 먼저 상담해 주세요.</p>
     ${hq.herbs.length?`<p class="meta">검색어에 들어 있는 품목 이름(${hq.herbs.map(esc).join(", ")})으로 찾은 상품만 아래에 보여 드립니다.</p>`:`<p class="meta">찾는 약초 이름을 알고 계시면 이름으로 검색해 주세요. 예: 도라지, 더덕, 오미자</p>`}
     <button type="button" class="recobtn" data-reco="1" style="margin:4px 0 8px"><i aria-hidden="true">🧺</i><div><b>쓰임새로 골라 드릴게요</b><br><span>누구에게, 어떻게 드실지, 예산만 알려 주세요</span></div></button>
+    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>약초 알아보기</b><br><span>약초마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 약초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
     <div><div class="meta" style="margin-bottom:6px">드시는 방법이나 받으실 분으로 골라 보시겠어요?</div><div class="usel">${USES.map(u=>`<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span></button>`).join("")}</div></div></div>`}
 const loggedQ=new Set();
 function logHealth(q){const hq=healthQ(q);if(!hq.hit||!S.db)return;const k=hq.kws.sort().join("|");if(loggedQ.has(k))return;loggedQ.add(k);
@@ -3705,6 +3709,8 @@ function openDict(name){
     <div class="vlist">${vids.length?vids.map(v=>`<div class="vcard"><span class="play" aria-hidden="true"><i></i></span><div>${safeUrl(v.url)?`<a href="${esc(safeUrl(v.url))}" target="_blank" rel="noopener">${esc(v.title||"유튜브 영상")}</a>`:esc(v.title||"")}<div class="meta">유튜브에서 열립니다</div></div>${S.owner?`<button class="btn sm danger" type="button" data-vdel="${esc(v.id)}">삭제</button>`:""}</div>`).join(""):'<div class="meta">아직 연결된 영상이 없습니다.</div>'}</div>
     ${S.owner?`<form class="panel goldp" id="vForm" style="margin-top:10px;padding:14px"><div class="field"><label for="vTitle">영상 제목</label><input id="vTitle" maxlength="80" placeholder="예: 동의보감 속 ${esc(name)} 이야기"></div><div class="field"><label for="vUrl">유튜브 주소</label><input id="vUrl" type="url" placeholder="https://youtu.be/..."></div><button class="btn primary" type="submit">영상 연결</button></form>`:""}</div>`}
   </div>`;
+  if(!isBlocked(x.st)&&x.st!=="hanyak")dlg.querySelector(".dsingle").insertAdjacentHTML("beforeend",`<div class="dictshop"><span>이 품목을 파는 농부·심마니가 있는지 마켓에서 찾아볼 수 있습니다.</span><button class="btn sm" type="button" id="dictShop">마켓에서 ‘${esc(name)}’ 찾기</button></div>`);
+  if($("#dictShop"))$("#dictShop").onclick=()=>{dlg.close();S.cat="전체";S.use="";$("#shopQ").value=name;go("shop")};
   dlg.querySelector(".close").onclick=()=>dlg.close();
   if($("#vForm"))$("#vForm").onsubmit=async e=>{e.preventDefault();const url=$("#vUrl").value.trim(),title=$("#vTitle").value.trim();
     if(!YT.test(url)){toast("youtube.com 또는 youtu.be 로 시작하는 영상 주소를 넣어 주세요");return}
