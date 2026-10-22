@@ -17,7 +17,7 @@ def patch(old, new, label):
         sys.exit(f"patch '{label}': expected 1 match, found {n}")
     s = s.replace(old, new)
 
-HEAD = """<meta name="description" content="심마니가 산에서 캔 약초, 농부가 밭에서 키운 산나물을 직접 사고파는 장터. 귀한 산삼·송이는 경매로.">
+HEAD = """<meta name="description" content="농부와 심마니 직거래 장터. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 경매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
 <link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
@@ -27,7 +27,7 @@ HEAD = """<meta name="description" content="심마니가 산에서 캔 약초, �
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="농마니">
-<meta property="og:title" content="농부와 심마니 마켓">
+<meta property="og:title" content="농부와 심마니 직거래 장터">
 <meta property="og:description" content="산에서 캔 약초, 밭에서 키운 산나물을 직접 사고파는 장터">
 <meta property="og:image" content="https://nongmani.com/seller/og.png">
 """

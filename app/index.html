@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="description" content="심마니가 산에서 캔 약초, 농부가 밭에서 키운 산나물을 직접 사고파는 장터. 귀한 산삼·송이는 경매로.">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="description" content="농부와 심마니 직거래 장터. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 경매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
 <link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
@@ -8,13 +8,13 @@
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="농마니">
-<meta property="og:title" content="농부와 심마니 마켓">
+<meta property="og:title" content="농부와 심마니 직거래 장터">
 <meta property="og:description" content="산에서 캔 약초, 밭에서 키운 산나물을 직접 사고파는 장터">
 <meta property="og:image" content="https://nongmani.com/seller/og.png">
 </head><body>
 <script src="vendor/supabase.js"></script>
 <script src="nm-claude.js"></script>
-<title>농부와 심마니 마켓</title>
+<title>농부와 심마니 직거래 장터</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 /* Layout: 상단 고정 내비 + 탭 화면(홈·경매·마켓·채취 의뢰·내 거래·판매자·운영자·이용 안내). 경매는 카드 그리드 + 상세 대화상자, 판매자·운영자는 2단 패널 */
@@ -435,7 +435,7 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .recomini{display:none;flex:none;border:1px solid var(--gold);background:var(--gold-soft);color:var(--gold-deep,var(--gold));border-radius:14px;padding:0 12px;font:inherit;font-weight:700;cursor:pointer;align-items:center;gap:4px;font-size:15px}
 @media (max-width:700px){
   .recomini{display:flex}.hhead .recobtn{display:none}#homeAucKinds{display:none}
-  .hhead>.eyebrow,.hhead .hsub{display:none}.hhead h1{font-size:24px}.hhead h1 br{display:none}.hhead{gap:10px}
+  .hhead .hsub{display:none}.hhead>.eyebrow{font-size:13px}.hhead h1{font-size:24px}.hhead h1 br{display:none}.hhead{gap:10px}
   .betabar{font-size:12.5px;padding:6px 0}
   #connBanner{padding:8px 12px;font-size:13px;margin-block:8px}
   #homeIcons{grid-template-columns:repeat(var(--cols,3),1fr)}
@@ -445,6 +445,7 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .faqs{display:grid;gap:18px;margin-bottom:20px}.faqg h3{font-size:17px;margin:0 0 6px}
 .faq{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:6px}.faq summary{cursor:pointer;padding:12px 14px;font-weight:700;list-style:none}.faq summary::after{content:"＋";float:right;color:var(--muted)}.faq[open] summary::after{content:"－"}
 .faq p{margin:0;padding:0 14px 14px;color:var(--muted);font-size:15px;line-height:1.65}
+.hdirect b{color:var(--gold-deep,var(--gold))}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -727,7 +728,7 @@ label.btn{display:inline-block}
 <section data-view="home">
   <div class="htop"><div class="hmain">
   <div class="hhead">
-    <div class="eyebrow">농부·심마니 약초 직거래 마켓 · 안전결제</div>
+    <div class="eyebrow hdirect">농부와 심마니 <b>직거래</b> 장터 · 안전결제</div>
     <h1>어떤 약초를 <br>찾으세요?</h1>
     <p class="hsub">심마니가 산에서 캔 약초부터 농부가 밭에서 키운 약초까지</p>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 약초 이름을 적어 주세요" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="추천받기">🧺<span>추천</span></button></div>
