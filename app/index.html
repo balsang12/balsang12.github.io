@@ -426,6 +426,7 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .recobtn b{font-size:17px;color:var(--gold-deep,var(--gold))}.recobtn span{font-size:14px;color:var(--muted)}.recobtn i{font-style:normal;font-size:26px}
 .reco{display:grid;gap:14px;padding:20px 18px 22px;grid-column:1/-1}.reco .prog{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}.reco .prog i{display:block;height:100%;background:var(--gold)}
 .reco h2{font-size:22px}.reco .opts{display:grid;gap:8px}.reco .opts button{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:inherit;font-size:16px;text-align:left;padding:10px 14px;cursor:pointer}
+.reco .opts button{word-break:keep-all}
 .reco .opts button[aria-pressed="true"]{border-color:var(--pine);background:var(--pine-soft);font-weight:700}.reco .opts button.any{color:var(--muted)}
 .reco .res{display:grid;gap:10px}.reco .rc{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface);text-align:left;font:inherit;cursor:pointer;width:100%}
 .reco .rc img,.reco .rc .ph{width:72px;height:72px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}.reco .rc b{display:block;font-size:16px}.reco .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
@@ -2673,6 +2674,7 @@ $("#inqForm").onsubmit=async e=>{e.preventDefault();const t=$("#inqText").value.
 /* ---------- 추천 도우미 ---------- */
 /* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
 const RECO_Q=[
+ {k:"src",o:["mtn","farm"]},
  {k:"who",o:["me","parents","holiday","biz"]},
  {k:"how",o:["namul","soup","tea","infuse","raw"]},
  {k:"budget",o:["20","50","100","999"]},
@@ -2705,13 +2707,14 @@ function recoRun(a,ctx){
   const must={wild:i=>String(i.x.grow||"").startsWith("자연산"),cert:i=>/인증/.test(i.x.grow||""),proof:i=>!!i.x.proofOk,
     review:i=>{if(i.kind!=="p")return false;const r=ctx.rating(i.x.id);return r.n>0&&r.avg>=4},season:i=>recoSeason(i.cat)};
   const fresh=i=>i.kind==="a"||form(i)==="생물";
+  const mtn=i=>/^자연산/.test(i.x.grow||"")||["산양삼","장뇌삼","산삼"].includes(i.x.item||i.x.cat||"")||(i.kind==="a"&&!/재배/.test(i.x.grow||""));
   const regOk=i=>{const r=RECO_REG[a.region];return !r||r.some(x=>String(i.x.region||"").startsWith(x))};
   const bandHi=b=>(RECO_BAND[b]||[0,1e12])[1];
   const tries=[{},{region:1},{region:1,must:1},{region:1,must:1,budget:1},{region:1,must:1,budget:1,keep:1}];
   let out=[],relaxed={},strict=null;
   for(const r of tries){
     const hi=a.budget?(r.budget?bandHi({"20":"50","50":"100","100":"999","999":"999"}[a.budget]):bandHi(a.budget)):1e12;
-    out=items.filter(i=>(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
+    out=items.filter(i=>(!a.src||(a.src==="mtn")===mtn(i))&&(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
     if(!strict)strict=new Set(out.map(i=>i.x.id));relaxed=r;if(out.length>=3)break}
   if(out.length===strict.size)relaxed={};
   const lo=a.budget?(RECO_BAND[a.budget]||[0])[0]:0;
@@ -2725,6 +2728,7 @@ function recoRun(a,ctx){
     if(a.prep==="easy"&&ctx.prep(it)){s-=4}
     if(ctx.prep(it))why.push("prep");
     if(i.price>=lo)s+=1;if(strict.has(i.x.id))s+=6;else why.unshift("wider");
+    if(a.src)why.unshift(a.src);
     if(String(i.x.grow||"").startsWith("자연산")){s+=1;why.push("wild")}
     if(/인증/.test(i.x.grow||""))why.push("cert");
     if(i.x.proofOk){s+=1;why.push("proof")}
@@ -2735,7 +2739,8 @@ function recoRun(a,ctx){
   out.sort((x,y)=>y.score-x.score||x.price-y.price);
   return {list:out.slice(0,5),relaxed,total:out.length}}
 
-const RECO_KO={who:["누구를 위한 건가요?",{me:"내가 먹을 것",parents:"부모님·어르신 선물",holiday:"명절·감사 선물",biz:"가게·식당에서 쓸 것"}],
+const RECO_KO={src:["어떤 걸 찾으세요?",{mtn:"⛰️ 산에서 난 것 — 심마니가 캔 자연산·산양삼",farm:"🌾 밭에서 키운 것 — 농부가 기른 재배품"}],
+ who:["누구를 위한 건가요?",{me:"내가 먹을 것",parents:"부모님·어르신 선물",holiday:"명절·감사 선물",biz:"가게·식당에서 쓸 것"}],
  how:["어떻게 드실 건가요?",{namul:"나물 무침·볶음",soup:"국·찌개·전골",tea:"차로 우려 마시기",infuse:"청·담금주 담그기",raw:"그대로·생으로"}],
  budget:["예산은 얼마인가요? (배송비 포함)",{"20":"2만 원 이하","50":"2~5만 원","100":"5~10만 원","999":"10만 원 이상"}],
  keep:["언제 드실 건가요?",{fresh:"바로 먹을 거라 신선하게",store:"두고두고 먹을 거라 오래 보관"}],
@@ -2745,7 +2750,7 @@ const RECO_KO={who:["누구를 위한 건가요?",{me:"내가 먹을 것",parent
  size:["몇 분이 드시나요?",{s:"1~2명",m:"3~4명",l:"5명 이상"}],
  must:["꼭 원하는 게 있나요? (여러 개 고를 수 있어요)",{wild:"자연산만",cert:"무농약·유기농 인증",proof:"채취 증빙 확인된 것",review:"후기 좋은 것",season:"지금 제철인 것"}],
  region:["원하는 산지가 있나요?",{"강원":"강원","경상":"경상","전라":"전라","충청":"충청","제주":"제주"}]};
-const RECO_WHY_KO={keeps:"오래 보관",gift:"선물하기 좋은 품목",bulk:"넉넉한 양",rare:"귀한 품목",new:"흔치 않은 품목",size:"식구 수에 맞는 양",prep:"데쳐서 드세요",wild:"자연산",cert:"인증 재배",proof:"채취 증빙 확인",season:"지금 제철",review:"후기 좋음",auction:"경매 중",wider:"조건을 넓혀 찾음"};
+const RECO_WHY_KO={mtn:"산에서 난 것",farm:"밭에서 키운 것",keeps:"오래 보관",gift:"선물하기 좋은 품목",bulk:"넉넉한 양",rare:"귀한 품목",new:"흔치 않은 품목",size:"식구 수에 맞는 양",prep:"데쳐서 드세요",wild:"자연산",cert:"인증 재배",proof:"채취 증빙 확인",season:"지금 제철",review:"후기 좋음",auction:"경매 중",wider:"조건을 넓혀 찾음"};
 const RC={a:{},i:0};
 function recoOpen(){RC.a={};RC.i=0;recoRender();const d=$("#dlg");if(!d.open)d.showModal();d.scrollTop=0}
 function recoCtx(){return {products:S.products,auctions:liveAucs(),aucCur:a=>{const x=auc(a);return x.phase==="진행중"?x.cur:null},mcat,prep:it=>findHerb(it)?.st==="caution",rating:ratingOf}}
@@ -2753,7 +2758,7 @@ function recoRender(){const d=$("#dlg"),qs=recoQuestions(RC.a),note=`<p class="m
   if(RC.i<qs.length){const q=qs[RC.i],[title,labels]=RECO_KO[q.k],cur=RC.a[q.k];
     d.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button><div class="reco">
       <div class="prog" aria-hidden="true"><i style="width:${Math.round(RC.i/qs.length*100)}%"></i></div>
-      <div class="meta">추천 도우미 · ${RC.i+1} / ${qs.length}</div><h2>${esc(title)}</h2>
+      <div class="meta">쇼핑도우미 · ${RC.i+1} / ${qs.length}</div><h2>${esc(title)}</h2>
       <div class="opts">${q.o.map(v=>`<button type="button" data-rv="${esc(v)}" aria-pressed="${q.multi?(cur||[]).includes(v):cur===v}">${esc(labels[v])}</button>`).join("")}${q.multi?"":`<button type="button" class="any" data-rv="">상관없음</button>`}</div>
       <div class="actions">${RC.i?`<button class="btn" type="button" id="rcBack">이전</button>`:""}${q.multi?`<button class="btn primary" type="button" id="rcNext">${(cur||[]).length?"다음":"상관없음, 다음"}</button>`:""}</div>${note}</div></div>`;
     d.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{const v=b.dataset.rv;
@@ -2764,7 +2769,7 @@ function recoRender(){const d=$("#dlg"),qs=recoQuestions(RC.a),note=`<p class="m
     const rel=[r.relaxed.region&&RC.a.region?"산지":"",r.relaxed.must&&(RC.a.must||[]).length?"꼭 원하는 조건":"",r.relaxed.budget&&RC.a.budget?"예산":"",r.relaxed.keep&&RC.a.keep?"보관 방식":""].filter(Boolean);
     d.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button><div class="reco">
       <h2>${r.list.length?"이런 상품은 어떠세요?":"딱 맞는 상품이 아직 없어요"}</h2>
-      <div class="meta">${[lab("who"),lab("how"),lab("budget"),lab("keep")].filter(Boolean).map(esc).join(" · ")||"조건 없이 골랐어요"}</div>
+      <div class="meta">${[lab("src").replace(/^\S+ /,"").split(" — ")[0],lab("who"),lab("how"),lab("budget"),lab("keep")].filter(Boolean).map(esc).join(" · ")||"조건 없이 골랐어요"}</div>
       ${rel.length&&r.list.length?`<div class="notice">조건을 조금 넓혀서 찾았어요: ${esc(rel.join(", "))}</div>`:""}
       <div class="res">${r.list.map(i=>{const x=i.x,name=i.kind==="a"?x.title:x.name;
         const why=[lab("how"),...i.why.map(w=>RECO_WHY_KO[w])].filter(Boolean);

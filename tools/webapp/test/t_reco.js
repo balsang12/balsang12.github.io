@@ -7,7 +7,13 @@ await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/jav
 await p.addInitScript('window.__SESSION={user:{id:"me"}};\n'+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1200);
 ok(await p.locator('.recomini').isVisible(),'home recommender button next to search');
 await p.locator('.recomini').click();await p.waitForTimeout(150);
-ok((await p.locator('.reco h2').innerText()).includes('누구'),'first question');
+ok((await p.locator('.reco h2').innerText()).includes('찾으세요'),'first question: mountain or farm');
+ok((await p.locator('.reco').innerText()).includes('산에서 난 것')&&(await p.locator('.reco').innerText()).includes('밭에서 키운 것'),'both choices');
+await p.screenshot({path:'reco_first.png'});
+{const r=await p.evaluate(()=>{const m=recoRun({src:"mtn"},recoCtx()).list,f=recoRun({src:"farm"},recoCtx()).list;return {m:m.length,mOk:m.every(i=>/^자연산/.test(i.x.grow||"")||["산양삼","장뇌삼","산삼"].includes(i.x.item||"")),f:f.length,fOk:f.every(i=>!/^자연산/.test(i.x.grow||""))}});
+ ok(r.m>0&&r.mOk&&r.f>0&&r.fOk,'mountain/farm filter '+JSON.stringify(r))}
+await p.locator('.reco .any').click();
+ok((await p.locator('.reco h2').innerText()).includes('누구'),'second question: who');
 await p.click('text=내가 먹을 것');await p.click('text=나물 무침·볶음');await p.click('text=2~5만 원');await p.click('text=바로 먹을 거라 신선하게');
 ok((await p.locator('.reco h2').innerText()).includes('손질'),'branch: handling question for greens');
 await p.click('text=바로 요리할 수 있는 것');ok((await p.locator('.reco h2').innerText()).includes('몇 분'),'branch: household size');

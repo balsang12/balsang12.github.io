@@ -76,7 +76,7 @@ ok(await p.evaluate(()=>window.__calls.some(c=>c[0]==='rpc'&&c[1]==='doc_update'
 // recommendation helper (ja)
 await p.click('[data-lang="ja"]');await p.waitForTimeout(150);
 await p.click('#recoBtn');await p.waitForTimeout(150);
-ok((await p.locator('.reco h2').innerText()).includes('どなた'),'ja helper first question');
+ok((await p.locator('.reco h2').innerText()).includes('何をお探し'),'ja helper first question');await p.locator('.reco .any').click();
 await p.click('text=自分で食べる');await p.click('text=ナムル・炒め物');await p.locator('.reco .any').click();await p.locator('.reco .any').click();
 await p.locator('.reco .any').click();await p.locator('.reco .any').click();await p.click('#rcNext');await p.locator('.reco .any').click();await p.waitForTimeout(150);
 {const tx=await p.locator('.reco').innerText();ok(tx.includes('こちらはいかがですか')||tx.includes('ぴったり'),'ja results: '+tx.split('\n').slice(0,3).join(' | '));ok(!tx.includes('後記')&&!tx.includes('review'),'no review option offered abroad')}

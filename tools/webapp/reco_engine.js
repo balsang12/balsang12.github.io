@@ -1,5 +1,6 @@
 /* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
 const RECO_Q=[
+ {k:"src",o:["mtn","farm"]},
  {k:"who",o:["me","parents","holiday","biz"]},
  {k:"how",o:["namul","soup","tea","infuse","raw"]},
  {k:"budget",o:["20","50","100","999"]},
@@ -32,13 +33,14 @@ function recoRun(a,ctx){
   const must={wild:i=>String(i.x.grow||"").startsWith("자연산"),cert:i=>/인증/.test(i.x.grow||""),proof:i=>!!i.x.proofOk,
     review:i=>{if(i.kind!=="p")return false;const r=ctx.rating(i.x.id);return r.n>0&&r.avg>=4},season:i=>recoSeason(i.cat)};
   const fresh=i=>i.kind==="a"||form(i)==="생물";
+  const mtn=i=>/^자연산/.test(i.x.grow||"")||["산양삼","장뇌삼","산삼"].includes(i.x.item||i.x.cat||"")||(i.kind==="a"&&!/재배/.test(i.x.grow||""));
   const regOk=i=>{const r=RECO_REG[a.region];return !r||r.some(x=>String(i.x.region||"").startsWith(x))};
   const bandHi=b=>(RECO_BAND[b]||[0,1e12])[1];
   const tries=[{},{region:1},{region:1,must:1},{region:1,must:1,budget:1},{region:1,must:1,budget:1,keep:1}];
   let out=[],relaxed={},strict=null;
   for(const r of tries){
     const hi=a.budget?(r.budget?bandHi({"20":"50","50":"100","100":"999","999":"999"}[a.budget]):bandHi(a.budget)):1e12;
-    out=items.filter(i=>(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
+    out=items.filter(i=>(!a.src||(a.src==="mtn")===mtn(i))&&(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
     if(!strict)strict=new Set(out.map(i=>i.x.id));relaxed=r;if(out.length>=3)break}
   if(out.length===strict.size)relaxed={};
   const lo=a.budget?(RECO_BAND[a.budget]||[0])[0]:0;
@@ -52,6 +54,7 @@ function recoRun(a,ctx){
     if(a.prep==="easy"&&ctx.prep(it)){s-=4}
     if(ctx.prep(it))why.push("prep");
     if(i.price>=lo)s+=1;if(strict.has(i.x.id))s+=6;else why.unshift("wider");
+    if(a.src)why.unshift(a.src);
     if(String(i.x.grow||"").startsWith("자연산")){s+=1;why.push("wild")}
     if(/인증/.test(i.x.grow||""))why.push("cert");
     if(i.x.proofOk){s+=1;why.push("proof")}
