@@ -2674,19 +2674,25 @@ $("#inqForm").onsubmit=async e=>{e.preventDefault();const t=$("#inqText").value.
 /* ---------- 추천 도우미 ---------- */
 /* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
 const RECO_Q=[
+ {k:"for",o:["me","others","gift"]},
+ {k:"whoO",when:a=>a.for==="others",o:["parents","family","kids","biz"]},
+ {k:"whoG",when:a=>a.for==="gift",o:["parents","boss","friend","biz"]},
+ {k:"occ",when:a=>a.for==="gift",o:["holiday","thanks","visit"]},
  {k:"src",o:["mtn","farm"]},
- {k:"who",o:["me","parents","holiday","biz"]},
- {k:"how",o:["namul","soup","tea","infuse","raw"]},
- {k:"budget",o:["20","50","100","999"]},
- {k:"keep",o:["fresh","store"]},
+ {k:"how",when:a=>a.for!=="gift",o:["namul","soup","tea","infuse","raw"]},
+ {k:"taste",when:a=>a.for==="gift",o:["rare","daily","new"]},
+ {k:"budget",when:a=>a.for!=="gift",o:["20","50","100","999"]},
+ {k:"gbudget",when:a=>a.for==="gift",o:["g5","g15","g30","g99"]},
+ {k:"wrap",when:a=>a.for==="gift",o:["yes"]},
+ {k:"keep",when:a=>a.for!=="gift",o:["fresh","store"]},
  {k:"prep",when:a=>a.how==="namul"||a.how==="soup",o:["easy","ok"]},
- {k:"taste",when:a=>a.who==="parents"||a.who==="holiday",o:["rare","daily","new"]},
+ {k:"size",when:a=>a.for==="me"||(a.for==="others"&&a.whoO!=="biz"),o:["s","m","l"]},
  {k:"auc",when:a=>a.how==="raw"||a.taste==="rare",o:["no","yes"]},
- {k:"size",when:a=>a.who==="me",o:["s","m","l"]},
  {k:"must",multi:true,o:["wild","cert","proof","review","season"]},
  {k:"region",o:["강원","경상","전라","충청","제주"]}
 ];
-const RECO_BAND={"20":[0,20000],"50":[20000,50000],"100":[50000,100000],"999":[100000,1e12]};
+const RECO_BAND={"20":[0,20000],"50":[20000,50000],"100":[50000,100000],"999":[100000,1e12],"g5":[0,50000],"g15":[50000,150000],"g30":[150000,300000],"g99":[300000,1e12]};
+const RECO_NEXT={"20":"50","50":"100","100":"999","999":"999","g5":"g15","g15":"g30","g30":"g99","g99":"g99"};
 const RECO_REG={"강원":["강원"],"경상":["경북","경남","경상"],"전라":["전북","전남","전라"],"충청":["충북","충남","충청"],"제주":["제주"]};
 const RECO_GIFT=["산양삼","산삼","장뇌삼","천마","송이","능이","하수오","상황","상황버섯","영지","겨우살이","복령","꽃송이버섯"];
 const RECO_COMMON=["도라지","더덕","둥굴레","오미자","표고","대추","칡","구기자","결명자","생강","우엉","돼지감자","고사리","곰취","취나물","참나물","느타리"];
@@ -2695,7 +2701,7 @@ function recoQuestions(a){return RECO_Q.filter(q=>!q.when||q.when(a))}
 function recoSeason(cat,m){m=m||new Date().getMonth()+1;return cat==="산나물"?m>=3&&m<=6:cat==="버섯"?m>=8&&m<=10:cat==="열매"?m>=6&&m<=10:cat==="뿌리 약초"?(m>=10||m<=4):false}
 /* ctx: {products, auctions, aucCur(a)->number|null (null = closed), mcat(c), prep(item)->bool, rating(id)->{avg,n}} */
 function recoRun(a,ctx){
-  const items=[];
+  const items=[],gift=a.for==="gift",bud=gift?a.gbudget:a.budget;
   ctx.products.forEach(p=>{if(p.status==="판매중"&&p.stock>0&&!p.demo)items.push({kind:"p",x:p,cat:ctx.mcat(p.cat),price:(+p.price||0)+(p.form==="생물"?5000:3500)})});
   if(a.auc==="yes")ctx.auctions.forEach(x=>{const c=ctx.aucCur(x);if(c!=null&&!x.demo)items.push({kind:"a",x,cat:"뿌리 약초",price:c})});
   const proc=i=>i.kind==="p"&&i.x.cat==="가공품",form=i=>i.x.form||"";
@@ -2708,23 +2714,28 @@ function recoRun(a,ctx){
     review:i=>{if(i.kind!=="p")return false;const r=ctx.rating(i.x.id);return r.n>0&&r.avg>=4},season:i=>recoSeason(i.cat)};
   const fresh=i=>i.kind==="a"||form(i)==="생물";
   const mtn=i=>/^자연산/.test(i.x.grow||"")||["산양삼","장뇌삼","산삼"].includes(i.x.item||i.x.cat||"")||(i.kind==="a"&&!/재배/.test(i.x.grow||""));
+  const wrapOk=i=>i.kind==="a"||!!i.x.gift;
   const regOk=i=>{const r=RECO_REG[a.region];return !r||r.some(x=>String(i.x.region||"").startsWith(x))};
   const bandHi=b=>(RECO_BAND[b]||[0,1e12])[1];
   const tries=[{},{region:1},{region:1,must:1},{region:1,must:1,budget:1},{region:1,must:1,budget:1,keep:1}];
   let out=[],relaxed={},strict=null;
   for(const r of tries){
-    const hi=a.budget?(r.budget?bandHi({"20":"50","50":"100","100":"999","999":"999"}[a.budget]):bandHi(a.budget)):1e12;
-    out=items.filter(i=>(!a.src||(a.src==="mtn")===mtn(i))&&(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
+    const hi=bud?(r.budget?bandHi(RECO_NEXT[bud]):bandHi(bud)):1e12;
+    out=items.filter(i=>(!a.src||(a.src==="mtn")===mtn(i))&&(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||((a.must||[]).every(m=>must[m](i))&&(a.wrap!=="yes"||wrapOk(i)))));
     if(!strict)strict=new Set(out.map(i=>i.x.id));relaxed=r;if(out.length>=3)break}
   if(out.length===strict.size)relaxed={};
-  const lo=a.budget?(RECO_BAND[a.budget]||[0])[0]:0;
+  const lo=bud?(RECO_BAND[bud]||[0])[0]:0;
+  const elder=a.whoO==="parents"||a.whoG==="parents"||a.whoG==="boss",biz=a.whoO==="biz"||a.whoG==="biz";
   out.forEach(i=>{let s=0;const why=[];const it=i.x.item||i.x.cat||"";
-    if(a.who==="parents"||a.who==="holiday"){if(!fresh(i)){s+=2;why.push("keeps")}if(RECO_GIFT.includes(it)){s+=3;why.push("gift")}if(i.x.proofOk)s+=1}
-    if(a.who==="biz"&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=1000){s+=2;why.push("bulk")}if(i.x.stock>=5)s+=1}
+    if(gift){if(!fresh(i)){s+=a.occ==="holiday"?3:2;why.push("keeps")}if(RECO_GIFT.includes(it)){s+=3;why.push("gift")}if(i.x.proofOk)s+=1;if(i.kind==="p"&&i.x.gift){s+=2;why.push("wrap")}}
+    else if(elder){if(RECO_GIFT.includes(it))s+=1}
+    if(biz&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=1000){s+=2;why.push("bulk")}if(i.x.stock>=5)s+=1}
+    if(a.whoO==="kids"&&(i.cat==="열매"||(proc(i)&&/청|잼/.test(form(i))))){s+=2;why.push("kids")}
+    if(a.whoO==="family"&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=600){s+=1;why.push("size")}}
     if(a.taste==="rare"&&(RECO_GIFT.includes(it)||String(i.x.grow||"").startsWith("자연산")||i.price>=50000)){s+=3;why.push("rare")}
     if(a.taste==="daily"&&["산나물","말린 약초·차"].includes(i.cat)){s+=2}
     if(a.taste==="new"&&!RECO_COMMON.includes(it)){s+=3;why.push("new")}
-    if(a.size&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if((a.size==="s"&&g&&g<=500)||(a.size==="m"&&g>=600&&g<=1000)||(a.size==="l"&&g>=1000)){s+=2;why.push("size")}}
+    if(a.size&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if((a.size==="s"&&g&&g<=500)||(a.size==="m"&&g>=600&&g<=1000)||(a.size==="l"&&g>=1000)){s+=2;if(!why.includes("size"))why.push("size")}}
     if(a.prep==="easy"&&ctx.prep(it)){s-=4}
     if(ctx.prep(it))why.push("prep");
     if(i.price>=lo)s+=1;if(strict.has(i.x.id))s+=6;else why.unshift("wider");
@@ -2739,7 +2750,13 @@ function recoRun(a,ctx){
   out.sort((x,y)=>y.score-x.score||x.price-y.price);
   return {list:out.slice(0,5),relaxed,total:out.length}}
 
-const RECO_KO={src:["어떤 걸 찾으세요?",{mtn:"⛰️ 산에서 난 것 — 심마니가 캔 자연산·산양삼",farm:"🌾 밭에서 키운 것 — 농부가 기른 재배품"}],
+const RECO_KO={for:["누가 드실 건가요?",{me:"🙋 내가 먹을 것",others:"👨‍👩‍👧 가족·다른 분이 드실 것",gift:"🎁 선물할 것"}],
+ whoO:["누가 드시나요?",{parents:"부모님·어르신",family:"온 가족이 함께",kids:"아이들",biz:"가게·식당 손님"}],
+ whoG:["받는 분은 누구인가요?",{parents:"부모님·어르신",boss:"은사·윗분",friend:"친구·지인",biz:"거래처·회사 (여러 개)"}],
+ occ:["어떤 때 드리는 선물인가요?",{holiday:"명절·연말 인사",thanks:"감사·축하",visit:"집들이·방문"}],
+ gbudget:["선물 예산은 얼마인가요? (1개 기준, 배송비 포함)",{g5:"5만 원 이하",g15:"5~15만 원",g30:"15~30만 원",g99:"30만 원 이상"}],
+ wrap:["선물 포장이 필요하세요?",{yes:"포장해서 보내 주는 상품만"}],
+ src:["어떤 걸 찾으세요?",{mtn:"⛰️ 산에서 난 것 — 심마니가 캔 자연산·산양삼",farm:"🌾 밭에서 키운 것 — 농부가 기른 재배품"}],
  who:["누구를 위한 건가요?",{me:"내가 먹을 것",parents:"부모님·어르신 선물",holiday:"명절·감사 선물",biz:"가게·식당에서 쓸 것"}],
  how:["어떻게 드실 건가요?",{namul:"나물 무침·볶음",soup:"국·찌개·전골",tea:"차로 우려 마시기",infuse:"청·담금주 담그기",raw:"그대로·생으로"}],
  budget:["예산은 얼마인가요? (배송비 포함)",{"20":"2만 원 이하","50":"2~5만 원","100":"5~10만 원","999":"10만 원 이상"}],
@@ -2750,7 +2767,7 @@ const RECO_KO={src:["어떤 걸 찾으세요?",{mtn:"⛰️ 산에서 난 것 �
  size:["몇 분이 드시나요?",{s:"1~2명",m:"3~4명",l:"5명 이상"}],
  must:["꼭 원하는 게 있나요? (여러 개 고를 수 있어요)",{wild:"자연산만",cert:"무농약·유기농 인증",proof:"채취 증빙 확인된 것",review:"후기 좋은 것",season:"지금 제철인 것"}],
  region:["원하는 산지가 있나요?",{"강원":"강원","경상":"경상","전라":"전라","충청":"충청","제주":"제주"}]};
-const RECO_WHY_KO={mtn:"산에서 난 것",farm:"밭에서 키운 것",keeps:"오래 보관",gift:"선물하기 좋은 품목",bulk:"넉넉한 양",rare:"귀한 품목",new:"흔치 않은 품목",size:"식구 수에 맞는 양",prep:"데쳐서 드세요",wild:"자연산",cert:"인증 재배",proof:"채취 증빙 확인",season:"지금 제철",review:"후기 좋음",auction:"경매 중",wider:"조건을 넓혀 찾음"};
+const RECO_WHY_KO={wrap:"선물 포장 가능",kids:"아이와 함께 먹기 좋은",mtn:"산에서 난 것",farm:"밭에서 키운 것",keeps:"오래 보관",gift:"선물하기 좋은 품목",bulk:"넉넉한 양",rare:"귀한 품목",new:"흔치 않은 품목",size:"식구 수에 맞는 양",prep:"데쳐서 드세요",wild:"자연산",cert:"인증 재배",proof:"채취 증빙 확인",season:"지금 제철",review:"후기 좋음",auction:"경매 중",wider:"조건을 넓혀 찾음"};
 const RC={a:{},i:0};
 function recoOpen(){RC.a={};RC.i=0;recoRender();const d=$("#dlg");if(!d.open)d.showModal();d.scrollTop=0}
 function recoCtx(){return {products:S.products,auctions:liveAucs(),aucCur:a=>{const x=auc(a);return x.phase==="진행중"?x.cur:null},mcat,prep:it=>findHerb(it)?.st==="caution",rating:ratingOf}}
@@ -2769,15 +2786,16 @@ function recoRender(){const d=$("#dlg"),qs=recoQuestions(RC.a),note=`<p class="m
     const rel=[r.relaxed.region&&RC.a.region?"산지":"",r.relaxed.must&&(RC.a.must||[]).length?"꼭 원하는 조건":"",r.relaxed.budget&&RC.a.budget?"예산":"",r.relaxed.keep&&RC.a.keep?"보관 방식":""].filter(Boolean);
     d.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button><div class="reco">
       <h2>${r.list.length?"이런 상품은 어떠세요?":"딱 맞는 상품이 아직 없어요"}</h2>
-      <div class="meta">${[lab("src").replace(/^\S+ /,"").split(" — ")[0],lab("who"),lab("how"),lab("budget"),lab("keep")].filter(Boolean).map(esc).join(" · ")||"조건 없이 골랐어요"}</div>
+      <div class="meta">${[lab("for"),lab("whoO")||lab("whoG"),lab("occ"),lab("src").split(" — ")[0],lab("how"),lab("budget")||lab("gbudget"),lab("keep")].map(x=>x.replace(/^[^\p{L}\p{N}]+/u,"")).filter(Boolean).map(esc).join(" · ")||"조건 없이 골랐어요"}</div>
       ${rel.length&&r.list.length?`<div class="notice">조건을 조금 넓혀서 찾았어요: ${esc(rel.join(", "))}</div>`:""}
       <div class="res">${r.list.map(i=>{const x=i.x,name=i.kind==="a"?x.title:x.name;
         const why=[lab("how"),...i.why.map(w=>RECO_WHY_KO[w])].filter(Boolean);
         return `<button type="button" class="rc" data-rcp="${i.kind}:${esc(x.id)}">${x.photo?`<img src="${esc(x.photo)}" alt="">`:`<span class="ph"></span>`}<div><b>${esc(name)}</b>
           <span class="meta num">${esc(shopName(x.sellerId))} · ${i.kind==="a"?`현재가 ${won(i.price)}`:`${won(x.price)}/${esc(x.unit)} · 배송비 포함 ${won(i.price)}`}</span>
           <div class="why">${why.slice(0,5).map(w=>`<span class="chip ${w==="데쳐서 드세요"?"gold":"ok"}">${esc(w)}</span>`).join("")}</div></div></button>`}).join("")}</div>
+      ${RC.a.for==="gift"?`<p class="meta" style="margin:0">공무원·교사·언론인 등에게 보낼 땐 선물 한도(평소 15만 원, 설·추석 기간 30만 원)를 확인하세요.</p>`:""}
       ${r.list.length?"":`<p style="margin:0">농부와 심마니에게 직접 구해 달라고 요청할 수 있어요.</p>`}
-      <div class="actions"><button class="btn" type="button" id="rcAgain">다시 고르기</button><button class="btn ${r.list.length?"":"primary"}" type="button" id="rcReq">채취 의뢰하기</button></div>${note}</div></div>`;
+      <div class="actions">${RC.a.for==="gift"&&typeof giftLive==="function"&&giftLive()?`<button class="btn gold" type="button" data-gift="all">🎁 선물 코너 보기</button>`:""}<button class="btn" type="button" id="rcAgain">다시 고르기</button><button class="btn ${r.list.length?"":"primary"}" type="button" id="rcReq">채취 의뢰하기</button></div>${note}</div></div>`;
     d.querySelectorAll("[data-rcp]").forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.rcp.split(":");k==="a"?openAuction(id):openProduct(id)});
     $("#rcAgain").onclick=()=>{RC.a={};RC.i=0;recoRender()};$("#rcReq").onclick=()=>{d.close();go("request")}}
   d.querySelector(".close").onclick=()=>d.close();

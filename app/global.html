@@ -423,19 +423,25 @@ function render(){
 /* ---------- recommendation helper ---------- */
 /* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
 const RECO_Q=[
+ {k:"for",o:["me","others","gift"]},
+ {k:"whoO",when:a=>a.for==="others",o:["parents","family","kids","biz"]},
+ {k:"whoG",when:a=>a.for==="gift",o:["parents","boss","friend","biz"]},
+ {k:"occ",when:a=>a.for==="gift",o:["holiday","thanks","visit"]},
  {k:"src",o:["mtn","farm"]},
- {k:"who",o:["me","parents","holiday","biz"]},
- {k:"how",o:["namul","soup","tea","infuse","raw"]},
- {k:"budget",o:["20","50","100","999"]},
- {k:"keep",o:["fresh","store"]},
+ {k:"how",when:a=>a.for!=="gift",o:["namul","soup","tea","infuse","raw"]},
+ {k:"taste",when:a=>a.for==="gift",o:["rare","daily","new"]},
+ {k:"budget",when:a=>a.for!=="gift",o:["20","50","100","999"]},
+ {k:"gbudget",when:a=>a.for==="gift",o:["g5","g15","g30","g99"]},
+ {k:"wrap",when:a=>a.for==="gift",o:["yes"]},
+ {k:"keep",when:a=>a.for!=="gift",o:["fresh","store"]},
  {k:"prep",when:a=>a.how==="namul"||a.how==="soup",o:["easy","ok"]},
- {k:"taste",when:a=>a.who==="parents"||a.who==="holiday",o:["rare","daily","new"]},
+ {k:"size",when:a=>a.for==="me"||(a.for==="others"&&a.whoO!=="biz"),o:["s","m","l"]},
  {k:"auc",when:a=>a.how==="raw"||a.taste==="rare",o:["no","yes"]},
- {k:"size",when:a=>a.who==="me",o:["s","m","l"]},
  {k:"must",multi:true,o:["wild","cert","proof","review","season"]},
  {k:"region",o:["강원","경상","전라","충청","제주"]}
 ];
-const RECO_BAND={"20":[0,20000],"50":[20000,50000],"100":[50000,100000],"999":[100000,1e12]};
+const RECO_BAND={"20":[0,20000],"50":[20000,50000],"100":[50000,100000],"999":[100000,1e12],"g5":[0,50000],"g15":[50000,150000],"g30":[150000,300000],"g99":[300000,1e12]};
+const RECO_NEXT={"20":"50","50":"100","100":"999","999":"999","g5":"g15","g15":"g30","g30":"g99","g99":"g99"};
 const RECO_REG={"강원":["강원"],"경상":["경북","경남","경상"],"전라":["전북","전남","전라"],"충청":["충북","충남","충청"],"제주":["제주"]};
 const RECO_GIFT=["산양삼","산삼","장뇌삼","천마","송이","능이","하수오","상황","상황버섯","영지","겨우살이","복령","꽃송이버섯"];
 const RECO_COMMON=["도라지","더덕","둥굴레","오미자","표고","대추","칡","구기자","결명자","생강","우엉","돼지감자","고사리","곰취","취나물","참나물","느타리"];
@@ -444,7 +450,7 @@ function recoQuestions(a){return RECO_Q.filter(q=>!q.when||q.when(a))}
 function recoSeason(cat,m){m=m||new Date().getMonth()+1;return cat==="산나물"?m>=3&&m<=6:cat==="버섯"?m>=8&&m<=10:cat==="열매"?m>=6&&m<=10:cat==="뿌리 약초"?(m>=10||m<=4):false}
 /* ctx: {products, auctions, aucCur(a)->number|null (null = closed), mcat(c), prep(item)->bool, rating(id)->{avg,n}} */
 function recoRun(a,ctx){
-  const items=[];
+  const items=[],gift=a.for==="gift",bud=gift?a.gbudget:a.budget;
   ctx.products.forEach(p=>{if(p.status==="판매중"&&p.stock>0&&!p.demo)items.push({kind:"p",x:p,cat:ctx.mcat(p.cat),price:(+p.price||0)+(p.form==="생물"?5000:3500)})});
   if(a.auc==="yes")ctx.auctions.forEach(x=>{const c=ctx.aucCur(x);if(c!=null&&!x.demo)items.push({kind:"a",x,cat:"뿌리 약초",price:c})});
   const proc=i=>i.kind==="p"&&i.x.cat==="가공품",form=i=>i.x.form||"";
@@ -457,23 +463,28 @@ function recoRun(a,ctx){
     review:i=>{if(i.kind!=="p")return false;const r=ctx.rating(i.x.id);return r.n>0&&r.avg>=4},season:i=>recoSeason(i.cat)};
   const fresh=i=>i.kind==="a"||form(i)==="생물";
   const mtn=i=>/^자연산/.test(i.x.grow||"")||["산양삼","장뇌삼","산삼"].includes(i.x.item||i.x.cat||"")||(i.kind==="a"&&!/재배/.test(i.x.grow||""));
+  const wrapOk=i=>i.kind==="a"||!!i.x.gift;
   const regOk=i=>{const r=RECO_REG[a.region];return !r||r.some(x=>String(i.x.region||"").startsWith(x))};
   const bandHi=b=>(RECO_BAND[b]||[0,1e12])[1];
   const tries=[{},{region:1},{region:1,must:1},{region:1,must:1,budget:1},{region:1,must:1,budget:1,keep:1}];
   let out=[],relaxed={},strict=null;
   for(const r of tries){
-    const hi=a.budget?(r.budget?bandHi({"20":"50","50":"100","100":"999","999":"999"}[a.budget]):bandHi(a.budget)):1e12;
-    out=items.filter(i=>(!a.src||(a.src==="mtn")===mtn(i))&&(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||(a.must||[]).every(m=>must[m](i))));
+    const hi=bud?(r.budget?bandHi(RECO_NEXT[bud]):bandHi(bud)):1e12;
+    out=items.filter(i=>(!a.src||(a.src==="mtn")===mtn(i))&&(!a.how||how[a.how](i))&&i.price<=hi&&(r.keep||!a.keep||(a.keep==="fresh"?fresh(i):!fresh(i)))&&(r.region||regOk(i))&&(r.must||((a.must||[]).every(m=>must[m](i))&&(a.wrap!=="yes"||wrapOk(i)))));
     if(!strict)strict=new Set(out.map(i=>i.x.id));relaxed=r;if(out.length>=3)break}
   if(out.length===strict.size)relaxed={};
-  const lo=a.budget?(RECO_BAND[a.budget]||[0])[0]:0;
+  const lo=bud?(RECO_BAND[bud]||[0])[0]:0;
+  const elder=a.whoO==="parents"||a.whoG==="parents"||a.whoG==="boss",biz=a.whoO==="biz"||a.whoG==="biz";
   out.forEach(i=>{let s=0;const why=[];const it=i.x.item||i.x.cat||"";
-    if(a.who==="parents"||a.who==="holiday"){if(!fresh(i)){s+=2;why.push("keeps")}if(RECO_GIFT.includes(it)){s+=3;why.push("gift")}if(i.x.proofOk)s+=1}
-    if(a.who==="biz"&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=1000){s+=2;why.push("bulk")}if(i.x.stock>=5)s+=1}
+    if(gift){if(!fresh(i)){s+=a.occ==="holiday"?3:2;why.push("keeps")}if(RECO_GIFT.includes(it)){s+=3;why.push("gift")}if(i.x.proofOk)s+=1;if(i.kind==="p"&&i.x.gift){s+=2;why.push("wrap")}}
+    else if(elder){if(RECO_GIFT.includes(it))s+=1}
+    if(biz&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=1000){s+=2;why.push("bulk")}if(i.x.stock>=5)s+=1}
+    if(a.whoO==="kids"&&(i.cat==="열매"||(proc(i)&&/청|잼/.test(form(i))))){s+=2;why.push("kids")}
+    if(a.whoO==="family"&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if(g>=600){s+=1;why.push("size")}}
     if(a.taste==="rare"&&(RECO_GIFT.includes(it)||String(i.x.grow||"").startsWith("자연산")||i.price>=50000)){s+=3;why.push("rare")}
     if(a.taste==="daily"&&["산나물","말린 약초·차"].includes(i.cat)){s+=2}
     if(a.taste==="new"&&!RECO_COMMON.includes(it)){s+=3;why.push("new")}
-    if(a.size&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if((a.size==="s"&&g&&g<=500)||(a.size==="m"&&g>=600&&g<=1000)||(a.size==="l"&&g>=1000)){s+=2;why.push("size")}}
+    if(a.size&&i.kind==="p"){const g=RECO_UNIT_G[i.x.unit]||0;if((a.size==="s"&&g&&g<=500)||(a.size==="m"&&g>=600&&g<=1000)||(a.size==="l"&&g>=1000)){s+=2;if(!why.includes("size"))why.push("size")}}
     if(a.prep==="easy"&&ctx.prep(it)){s-=4}
     if(ctx.prep(it))why.push("prep");
     if(i.price>=lo)s+=1;if(strict.has(i.x.id))s+=6;else why.unshift("wider");
@@ -492,7 +503,13 @@ const RECO_L={
  en:{b:"Not sure what to buy? We’ll pick for you",sub:"Answer a few questions about how you’ll use it and your budget",step:(i,n)=>`Helper · ${i} / ${n}`,any:"No preference",next:"Next",skip:"No preference, next",back:"Back",
   res:"You might like these",none:"Nothing matches yet",wider:"We widened some conditions to find these",again:"Start again",
   note:"We don’t recommend by health condition. If you have a health concern, please talk to a doctor or Korean medicine doctor.",
-  q:{src:["What are you looking for?",{mtn:"⛰️ From the mountains — wild herbs and mountain ginseng",farm:"🌾 From the farm — grown by farmers"}],
+  q:{for:["Who is it for?",{me:"🙋 For me",others:"👨‍👩‍👧 For family or others",gift:"🎁 A gift"}],
+   whoO:["Who will eat it?",{parents:"Parents or elders",family:"The whole family",kids:"Children",biz:"Customers at my shop or restaurant"}],
+   whoG:["Who is the gift for?",{parents:"Parents or elders",boss:"A teacher or senior",friend:"A friend",biz:"Clients or a company (several)"}],
+   occ:["What is the occasion?",{holiday:"Holidays or year-end",thanks:"Thanks or congratulations",visit:"Housewarming or a visit"}],
+   gbudget:["Gift budget (per gift, incl. delivery)",{g5:"Up to ₩50,000",g15:"₩50,000–150,000",g30:"₩150,000–300,000",g99:"Over ₩300,000"}],
+   wrap:["Need gift wrapping?",{yes:"Only items the seller gift-wraps"}],
+   src:["What are you looking for?",{mtn:"⛰️ From the mountains — wild herbs and mountain ginseng",farm:"🌾 From the farm — grown by farmers"}],
    who:["Who is it for?",{me:"For me",parents:"A gift for parents or elders",holiday:"A holiday or thank-you gift",biz:"For my shop or restaurant"}],
    how:["How will you use it?",{namul:"Seasoned or stir-fried greens",soup:"Soups and stews",tea:"Steeped as tea",infuse:"Syrup or infused liquor",raw:"As it is"}],
    budget:["Budget (including delivery)",{"20":"Up to ₩20,000","50":"₩20,000–50,000","100":"₩50,000–100,000","999":"Over ₩100,000"}],
@@ -503,12 +520,18 @@ const RECO_L={
    size:["How many people?",{s:"1–2",m:"3–4",l:"5 or more"}],
    must:["Anything you must have? (choose any)",{wild:"Wild only",cert:"Certified organic / pesticide-free",proof:"Harvest papers checked",season:"In season now"}],
    region:["Preferred region?",{"강원":"Gangwon","경상":"Gyeongsang","전라":"Jeolla","충청":"Chungcheong","제주":"Jeju"}]},
-  why:{mtn:"From the mountains",farm:"From the farm",keeps:"Keeps well",gift:"Good gift",bulk:"Large pack",rare:"Rare find",new:"Unusual",size:"Right size",prep:"Blanch before eating",wild:"Wild",cert:"Certified",proof:"Papers checked",season:"In season",auction:"Auction",wider:"Wider match"},
+  why:{wrap:"Gift wrap",kids:"Good with children",mtn:"From the mountains",farm:"From the farm",keeps:"Keeps well",gift:"Good gift",bulk:"Large pack",rare:"Rare find",new:"Unusual",size:"Right size",prep:"Blanch before eating",wild:"Wild",cert:"Certified",proof:"Papers checked",season:"In season",auction:"Auction",wider:"Wider match"},
   med:"If you are pregnant, breastfeeding or taking medicine, talk to a doctor or Korean medicine doctor before eating."},
  ja:{b:"何を買うか迷ったら、おすすめします",sub:"使い方と予算についていくつか答えるだけ",step:(i,n)=>`おすすめ ${i} / ${n}`,any:"こだわらない",next:"次へ",skip:"こだわらない・次へ",back:"戻る",
   res:"こちらはいかがですか",none:"ぴったりの商品がまだありません",wider:"条件を少し広げて探しました",again:"最初から",
   note:"体調に合わせたおすすめは行っていません。健康が気になる方は医師・韓医師にご相談ください。",
-  q:{src:["何をお探しですか？",{mtn:"⛰️ 山で採れたもの — 天然の山菜・山養参",farm:"🌾 畑で育てたもの — 農家の栽培品"}],
+  q:{for:["どなたが召し上がりますか？",{me:"🙋 自分で食べる",others:"👨‍👩‍👧 家族・ほかの方が食べる",gift:"🎁 ギフト"}],
+   whoO:["どなた向けですか？",{parents:"両親・目上の方",family:"家族みんなで",kids:"子ども",biz:"お店・飲食店のお客様"}],
+   whoG:["贈る相手は？",{parents:"両親・目上の方",boss:"恩師・上司",friend:"友人・知人",biz:"取引先・会社（複数）"}],
+   occ:["どんな機会の贈り物ですか？",{holiday:"お正月・年末・名節",thanks:"お礼・お祝い",visit:"新築祝い・訪問"}],
+   gbudget:["ギフトの予算は？（1個あたり・送料込み）",{g5:"5万ウォン以下",g15:"5〜15万ウォン",g30:"15〜30万ウォン",g99:"30万ウォン以上"}],
+   wrap:["ギフト包装は必要ですか？",{yes:"包装して送ってくれる商品だけ"}],
+   src:["何をお探しですか？",{mtn:"⛰️ 山で採れたもの — 天然の山菜・山養参",farm:"🌾 畑で育てたもの — 農家の栽培品"}],
    who:["どなたのためですか？",{me:"自分で食べる",parents:"両親・目上の方へのギフト",holiday:"お祝い・お礼のギフト",biz:"お店・飲食店で使う"}],
    how:["どのように召し上がりますか？",{namul:"ナムル・炒め物",soup:"スープ・鍋",tea:"お茶として",infuse:"シロップ漬け・果実酒",raw:"そのまま"}],
    budget:["ご予算は？（送料込み）",{"20":"2万ウォン以下","50":"2〜5万ウォン","100":"5〜10万ウォン","999":"10万ウォン以上"}],
@@ -519,12 +542,18 @@ const RECO_L={
    size:["何人分ですか？",{s:"1〜2人",m:"3〜4人",l:"5人以上"}],
    must:["必須の条件は？（複数選択可）",{wild:"天然のみ",cert:"無農薬・有機認証",proof:"採取書類確認済み",season:"今が旬"}],
    region:["産地の希望は？",{"강원":"江原道","경상":"慶尚道","전라":"全羅道","충청":"忠清道","제주":"済州"}]},
-  why:{mtn:"山で採れたもの",farm:"畑で育てたもの",keeps:"長期保存",gift:"ギフト向き",bulk:"たっぷり",rare:"希少",new:"珍しい",size:"ちょうどいい量",prep:"下茹でが必要",wild:"天然",cert:"認証栽培",proof:"書類確認済み",season:"旬",auction:"オークション",wider:"条件を広げて表示"},
+  why:{wrap:"ギフト包装可",kids:"子どもと一緒に",mtn:"山で採れたもの",farm:"畑で育てたもの",keeps:"長期保存",gift:"ギフト向き",bulk:"たっぷり",rare:"希少",new:"珍しい",size:"ちょうどいい量",prep:"下茹でが必要",wild:"天然",cert:"認証栽培",proof:"書類確認済み",season:"旬",auction:"オークション",wider:"条件を広げて表示"},
   med:"妊娠中・授乳中の方、薬を服用中の方は、召し上がる前に医師・韓医師にご相談ください。"},
  "zh-Hans":{b:"不知道买什么？我们帮您挑",sub:"回答几个关于用途和预算的问题即可",step:(i,n)=>`推荐助手 ${i} / ${n}`,any:"都可以",next:"下一步",skip:"都可以，下一步",back:"上一步",
   res:"为您推荐",none:"暂时没有合适的商品",wider:"已适当放宽条件",again:"重新选择",
   note:"我们不根据身体状况推荐。如有健康方面的担心，请咨询医生或韩医师。",
-  q:{src:["您在找什么？",{mtn:"⛰️ 山里采的 — 野生山货、山养参",farm:"🌾 田里种的 — 农民栽培"}],
+  q:{for:["给谁吃？",{me:"🙋 自己吃",others:"👨‍👩‍👧 家人或别人吃",gift:"🎁 送礼"}],
+   whoO:["谁来吃？",{parents:"父母或长辈",family:"全家一起",kids:"孩子",biz:"店里或餐厅的客人"}],
+   whoG:["送给谁？",{parents:"父母或长辈",boss:"老师或上级",friend:"朋友",biz:"客户或公司（多份）"}],
+   occ:["什么场合的礼物？",{holiday:"节日或年末",thanks:"答谢或祝贺",visit:"乔迁或拜访"}],
+   gbudget:["礼物预算？（每份，含运费）",{g5:"5万韩元以下",g15:"5万–15万韩元",g30:"15万–30万韩元",g99:"30万韩元以上"}],
+   wrap:["需要礼品包装吗？",{yes:"只看卖家可以包装的"}],
+   src:["您在找什么？",{mtn:"⛰️ 山里采的 — 野生山货、山养参",farm:"🌾 田里种的 — 农民栽培"}],
    who:["买给谁？",{me:"自己吃",parents:"送给父母或长辈",holiday:"节日或答谢礼物",biz:"店铺或餐厅使用"}],
    how:["打算怎么吃？",{namul:"凉拌或炒菜",soup:"煲汤或炖菜",tea:"泡茶",infuse:"做果酱或泡酒",raw:"直接食用"}],
    budget:["预算（含运费）",{"20":"2万韩元以下","50":"2〜5万韩元","100":"5〜10万韩元","999":"10万韩元以上"}],
@@ -535,7 +564,7 @@ const RECO_L={
    size:["几个人吃？",{s:"1〜2人",m:"3〜4人",l:"5人以上"}],
    must:["必须满足的条件？（可多选）",{wild:"只要野生",cert:"无农药或有机认证",proof:"采挖文件已审核",season:"当季"}],
    region:["希望的产地？",{"강원":"江原道","경상":"庆尚道","전라":"全罗道","충청":"忠清道","제주":"济州"}]},
-  why:{mtn:"山里采的",farm:"田里种的",keeps:"耐储存",gift:"适合送礼",bulk:"量大",rare:"珍贵",new:"少见",size:"份量合适",prep:"需焯水",wild:"野生",cert:"认证栽培",proof:"文件已审核",season:"当季",auction:"拍卖中",wider:"放宽条件"},
+  why:{wrap:"可礼品包装",kids:"适合和孩子一起吃",mtn:"山里采的",farm:"田里种的",keeps:"耐储存",gift:"适合送礼",bulk:"量大",rare:"珍贵",new:"少见",size:"份量合适",prep:"需焯水",wild:"野生",cert:"认证栽培",proof:"文件已审核",season:"当季",auction:"拍卖中",wider:"放宽条件"},
   med:"孕期、哺乳期或正在服药的人士，食用前请咨询医生或韩医师。"}};
 const RL=()=>RECO_L[window.NM_LANG]||RECO_L.en;
 const MED_ITEMS=["산삼","산양삼","장뇌삼","인삼","천마","하수오","백수오","영지","상황","상황버섯","차가버섯","동충하초","복령","겨우살이","당귀","황기","감초","천궁","익모초","삼지구엽초","오가피","엄나무","헛개","꾸지뽕"];
@@ -556,7 +585,7 @@ function recoRender(){const d=$("#dlg"),L=RL(),qs=recoQuestions(RC.a),note=`<p c
   }else{const r=recoRun(RC.a,recoCtx()),lab=k=>RC.a[k]?L.q[k][1][RC.a[k]]:"";
     d.innerHTML=`<div class="reco"><button class="x" type="button" aria-label="Close" id="dx">×</button>
       <h2 style="font-size:22px">${esc(r.list.length?L.res:L.none)}</h2>
-      <div class="meta">${[lab("who"),lab("how"),lab("budget"),lab("keep")].filter(Boolean).map(esc).join(" · ")}</div>
+      <div class="meta">${[lab("for"),lab("whoO")||lab("whoG"),lab("occ"),lab("how"),lab("budget")||lab("gbudget"),lab("keep")].map(x=>x.replace(/^[^\p{L}\p{N}]+/u,"")).filter(Boolean).map(esc).join(" · ")}</div>
       ${Object.keys(r.relaxed).length&&r.list.length?`<div class="notice" style="margin:0">${esc(L.wider)}</div>`:""}
       <div style="display:grid;gap:10px">${r.list.map(i=>{const x=i.x,name=i.kind==="a"?(ftitle(x)||itemName(x)):pname(x);
         const why=[lab("how"),...i.why.map(w=>L.why[w])].filter(Boolean).slice(0,5);
