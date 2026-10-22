@@ -155,7 +155,7 @@ footer a{color:var(--pine)}
   </section>
   <section id="secOrd" hidden><div id="olist" style="display:grid;gap:10px;margin-top:14px"></div></section>
 </main>
-<footer><div class="wrap" id="foot"></div></footer>
+<footer><div class="wrap"><button type="button" class="btn sm" id="contactBtn" style="margin-bottom:10px"></button><div id="foot"></div></div></footer>
 <dialog id="dlg"></dialog>
 <div id="toast" role="status" hidden></div>
 
@@ -180,6 +180,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 /* ---------- words ---------- */
 const TX={
  en:{
+  contact:"Contact us",cTitle:"Ask Nongmani",cLead:"Questions about an order, an auction or shipping? Write to us and we will reply here under “My orders”.",cPh:"Your question (please don’t include phone or bank numbers)",cSend:"Send",cOk:"Thanks! We’ll reply under “My orders”.",cShort:"Please write a little more.",myQ:"My questions",waiting:"Waiting for reply",answer:"Answer",cTr:"You can write in English, Chinese or Japanese.",
   tabAuc:"Auctions",tabMkt:"Market",tabOrd:"My orders",
   mktNote:"Fresh and dried wild herbs from Korean farmers and simmani. Delivered anywhere in Korea. Overseas shipping is not available yet.",
   cats:{"전체":"All","뿌리 약초":"Roots","산나물":"Mountain greens","말린 약초·차":"Dried herbs & tea","열매":"Fruits & berries","버섯":"Mushrooms","가공품":"Processed foods"},
@@ -217,6 +218,7 @@ const TX={
   foot:'Nongmani (농부와 심마니) · Korean marketplace for wild herbs · <a href="./">한국어</a> · Trademark application No. 40-2026-0219569',
   ko:"Korean listing",law:"Health claims are not allowed on Nongmani. Listings describe size, shape and where the root was found."},
  ja:{
+  contact:"お問い合わせ",cTitle:"ノンマニへのお問い合わせ",cLead:"注文・オークション・配送についてのご質問をどうぞ。回答は「注文履歴」に表示されます。",cPh:"お問い合わせ内容（電話番号・口座番号は書かないでください）",cSend:"送信",cOk:"ありがとうございます。回答は「注文履歴」に表示されます。",cShort:"もう少し詳しく書いてください。",myQ:"お問い合わせ履歴",waiting:"回答待ち",answer:"回答",cTr:"日本語でご記入いただけます。",
   tabAuc:"オークション",tabMkt:"マーケット",tabOrd:"注文履歴",
   mktNote:"韓国の農家とシンマニ（天然山参の採取人）が届ける生・乾燥の山野草。韓国国内ならどこへでも配送します。海外発送はまだ行っていません。",
   cats:{"전체":"すべて","뿌리 약초":"根もの","산나물":"山菜","말린 약초·차":"乾燥ハーブ・お茶","열매":"木の実・果実","버섯":"きのこ","가공품":"加工食品"},
@@ -284,6 +286,7 @@ const TX={
   foot:'農마니（농부와 심마니）· 韓國野生草藥交易平台 · <a href="./">한국어</a> · 商標申請 第40-2026-0219569號',
   ko:"韓文原文",law:"本平台不允許標示療效，商品只描述大小、形狀與產地。"},
  "zh-Hans":{
+  contact:"联系我们",cTitle:"联系农마니",cLead:"关于订单、拍卖或配送的问题都可以留言，我们会在“我的订单”中回复。",cPh:"您的问题（请勿填写电话或银行账号）",cSend:"发送",cOk:"谢谢！我们会在“我的订单”中回复。",cShort:"请再多写一点。",myQ:"我的提问",waiting:"等待回复",answer:"回复",cTr:"可以用中文填写。",
   tabAuc:"拍卖",tabMkt:"商店",tabOrd:"我的订单",
   mktNote:"韩国农民与采参人提供的新鲜及干燥野生草本。可配送至韩国全境，暂不提供海外配送。",
   cats:{"전체":"全部","뿌리 약초":"根类","산나물":"山野菜","말린 약초·차":"干燥草本与茶","열매":"果实","버섯":"菌菇","가공품":"加工食品"},
@@ -356,6 +359,7 @@ function pname(p){const f=String((window.NM_LANG==="en"?p.nameEn:window.NM_LANG=
 const EXT=3*60*1000;
 function inc(p){return p<100000?1000:p<1000000?5000:p<10000000?10000:50000}
 const won=n=>"₩"+Math.round(n).toLocaleString("en-US");
+const day=ts=>ts?new Date(ts).toLocaleDateString(window.NM_LANG==="en"?"en-US":window.NM_LANG==="ja"?"ja-JP":"zh-CN",{month:"short",day:"numeric"}):"";
 function fxCode(){if(window.NM_LANG==="en")return "USD";if(window.NM_LANG==="ja")return "JPY";if(window.NM_LANG==="zh-Hans")return "CNY";return /hk|mo/i.test(navigator.language||"")?"HKD":"TWD"}
 function approx(n){const c=fxCode(),r=((S.site.fx||{})[c])||FX_DEFAULT[c],v=n/r;const sym={USD:"US$",HKD:"HK$",TWD:"NT$",CNY:"¥",JPY:"￥"}[c];
   return `${t("approx")} ${sym}${(v>=100?Math.round(v):Math.round(v*10)/10).toLocaleString("en-US")}`}
@@ -388,7 +392,7 @@ function paintStatic(){
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===window.NM_LANG));
   $("#filters").innerHTML=["all","wild","forest","other"].map(k=>`<button type="button" class="filter" data-f="${k}" aria-pressed="${S.filter===k}">${esc(t(k))}</button>`).join("");
   $("#tabs").innerHTML=[["auc","tabAuc"],["mkt","tabMkt"],["ord","tabOrd"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${esc(t(l))}</button>`).join("");
-  $("#mktNote").textContent=t("mktNote");$("#recoB").textContent=RL().b;$("#recoS").textContent=RL().sub;$("#recoBtn").hidden=S.tab==="ord";$("#abroadT").textContent=t("abroadT");$("#abroadL").innerHTML=t("abroad").map(x=>`<li>${esc(x)}</li>`).join("");
+  $("#mktNote").textContent=t("mktNote");$("#contactBtn").textContent="✉ "+t("contact");$("#recoB").textContent=RL().b;$("#recoS").textContent=RL().sub;$("#recoBtn").hidden=S.tab==="ord";$("#abroadT").textContent=t("abroadT");$("#abroadL").innerHTML=t("abroad").map(x=>`<li>${esc(x)}</li>`).join("");
   $("#mfilters").innerHTML=Object.keys(t("cats")).map(k=>`<button type="button" class="filter" data-mc="${esc(k)}" aria-pressed="${S.mcat===k}">${esc(t("cats")[k])}</button>`).join("");
   ["auc","mkt","ord"].forEach(k=>$("#sec"+{auc:"Auc",mkt:"Mkt",ord:"Ord"}[k]).hidden=S.tab!==k);
   paintWho();render()}
@@ -613,15 +617,28 @@ function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;
         toast(t("ordered"));d.close();S.tab="ord";history.replaceState(null,"","#ord");paintStatic()}
       catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}finally{b.disabled=false}}}
   if(!d.open)d.showModal()}
+/* ---------- contact ---------- */
+function openContact(){if(!S.uid){nmAuth.open(t("needLogin"));return}S.dlgKind="c";const d=$("#dlg");
+  d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button><h2 style="font-size:22px">${esc(t("cTitle"))}</h2><p class="meta" style="margin:0">${esc(t("cLead"))} ${esc(t("cTr"))}</p>
+   <textarea id="cText" rows="5" maxlength="1000" placeholder="${esc(t("cPh"))}" style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);font:inherit"></textarea>
+   <div><button type="button" class="btn pri" id="cSend">${esc(t("cSend"))}</button></div></div>`;
+  $("#dx").onclick=()=>d.close();
+  $("#cSend").onclick=async()=>{const x=$("#cText").value.trim();if(x.length<5){toast(t("cShort"));return}
+    if(/(\d[\s.\-]*){9,}/.test(x)){toast(t("cPh"));return}
+    try{await S.db.collection("inquiries").add({by:S.uid,cat:"해외 손님",lang:window.NM_LANG,text:x.slice(0,1000),status:"접수",createdAt:Date.now()});toast(t("cOk"));d.close()}catch(e){e&&e.code==="login"?nmAuth.open(t("needLogin")):toast(t("fail"))}};
+  if(!d.open)d.showModal()}
+$("#contactBtn").onclick=openContact;
 /* ---------- my orders ---------- */
 function renderOrd(){const el=$("#olist");if(!S.uid){el.innerHTML=`<div class="empty">${esc(t("signToSee"))} <button type="button" class="btn sm pri" onclick="nmAuth.open()">${esc(t("signIn"))}</button></div>`;return}
   const os=S.orders.filter(o=>o.buyerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
   const won_=S.auctions.map(a=>({a,x:auc(a)})).filter(o=>o.x.ended&&o.x.top&&o.x.top.bidderId===S.uid);
-  if(!os.length&&!won_.length){el.innerHTML=`<div class="empty">${esc(t("noOrd"))}</div>`;return}
+  const qs=(S.inq||[]).filter(x=>x.by===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
+  const qh=qs.length?`<h3 style="font-size:17px;margin:14px 0 0">${esc(t("myQ"))}</h3>`+qs.map(x=>`<div class="ord"><span class="meta">${day(x.createdAt)} · ${esc(x.reply?t("answer"):t("waiting"))}</span><span style="white-space:pre-wrap">${esc(x.text)}</span>${x.reply?`<div class="notice" style="margin:4px 0 0"><b>${esc(t("answer"))}</b><br><span style="white-space:pre-wrap">${esc(x.reply)}</span></div>`:""}</div>`).join(""):"";
+  if(!os.length&&!won_.length){el.innerHTML=`<div class="empty">${esc(t("noOrd"))}</div>`+qh;return}
   el.innerHTML=won_.map(({a,x})=>`<div class="ord"><b>${esc(ftitle(a)||itemName(a))}</b><span class="ko" lang="ko">${esc(a.title)}</span><span class="num">${won(x.top.amount)} · ${esc(a.deal?(t("st")[a.deal]||a.deal):t("sold"))}</span></div>`).join("")+
    os.map(o=>{const p=S.products.find(x=>x.id===o.productId)||{item:"",name:o.productName};return `<div class="ord"><b>${esc(pname({...p,name:o.productName}))}</b><span class="ko" lang="ko">${esc(o.productName)}</span>
     <span class="num">${o.qty} × ${esc(unitT(o.unit))} · ${won(o.total)}</span><span class="meta">${esc(t("st")[o.status]||o.status)}${o.tracking?` · ${esc(t("track"))} ${esc(o.courier||"")} ${esc(o.tracking)}`:""}</span>
-    ${o.status==="발송완료"?`<div><button type="button" class="btn sm pri" data-recv="${esc(o.id)}">${esc(t("recv"))}</button></div>`:""}</div>`}).join("");
+    ${o.status==="발송완료"?`<div><button type="button" class="btn sm pri" data-recv="${esc(o.id)}">${esc(t("recv"))}</button></div>`:""}</div>`}).join("")+qh;
   el.querySelectorAll("[data-recv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await S.db.doc("orders/"+b.dataset.recv).update({status:"수령확인",receivedAt:Date.now()});toast(t("recvOk"))}catch(e){toast(t("fail"));b.disabled=false}})}
 document.addEventListener("click",e=>{const c=e.target.closest("[data-aid]");if(c){openA(c.dataset.aid);return}const q=e.target.closest("[data-pid]");if(q)openP(q.dataset.pid)});
 setInterval(()=>{render();if($("#dlg").open&&S.dlgKind==="a")paintBoard()},30000);
@@ -690,7 +707,7 @@ async function bid(id){if(!S.uid){nmAuth.open(t("needLogin"));return}
   sub("settings",v=>{S.site=(v.find(x=>x.id==="site")||{})});
   sub("products",v=>S.products=v);
   sub("sellerchecks",v=>{S.susp=new Set(v.filter(x=>x.suspended).map(x=>x.id))});
-  if(S.uid){sub("alerts",v=>S.alerts=v);sub("orders",v=>S.orders=v)}
+  if(S.uid){sub("alerts",v=>S.alerts=v);sub("orders",v=>S.orders=v);sub("inquiries",v=>S.inq=v)}
 })();
 </script>
 </body>

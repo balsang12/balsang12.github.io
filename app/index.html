@@ -441,6 +441,10 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
   #homeIcons{grid-template-columns:repeat(var(--cols,3),1fr)}
 }
 @media (min-width:861px){.tab[data-go="chat"]{display:none}.hchat{display:block}}
+.helptop{display:grid;gap:14px}@media (min-width:900px){.helptop{grid-template-columns:3fr 2fr}}
+.faqs{display:grid;gap:18px;margin-bottom:20px}.faqg h3{font-size:17px;margin:0 0 6px}
+.faq{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:6px}.faq summary{cursor:pointer;padding:12px 14px;font-weight:700;list-style:none}.faq summary::after{content:"＋";float:right;color:var(--muted)}.faq[open] summary::after{content:"－"}
+.faq p{margin:0;padding:0 14px 14px;color:var(--muted);font-size:15px;line-height:1.65}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -709,7 +713,7 @@ label.btn{display:inline-block}
       <button class="tab" role="tab" data-go="seller" aria-selected="false">판매자<span id="dotSeller"></span></button>
       <button class="tab" role="tab" data-go="admin" aria-selected="false" id="adminTab" hidden>운영자<span id="dotAdmin"></span></button>
       <button class="tab" role="tab" data-go="herbs" aria-selected="false">약초 사전</button>
-      <button class="tab" role="tab" data-go="guide" aria-selected="false">이용 안내</button>
+      <button class="tab" role="tab" data-go="help" aria-selected="false">고객센터</button>
     </nav>
   </div>
 </header>
@@ -836,7 +840,7 @@ label.btn{display:inline-block}
     <button data-go="request"><b>채취 의뢰</b><span>내 요청서와 받은 견적</span></button>
     <button data-go="seller"><b>판매자 센터<span id="dotSeller2"></span></b><span>상품·경매 등록, 주문 처리, 견적 보내기</span></button>
     <button data-go="herbs"><b>약초 사전</b><span>한국 산나물·약초 300여 가지의 생김새·구별법·고서 기록</span></button>
-    <button data-go="guide"><b>이용 안내</b><span>경매 규칙·수수료·품목 사전</span></button>
+    <button data-go="help"><b>고객센터</b><span>자주 묻는 질문·1:1 문의·이용 안내</span></button>
     <button data-go="admin" id="adminMenu" hidden><b>운영자</b><span>검수·정산·문제 신고</span></button>
   </div>
   <div class="sechead"><h2>내 거래</h2><span class="meta">입찰·낙찰·주문을 한곳에서 봅니다. 수령 확인을 눌러야 판매자에게 정산됩니다</span></div>
@@ -1050,6 +1054,8 @@ label.btn{display:inline-block}
     <div class="field"><label for="cfgAnchor">기준 경매일 (토요일)</label><input id="cfgAnchor" type="date"></div></div>
     <div class="row2"><div class="field"><label for="cfgVideo">경매 인증 영상 기준 (원)</label><input id="cfgVideo" type="number" min="10000" step="10000" class="num"></div>
       <div class="field"><label for="cfgReview">경매 직접 승인·감정서 기준 (원)</label><input id="cfgReview" type="number" min="10000" step="10000" class="num"></div></div>
+    <div class="row2"><div class="field"><label for="cfgPhone">고객센터 전화 (고객센터에 표시)</label><input id="cfgPhone" inputmode="tel" placeholder="예: 010-0000-0000"></div>
+      <div class="field"><label for="cfgHours">전화 받는 시간</label><input id="cfgHours" placeholder="예: 평일 오전 10시~오후 6시"></div></div>
     <div class="field"><label for="cfgProof">채취 근거 기준 (원, 경매·마켓 공통 · 자연산 산삼은 금액과 상관없이 필요)</label><input id="cfgProof" type="number" min="10000" step="10000" class="num"></div>
     <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="cfgBeta"> 베타 모드 (구매·입찰·견적 결제를 받지 않고 오픈 알림만 받음, 출품료 무료)</label>
     <div class="actions"><button class="btn gold" type="button" id="cfgSave">저장</button><span class="meta" id="cfgNote"></span></div>
@@ -1076,6 +1082,7 @@ label.btn{display:inline-block}
           <li><b>감정서 원칙:</b> 자연산 산삼 민간 감정서를 어디까지 믿을지 운영 원칙 정하기</li>
           <li><b>베타 끄기:</b> 위 결제·사업자 준비가 끝나면 설정에서 베타를 끄면 실제 주문·입찰이 열림</li>
         </ul></div>
+      <div class="panel"><h3>고객 문의</h3><div class="list" id="inqQueue"></div></div>
       <div class="panel"><h3>직거래 유도 신고</h3><div class="list" id="flagQueue"></div></div>
       <div class="panel"><h3>새로 올라온 것 (사후 확인)</h3><p class="meta" style="margin:0 0 8px">바로 판매가 시작된 상품·경매입니다. 위험한 것이 위에 옵니다. 문제가 있으면 내리세요.</p><div class="actions" style="margin-bottom:8px"><button class="btn sm" type="button" id="postAll">가공품 빼고 모두 확인함</button></div><div class="list" id="postQueue"></div></div>
       <div class="panel"><h3>채취지 확인</h3><p class="meta" style="margin:0 0 8px">판매자가 등록한 산입니다. 한 번 확인하면 그 산에서 캔 산삼은 근거가 자동으로 확인됩니다.</p><div class="list" id="siteQueue"></div></div>
@@ -1105,9 +1112,33 @@ label.btn{display:inline-block}
 </section>
 
 <!-- GUIDE -->
+<section data-view="help" hidden>
+  <div class="sechead"><div><div class="eyebrow">자주 묻는 질문 · 1:1 문의</div><h2>고객센터</h2></div><button class="btn sm" data-go="guide">이용 안내 (수수료·경매 규칙)</button></div>
+  <p class="meta" style="margin:0 0 10px">먼저 자주 묻는 질문을 확인해 보세요. 답이 없으면 아래 1:1 문의로 남겨 주세요.</p>
+  <div class="faqs">
+      <div class="faqg"><h3>주문·배송</h3><details class="faq"><summary>언제 받을 수 있나요?</summary><p>판매자가 직접 택배로 보냅니다. 보통 결제 뒤 1~3일 안에 보내고, 송장번호는 ‘마이 → 내 거래’에서 볼 수 있습니다. 생물은 신선도 때문에 주말 도착을 피해 보내기도 합니다.</p></details><details class="faq"><summary>배송비는 얼마인가요?</summary><p>생물(생 나물·생 뿌리 등)은 5,000원, 말린 것과 가공품은 3,500원입니다. 상품 화면의 결제 금액에 배송비가 포함되어 있습니다.</p></details><details class="faq"><summary>물건을 받았어요. 무엇을 해야 하나요?</summary><p>‘마이 → 내 거래’에서 <b>수령 확인</b>을 눌러 주세요. 그래야 판매자에게 대금이 정산됩니다. 발송 후 5일 동안 아무것도 하지 않으면 자동으로 수령 확인됩니다.</p></details><details class="faq"><summary>주문을 취소할 수 있나요?</summary><p>판매자가 발송하기 전에는 ‘내 거래’에서 바로 취소할 수 있습니다. 발송한 뒤에는 1:1 문의로 알려 주세요.</p></details></div>
+      <div class="faqg"><h3>결제·환불</h3><details class="faq"><summary>결제한 돈은 어디로 가나요?</summary><p>농마니 안전결제로 대금을 보관했다가, 구매자가 수령 확인을 하면 판매자에게 정산합니다. 물건이 오지 않으면 판매자에게 돈이 가지 않습니다.</p></details><details class="faq"><summary>물건이 안 오거나 상했어요.</summary><p>‘내 거래’에서 <b>문제 신고</b>를 눌러 사진과 함께 알려 주세요. 운영자가 확인하고, 판매자 책임이면 환불합니다.</p></details><details class="faq"><summary>판매자가 계좌로 따로 입금하라고 해요.</summary><p>절대 보내지 마세요. 농마니 밖에서 거래하면 환불 보호를 받을 수 없습니다. 대화창 위의 <b>직거래 유도 신고</b>를 눌러 주세요.</p></details></div>
+      <div class="faqg"><h3>경매</h3><details class="faq"><summary>경매는 언제 끝나요?</summary><p>토요일 저녁 8시에 한꺼번에 마감합니다. 마감 3분 안에 입찰이 들어오면 그 입찰로부터 3분 뒤로 마감이 늦춰집니다.</p></details><details class="faq"><summary>낙찰되면 어떻게 하나요?</summary><p>24시간 안에 결제해 주세요. 결제하지 않으면 판매자가 다음 순위 입찰자에게 넘길 수 있습니다.</p></details><details class="faq"><summary>진짜 자연산인지 어떻게 믿나요?</summary><p>‘채취 증빙 확인’ 배지는 운영자가 채취 근거를 확인한 물건입니다. 시작가가 높은 경매는 인증 영상과 감정서를 함께 받습니다. 받은 물건이 설명과 다르면 문제 신고로 환불받을 수 있습니다.</p></details></div>
+      <div class="faqg"><h3>판매</h3><details class="faq"><summary>누구나 팔 수 있나요?</summary><p>로그인한 뒤 ‘판매자 센터’에서 가게 정보를 저장하면 바로 팔 수 있습니다. 직접 기르거나 캔 농산물·임산물은 개인도 팔 수 있고, 청·즙 같은 가공품은 영업 신고를 한 곳에서 만든 것만 팔 수 있습니다.</p></details><details class="faq"><summary>수수료는 얼마인가요?</summary><p>마켓 판매 10%(같은 손님의 3번째 주문부터 7%), 경매는 낙찰가의 8%부터 금액이 클수록 낮아집니다. 결제 수수료 3.3%가 따로 있고, 채취 의뢰 견적은 무료입니다. 자세한 표는 ‘이용 안내’에 있습니다.</p></details><details class="faq"><summary>정산은 언제 되나요?</summary><p>구매자가 수령 확인을 하면 운영자가 정산합니다. 채취 근거가 필요한 상품은 근거를 확인한 뒤, 가공품은 영업 신고 번호를 확인한 뒤 정산됩니다.</p></details></div>
+      <div class="faqg"><h3>채취 근거</h3><details class="faq"><summary>어떤 상품에 근거가 필요한가요?</summary><p>자연산 산삼과 비싼 상품(기본 100만 원 이상)입니다. 먼저 올리고 정산 전 14일 안에 근거를 내면 됩니다.</p></details><details class="faq"><summary>무엇을 내면 되나요?</summary><p>허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다. 자주 가는 산은 판매자 센터의 ‘내 채취지’에 한 번 등록해 두면 다음부터 고르기만 하면 됩니다.</p></details><details class="faq"><summary>산주가 누군지 몰라요.</summary><p>출품 화면의 ‘산주 찾기’로 산의 위치를 알려 주세요. 산림조합을 통해 산주를 찾아 연결해 드립니다.</p></details></div>
+      <div class="faqg"><h3>계정</h3><details class="faq"><summary>로그인 링크를 눌렀는데 로그인이 안 돼요.</summary><p>링크는 요청한 <b>같은 기기, 같은 브라우저</b>에서 눌러야 합니다. 메일이 안 오면 스팸함을 확인해 주세요.</p></details><details class="faq"><summary>탈퇴하고 싶어요.</summary><p>1:1 문의로 ‘탈퇴’를 남겨 주세요. 진행 중인 거래가 없으면 처리해 드립니다.</p></details></div>
+  </div>
+  <div class="helptop">
+    <div class="panel"><h3>1:1 문의</h3><p class="meta" style="margin:0 0 8px">남겨 주시면 운영자가 확인하고 이 화면과 대화함으로 답변을 보내 드립니다.</p>
+      <form id="inqForm" style="display:grid;gap:8px">
+        <div class="row2"><div class="field"><label for="inqCat">분류</label><select id="inqCat"><option>주문·배송</option><option>결제·환불</option><option>경매</option><option>판매</option><option>채취 근거</option><option>계정</option><option>기타</option></select></div>
+        <div class="field"><label for="inqOrder">관련 주문 (있으면)</label><select id="inqOrder"><option value="">없음</option></select></div></div>
+        <div class="field"><label for="inqText">문의 내용</label><textarea id="inqText" rows="4" maxlength="1000" placeholder="어떤 일이 있었는지 적어 주세요. 전화번호·계좌번호는 적지 마세요."></textarea></div>
+        <div class="actions"><button class="btn primary needWrite" type="submit">문의 남기기</button></div>
+      </form>
+      <div id="csPhone"></div>
+    </div>
+    <div class="panel"><h3>내 문의</h3><div class="list" id="myInq"></div></div>
+  </div>
+</section>
 <section data-view="guide" hidden>
   <div class="doc">
-    <div><div class="eyebrow">이용 안내 · 수수료</div><h2>농마니 경매와 마켓는 이렇게 돌아갑니다</h2></div>
+    <div><div class="eyebrow">이용 안내 · 수수료</div><h2>농마니 경매와 마켓은 이렇게 돌아갑니다</h2></div>
     <div>
       <h3>경매 규칙</h3>
       <ol>
@@ -2038,6 +2069,12 @@ function renderAdmin(){
     guard(()=>c==="auctions"?S.db.doc("auctions/"+id).update({status:"반려",rejectReason:"운영자 사후 확인에서 내림",reviewedAt:Date.now()}):S.db.doc("products/"+id).update({status:"판매중지",reviewedAt:Date.now()}),"내렸습니다")});
   $("#postAll").onclick=async()=>{const list=post.filter(([c,x])=>x.cat!=="가공품");if(!list.length){toast("한꺼번에 확인할 것이 없습니다");return}
     await guard(async()=>{for(const [c,x] of list)await pOk(c,x.id)},`${list.length}건을 확인했습니다`)};
+  const iq=(S.inq||[]).filter(x=>x.status==="접수").sort((a,b)=>a.createdAt-b.createdAt);
+  $("#inqQueue").innerHTML=iq.length?iq.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.cat)}</b><span class="meta">${esc(nameOf(x.by))} · ${day(x.createdAt)}</span></div>${x.orderName?`<div class="meta">관련 주문: ${esc(x.orderName)}</div>`:""}<div style="white-space:pre-wrap">${esc(x.text)}</div>
+    <textarea id="iqr-${x.id}" rows="3" placeholder="답변" aria-label="답변" style="width:100%;margin-top:6px"></textarea><div class="actions"><button class="btn sm primary" type="button" data-iqr="${esc(x.id)}">답변 보내기</button></div></div>`).join(""):`<div class="empty">새 문의가 없습니다.</div>`;
+  $("#inqQueue").querySelectorAll("[data-iqr]").forEach(b=>b.onclick=()=>{const x=iq.find(y=>y.id===b.dataset.iqr),r=$("#iqr-"+x.id).value.trim();if(!r){toast("답변을 적어 주세요");return}
+    guard(async()=>{await S.db.doc("inquiries/"+x.id).update({reply:r.slice(0,2000),status:"답변완료",repliedAt:Date.now()});await S.db.collection("messages").add({members:[S.uid,x.by].sort(),from:S.uid,to:x.by,text:`[농마니 고객센터 답변] ${x.cat} 문의
+${r.slice(0,450)}`,createdAt:Date.now()})},"답변을 보냈습니다")});
   const fq=(S.flags||[]).filter(x=>x.status==="접수").sort((a,b)=>a.createdAt-b.createdAt);
   $("#flagQueue").innerHTML=fq.length?fq.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(nameOf(x.target))}</b><span class="meta">신고: ${esc(nameOf(x.by))} · ${day(x.createdAt)}</span></div><div>${esc(x.text||"")}</div>
     <div class="meta">이전 신고 ${(S.flags||[]).filter(y=>y.target===x.target&&y.id!==x.id).length}건${suspended(x.target)?" · 판매 정지 중":""}</div>
@@ -2053,7 +2090,7 @@ function renderAdmin(){
     <div class="actions"><button class="btn sm primary" type="button" data-sok="${esc(x.id)}">확인함</button><input id="sr-${x.id}" placeholder="부족한 점" aria-label="부족한 점"><button class="btn sm danger" type="button" data-sno="${esc(x.id)}">부족함</button></div></div>`).join(""):`<div class="empty">확인할 채취지가 없습니다.</div>`;
   $("#siteQueue").querySelectorAll("[data-sok]").forEach(b=>b.onclick=()=>guard(()=>S.db.doc("sites/"+b.dataset.sok).update({status:"확인",doneAt:Date.now()}),"확인했습니다. 판매자가 이 산을 고르면 근거가 바로 확인됩니다"));
   $("#siteQueue").querySelectorAll("[data-sno]").forEach(b=>b.onclick=()=>{const id=b.dataset.sno,why=$("#sr-"+id).value.trim();if(!why){toast("부족한 점을 적어 주세요");return}guard(()=>S.db.doc("sites/"+id).update({status:"부족",reason:why.slice(0,200),doneAt:Date.now()}),"판매자에게 보완을 요청했습니다")});
-  const n=pendA.length+pendP.length+payO.length+payA.length+dA.length+dO.length+rps.length+pq.length+pfs.length+lrs.filter(r=>r.status==="접수").length+post.filter(([c,x])=>x.cat==="가공품").length+sq.length+fq.length;$("#dotAdmin").innerHTML=n?`<span class="dot">${n}</span>`:"";
+  const n=pendA.length+pendP.length+payO.length+payA.length+dA.length+dO.length+rps.length+pq.length+pfs.length+lrs.filter(r=>r.status==="접수").length+post.filter(([c,x])=>x.cat==="가공품").length+sq.length+fq.length+iq.length;$("#dotAdmin").innerHTML=n?`<span class="dot">${n}</span>`:"";
 }
 function renderHerbs(){
   const q=($("#herbQ").value||"").trim(),f=$("#herbF").value;
@@ -2318,7 +2355,7 @@ function go(v){
   S.view=v;
   document.querySelectorAll("section[data-view]").forEach(s=>s.hidden=s.dataset.view!==v);
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.go===v));
-  const bt={home:"home",shop:"shop",auction:"auction",chat:"chat",sell:"sell"}[v]||"my";
+  const bt={home:"home",shop:"shop",auction:"auction",chat:"chat",sell:"sell"}[v]||"my";if(v==="help")renderHelp();
   document.querySelectorAll(".bnav button").forEach(b=>b.dataset.tab===bt?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current"));
   if(v==="chat")renderChat();
   if(v==="sell"&&!$("#wz")?.childElementCount)queueMicrotask(()=>{if(S.view==="sell"&&!$("#wz").childElementCount){S.uid?openSell():go("home")}});
@@ -2516,6 +2553,19 @@ function renderHealthAdmin(){const el=$("#hqList");if(!el)return;const since=Dat
   const top=[...c.entries()].sort((a,b)=>b[1]-a[1]).slice(0,15);
   el.innerHTML=top.length?top.map(([k,n])=>`<div><span>${esc(k)}</span><b class="num">${n}회</b></div>`).join(""):`<div class="empty">아직 기록이 없습니다.</div>`}
 
+
+/* ---------- 고객센터 ---------- */
+function renderHelp(){
+  const sel=$("#inqOrder");if(sel){const v=sel.value,mine=S.orders.filter(o=>o.buyerId===S.uid||o.sellerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt).slice(0,20);
+    sel.innerHTML=`<option value="">없음</option>`+mine.map(o=>`<option value="${esc(o.id)}">${esc(o.productName)} · ${won(o.total)} · ${day(o.createdAt)}</option>`).join("");sel.value=v}
+  const ph=(S.site||{}).csPhone;$("#csPhone").innerHTML=ph?`<p class="meta" style="margin:10px 0 0">전화 문의: <a href="tel:${esc(ph.replace(/[^0-9+]/g,""))}"><b>${esc(ph)}</b></a>${S.site.csHours?` · ${esc(S.site.csHours)}`:""}</p>`:"";
+  const mine=(S.inq||[]).filter(x=>x.by===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
+  $("#myInq").innerHTML=!S.uid?`<div class="empty">로그인하면 내가 남긴 문의와 답변을 볼 수 있습니다.</div>`:mine.length?mine.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.cat)}</b><span class="chip ${x.status==="답변완료"?"ok":""}">${esc(x.status)}</span></div><div class="meta">${day(x.createdAt)}</div><div style="white-space:pre-wrap">${esc(x.text)}</div>${x.reply?`<div class="notice" style="margin-top:6px"><b>답변</b> · ${day(x.repliedAt)}<br><span style="white-space:pre-wrap">${esc(x.reply)}</span></div>`:""}</div>`).join(""):`<div class="empty">아직 남긴 문의가 없습니다.</div>`}
+$("#inqForm").onsubmit=async e=>{e.preventDefault();const t=$("#inqText").value.trim();
+  if(t.length<5){toast("문의 내용을 조금 더 적어 주세요");return}
+  if(PII.test(t)){toast("전화번호·계좌번호는 적지 말아 주세요. 필요하면 운영자가 따로 여쭤봅니다");return}
+  const o=S.orders.find(x=>x.id===$("#inqOrder").value);
+  if(await guard(()=>S.db.collection("inquiries").add({by:S.uid,cat:$("#inqCat").value,orderId:o?o.id:"",orderName:o?o.productName:"",text:t.slice(0,1000),status:"접수",createdAt:Date.now()}),"문의를 남겼습니다. 답변이 오면 이 화면과 대화함에서 볼 수 있어요"))$("#inqText").value=""};
 /* ---------- 추천 도우미 ---------- */
 /* 추천 도우미 엔진 (한국어 앱·해외 화면 공통). 쓰임새·예산·보관·조건으로만 고릅니다. 건강 상태로는 고르지 않습니다. */
 const RECO_Q=[
@@ -2844,14 +2894,14 @@ function renderAucExtras(){
   if($("#aucExtra"))$("#aucExtra").innerHTML=row+upNextHTML()+(lv?winsHTML(5):"");
   if(S.owner&&$("#alertCounts")){const m={};(S.alerts||[]).filter(a=>a.kind==="auction").forEach(a=>m[a.key]=(m[a.key]||0)+1);const rows=Object.entries(m).sort((a,b)=>b[1]-a[1]);
     $("#alertCounts").innerHTML=rows.length?rows.map(([c,k])=>`<div class="item sunk"><div class="itop"><b>${esc(c)}</b><span class="num">${k}명 대기</span></div></div>`).join(""):`<div class="empty">아직 경매 알림을 신청한 손님이 없습니다.</div>`;
-    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();if(!["cfgVideo","cfgReview","cfgProof"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
+    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();if(!["cfgVideo","cfgReview","cfgProof","cfgPhone","cfgHours"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon();$("#cfgPhone").value=S.site?.csPhone||"";$("#cfgHours").value=S.site?.csHours||""}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
     $("#cfgNote").textContent=`다음 마감: ${satLabel(nextSat(Date.now()))}`}
 }
 $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:00:00+09:00");if(!an||new Date(an+9*3600e3).getUTCDay()!==6){toast("기준 경매일은 토요일로 골라 주세요");return}
   const vw=+$("#cfgVideo").value,rw=+$("#cfgReview").value,pw=+$("#cfgProof").value;
   if(!(vw>=10000&&rw>=10000&&pw>=10000)){toast("기준 금액은 1만 원 이상으로 적어 주세요");return}
   if(vw>rw){toast("인증 영상 기준은 직접 승인 기준보다 낮아야 합니다");return}
-  const v={aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,videoWon:vw,reviewWon:rw,proofWon:pw,updatedAt:Date.now()};
+  const v={aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,videoWon:vw,reviewWon:rw,proofWon:pw,csPhone:$("#cfgPhone").value.trim().slice(0,20),csHours:$("#cfgHours").value.trim().slice(0,40),updatedAt:Date.now()};
   if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),"운영 설정을 저장했습니다. 경매 주기는 새로 올라오는 경매부터 적용됩니다")){S.site={...(S.site||{}),...v};render()}};
 
 /* ---------- 판매 마법사 (사진 → 품목 → 방식 → 값 → 확인) ---------- */
@@ -3881,6 +3931,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   if(S.owner)db.collection("herbphotos").where("status","==","pending").limit(200).onSnapshot(s=>{S.pendPhotos=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   if(S.owner)db.collection("reports").limit(500).onSnapshot(s=>{S.reports=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   db.collection("sites").limit(500).onSnapshot(s=>{S.sites=s.docs.map(d=>({id:d.id,...d.data()}));renderSites();if(S.owner)renderAdmin()},()=>{});
+  if(S.uid)db.collection("inquiries").limit(500).onSnapshot(s=>{S.inq=s.docs.map(d=>({id:d.id,...d.data()}));if(S.view==="help")renderHelp();if(S.owner)renderAdmin()},()=>{});
   if(S.owner)db.collection("flags").limit(500).onSnapshot(s=>{S.flags=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   if(S.owner){db.collection("proofs").limit(500).onSnapshot(s=>{S.proofs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
     db.collection("landreqs").limit(500).onSnapshot(s=>{S.landreqs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{})}
@@ -3899,7 +3950,7 @@ addEventListener("resize",()=>{clearTimeout(paintAll.t);paintAll.t=setTimeout(pa
 </script>
 
 <footer style="max-width:1100px;margin:32px auto 0;padding:18px 16px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.7">
-농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">中文</a> · <a href="global.html?lang=ja" style="color:var(--pine)" lang="ja">日本語</a><br>
+농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="https://nongmani.com/nongmani-yakcho/" style="color:var(--pine)">약초 백과</a> · <a href="#" onclick="go('help');scrollTo(0,0);return false" style="color:var(--pine)">고객센터</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">中文</a> · <a href="global.html?lang=ja" style="color:var(--pine)" lang="ja">日本語</a><br>
 시범 운영 중입니다. 사업자 정보는 등록 후 표시됩니다.
 </footer>
 <div id="nmIntl" hidden style="position:fixed;left:12px;right:12px;bottom:84px;z-index:50;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;gap:10px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:15px" translate="no">

@@ -1,0 +1,27 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+(async()=>{const b=await chromium.launch();
+async function open(url,pre,loc){const ctx=await b.newContext({viewport:{width:390,height:844},serviceWorkers:'block',locale:loc||'ko-KR'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+ await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript(pre+'\n'+mock);await p.goto(process.argv[2]+url);await p.waitForTimeout(1200);return {p,errs,ctx}}
+let {p,errs,ctx}=await open('/app/','window.__SESSION={user:{id:"me"}};window.__ADMIN=true;');
+await p.evaluate(()=>go('help'));await p.waitForTimeout(150);
+ok(await p.locator('section[data-view="help"] h2').first().innerText()==='고객센터','help page');
+ok(await p.locator('.faq').count()>=15,'faq items: '+await p.locator('.faq').count());
+await p.locator('.faq summary').first().click();ok(await p.locator('.faq[open] p').first().isVisible(),'faq opens');
+await p.fill('#inqText','010-1234-5678로 전화 주세요');await p.click('#inqForm button[type=submit]');await p.waitForTimeout(150);
+ok((await p.locator('#toast').innerText()).includes('전화번호'),'phone number blocked in inquiry');
+await p.selectOption('#inqCat','경매');await p.fill('#inqText','낙찰 후 결제 기한이 언제까지인가요?');await p.click('#inqForm button[type=submit]');await p.waitForTimeout(600);
+const iq=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='inquiries').pop());ok(iq&&iq[3].cat==='경매'&&iq[3].status==='접수','inquiry saved');
+await p.evaluate(()=>{go('admin');renderAdmin()});await p.waitForTimeout(150);
+await p.fill(`#iqr-${iq[2]}`,'낙찰 후 24시간 안에 결제해 주세요.');await p.click(`[data-iqr="${iq[2]}"]`);await p.waitForTimeout(800);
+const done=await p.evaluate(id=>{const x=S.inq.find(y=>y.id===id);return x&&x.status==='답변완료'&&!!x.reply},iq[2]);ok(done,'operator answer saved');
+ok(await p.evaluate(()=>window.__calls.some(c=>c[0]==='upsert'&&c[1]==='messages'&&String(c[3].text).includes('고객센터 답변'))),'answer also sent to chat');
+await p.evaluate(()=>go('help'));await p.waitForTimeout(200);ok((await p.locator('#myInq').innerText()).includes('24시간'),'user sees answer');
+ok(await p.locator('.tab[data-go="help"]').count()===1,'nav has customer center');
+ok(errs.length===0,'no errors '+errs.join('|'));await ctx.close();
+({p,errs,ctx}=await open('/app/global.html?lang=ja','window.__SESSION={user:{id:"me"}};','ja-JP'));
+await p.click('#contactBtn');await p.fill('#cText','送料について教えてください');await p.click('#cSend');await p.waitForTimeout(500);
+ok(await p.evaluate(()=>window.__calls.some(c=>c[0]==='upsert'&&c[1]==='inquiries'&&c[3].lang==='ja')),'overseas inquiry saved (ja)');
+ok(errs.length===0,'no errors global '+errs.join('|'));
+await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();
