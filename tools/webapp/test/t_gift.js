@@ -1,0 +1,61 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+const today=new Date(Date.now()+9*3600e3).toISOString().slice(0,10),later=new Date(Date.now()+9*3600e3+20*864e5).toISOString().slice(0,10),past=new Date(Date.now()+9*3600e3-20*864e5).toISOString().slice(0,10);
+const post=(site)=>`(()=>{const D=window.__D;D.settings.site=Object.assign({beta:false},${JSON.stringify(site)});
+ const ks=Object.keys(D.products);D.products[ks[0]].gift=true;D.products[ks[0]].giftWrap=3000;
+ D.products.big={name:"산양삼 10년근 선물세트",item:"산양삼",cat:"뿌리·줄기",price:280000,unit:"1세트",form:"생물",stock:3,region:"강원 평창",sellerId:"s1",grow:"재배 (인증 없음)",permit:"본인 소유 임야·재배",status:"판매중",gift:true,giftWrap:0,createdAt:Date.now()};
+ D.products.top={name:"산양삼 15년근 특품",item:"산양삼",cat:"뿌리·줄기",price:450000,unit:"1세트",form:"생물",stock:2,region:"강원 인제",sellerId:"s1",grow:"재배 (인증 없음)",permit:"본인 소유 임야·재배",status:"판매중",gift:true,createdAt:Date.now()};})();`;
+(async()=>{const b=await chromium.launch();
+async function open(pre,site,vp){const ctx=await b.newContext({viewport:vp||{width:390,height:844},serviceWorkers:'block',locale:'ko-KR'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+ await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript(pre+'\n'+mock+'\n'+post(site));await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);return {p,errs,ctx}}
+// 1) 기간 안: 손님에게 배너
+let {p,errs,ctx}=await open('window.__SESSION={user:{id:"buyer"}};',{giftOn:true,giftTitle:"2027 설 선물",giftStart:past,giftEnd:later,giftCut:later});
+ok(await p.locator('#giftBan').isVisible(),'banner visible in window');
+ok((await p.locator('#giftBan').innerText()).includes('2027 설 선물'),'banner title');
+await p.screenshot({path:path.join(__dirname,'gift_home.png')});
+await p.click('#giftBan .giftban');await p.waitForTimeout(300);
+ok(await p.locator('.giftdlg').isVisible(),'gift dialog opens');
+const n=await p.locator('.giftdlg .card').count();ok(n===3,'3 gift products: '+n);
+ok((await p.locator('.giftdlg').innerText()).includes('명절 기간 한도 30만 원 안'),'law tag shown');
+await p.screenshot({path:path.join(__dirname,'gift_dlg.png'),fullPage:false});
+await p.click('.giftdlg [data-gift="t4"]');await p.waitForTimeout(200);
+ok(await p.locator('.giftdlg .card').count()===1,'tier 30만+ filters');
+await p.click('.giftdlg [data-gift="t1"]');await p.waitForTimeout(200);
+await p.locator('.giftdlg .card').first().click();await p.waitForTimeout(300);
+ok(await p.locator('#gOpt').evaluate(e=>e.open),'gift options open from corner');
+ok(await p.locator('#dlg [data-gift="t1"]').count()===1,'back to corner button');
+const t0=await p.locator('#tot').innerText();
+await p.fill('#gCard','새해 복 많이 받으세요');await p.fill('#gDate',later);
+const t1=await p.locator('#tot').innerText();ok(t0===t1&&t1.length>0,'total includes wrap: '+t1);
+await p.screenshot({path:path.join(__dirname,'gift_opt.png')});
+await p.click('#buy');await p.waitForTimeout(700);
+const od=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').pop());
+ok(od&&od[3].gift&&od[3].gift.card==='새해 복 많이 받으세요'&&od[3].gift.wrap===true&&od[3].gift.wrapFee===3000&&od[3].gift.hidePrice===true,'order saved with gift '+JSON.stringify(od&&od[3].gift));
+ok(od&&od[3].total===od[3].unitPrice*od[3].qty+od[3].ship+3000,'total incl wrap fee');
+ok(errs.length===0,'no errors '+errs.join('|'));await ctx.close();
+// 2) 기간 밖: 손님에게 안 보임
+({p,errs,ctx}=await open('window.__SESSION={user:{id:"buyer"}};',{giftOn:true,giftStart:later,giftEnd:later}));
+ok(!(await p.locator('#giftBan').isVisible()),'hidden outside window');await ctx.close();
+// 3) 운영자: 미리보기, 설정 저장, 넣기/빼기
+({p,errs,ctx}=await open('window.__SESSION={user:{id:"me"}};window.__ADMIN=true;',{giftOn:true,giftStart:later,giftEnd:later},{width:1280,height:900}));
+ok((await p.locator('#giftBan').innerText()).includes('미리보기'),'admin preview');
+await p.evaluate(()=>{go('admin');renderAdmin()});await p.waitForTimeout(200);
+await p.click('[data-gpre="seol27"]');ok(await p.inputValue('#cfgGiftEnd')==='2027-02-09','preset fills');
+await p.click('#cfgSave');await p.waitForTimeout(500);
+const st=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='settings').pop());ok(st&&st[3].giftTitle==='2027 설 선물'&&st[3].giftCut==='2027-02-01','settings saved');
+await p.screenshot({path:path.join(__dirname,'gift_admin.png')});
+await p.evaluate(()=>openProduct('big'));await p.waitForTimeout(200);
+await p.click('#gPick');await p.waitForTimeout(400);
+ok(await p.evaluate(()=>!inGift(S.products.find(x=>x.id==='big'))&&S.site.giftHide.includes('big')),'admin removes from corner');
+await p.click('#gPick');await p.waitForTimeout(400);ok(await p.evaluate(()=>inGift(S.products.find(x=>x.id==='big'))),'admin adds back');
+ok(errs.length===0,'no errors admin '+errs.join('|'));await ctx.close();
+// 4) 판매자: 선물 포장 켜기, 주문에 선물 안내
+({p,errs,ctx}=await open('window.__SESSION={user:{id:"s2"}};',{}));
+await p.evaluate(()=>{const D=window.__D;});
+await p.evaluate(()=>go('seller'));await p.waitForTimeout(200);
+const pid=await p.evaluate(()=>S.products.find(x=>x.sellerId==='s2'&&!x.gift&&x.status==='판매중').id);
+await p.fill('#gw-'+pid,'2000');await p.click(`[data-act="giftP"][data-id="${pid}"]`);await p.waitForTimeout(500);
+ok(await p.evaluate(id=>{const x=S.products.find(y=>y.id===id);return x.gift===true&&x.giftWrap===2000},pid),'seller turns on gift wrap');
+ok(errs.length===0,'no errors seller '+errs.join('|'));
+await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();
