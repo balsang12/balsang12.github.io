@@ -54,7 +54,7 @@ patch("  catch(e){\n    const m={invalid_argument:",
 
 patch('if(!db||!S.uid){ban.hidden=false;ban.textContent="저장소에 연결되지 않아 둘러보기만 할 수 있습니다. claude.ai에 로그인한 상태로 열면 입찰·주문·출품이 저장됩니다.";render();return}',
       'if(!db){ban.hidden=false;ban.textContent="저장소에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.";render();return}\n'
-      '  if(!S.uid){ban.hidden=false;ban.innerHTML=\'둘러보는 중입니다. <button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button> 하면 주문·입찰·판매를 할 수 있어요.\';$("#who").innerHTML=\'<button type="button" class="btn sm" onclick="nmAuth.open()">로그인</button>\'}\n'
+      '  if(!S.uid){ban.hidden=false;ban.innerHTML=\'<button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button> 하면 주문·입찰·판매를 할 수 있어요.\';$("#who").innerHTML=\'<button type="button" class="btn sm" onclick="nmAuth.open()">로그인</button>\'}\n'
       '  else $("#who").insertAdjacentHTML("beforeend",\' <button type="button" class="btn sm" onclick="nmAuth.signOut()" aria-label="로그아웃">로그아웃</button>\');',
       "startup")
 patch("""if(!S.canWrite){ban.hidden=false;ban.textContent="보기 전용 권한으로 열었습니다. 입찰·주문·출품을 하려면 페이지 소유자에게 '참여자(Contributor)' 이상 권한을 요청하세요."}""",

@@ -431,6 +431,16 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .reco .rc img,.reco .rc .ph{width:72px;height:72px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}.reco .rc b{display:block;font-size:16px}.reco .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 .medn{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:8px 10px}
 .cguard{font-size:13px;color:var(--muted);background:var(--sunk);padding:8px 12px;border-bottom:1px solid var(--line)}.cguard button{border:0;background:none;padding:0 0 0 4px;font:inherit;font-weight:700;color:var(--berry);text-decoration:underline;cursor:pointer}
+.srow2{display:flex;gap:8px;align-items:stretch;max-width:640px}.srow2 .search{flex:1 1 0;min-width:0;max-width:none}.srow2 .search input{min-width:0;width:100%}
+.recomini{display:none;flex:none;border:1px solid var(--gold);background:var(--gold-soft);color:var(--gold-deep,var(--gold));border-radius:14px;padding:0 12px;font:inherit;font-weight:700;cursor:pointer;align-items:center;gap:4px;font-size:15px}
+@media (max-width:700px){
+  .recomini{display:flex}.hhead .recobtn{display:none}#homeAucKinds{display:none}
+  .hhead>.eyebrow,.hhead .hsub{display:none}.hhead h1{font-size:24px}.hhead h1 br{display:none}.hhead{gap:10px}
+  .betabar{font-size:12.5px;padding:6px 0}
+  #connBanner{padding:8px 12px;font-size:13px;margin-block:8px}
+  #homeIcons{grid-template-columns:repeat(var(--cols,3),1fr)}
+}
+@media (min-width:861px){.tab[data-go="chat"]{display:none}.hchat{display:block}}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -705,7 +715,7 @@ label.btn{display:inline-block}
 </header>
 
 <div id="actBar" class="actbar" hidden><div class="wrap"><span id="actTxt"></span><button type="button" id="actExit">내 계정으로 돌아가기</button></div></div>
-<div id="betaBar" class="betabar" hidden><div class="wrap"><b>베타 오픈</b> 약초 사전·상품 구경·입고 알림을 먼저 열었습니다. 실제 주문과 결제는 곧 시작합니다.</div></div>
+<div id="betaBar" class="betabar" hidden><div class="wrap"><b>베타 오픈</b> 지금은 구경과 알림 신청만 됩니다. 주문·결제는 곧 시작해요.</div></div>
 <main class="wrap">
 <div class="banner" id="connBanner" hidden></div>
 
@@ -714,9 +724,9 @@ label.btn{display:inline-block}
   <div class="htop"><div class="hmain">
   <div class="hhead">
     <div class="eyebrow">농부·심마니 약초 직거래 마켓 · 안전결제</div>
-    <h1>어떤 약초를<br>찾으세요?</h1>
+    <h1>어떤 약초를 <br>찾으세요?</h1>
     <p class="hsub">심마니가 산에서 캔 약초부터 농부가 밭에서 키운 약초까지</p>
-    <form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 약초 이름을 적어 주세요" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form>
+    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 약초 이름을 적어 주세요" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="추천받기">🧺<span>추천</span></button></div>
     <button type="button" class="recobtn" data-reco="1"><i aria-hidden="true">🧺</i><div><b>뭘 살지 모르겠다면, 골라 드릴게요</b><br><span>몇 가지만 답하면 쓰임새와 예산에 맞는 상품을 추천해 드려요</span></div></button>
     <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" data-go="herbs">약초 사전에서 찾아보기</button><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
     <form class="askbox" id="askBox" hidden>
@@ -729,7 +739,6 @@ label.btn{display:inline-block}
   <div id="todoHome"></div>
   <div id="alertHome"></div>
   <div class="hgroup mkt"><div class="hg-head"><b>마켓 장보기</b><span id="mktSub">정한 값에 바로 구매</span></div><div class="icons" id="homeIcons"></div></div>
-  <div class="uses"><div class="hg-head"><b>어떻게 드실 건가요?</b><span>드시는 방법이나 받으실 분에 맞춰 골라 드려요</span></div><div class="usel" id="homeUses"></div></div>
   </div>
   <aside class="hside" aria-label="경매·마켓 요약">
     <div class="hcard mkt">
@@ -750,15 +759,16 @@ label.btn{display:inline-block}
   </aside>
   </div>
 
+  <div class="hgroup auc hauc" id="homeAucKinds"><div class="hg-head"><b>희귀약초 경매</b><span><span class="cyc">매주</span> 토요일 저녁 8시 마감 · <span id="aucKinds"></span></span></div><div class="icons" id="homeAucIcons"></div></div>
+  <div class="sechead"><div><div class="eyebrow"><span class="cyc">매주</span> 토요일 저녁 8시 마감</div><h2 id="homeAucH">이번 주 경매</h2><div class="meta nextSat"></div></div><button class="btn sm" data-go="auction">전체 보기</button></div>
+  <div class="grid" id="homeAuc"></div>
+  <div id="homeWins"></div>
+
   <div class="sechead"><div><div class="eyebrow">정한 값에 바로 구매 · 안전결제</div><h2>마켓 인기 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
   <div class="grid" id="homeShop"></div>
   <div class="sechead" id="homeNewH" hidden><div><div class="eyebrow">산지에서 막 올라온</div><h2>새로 들어온 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
   <div class="grid" id="homeNew"></div>
 
-  <div class="hgroup auc hauc"><div class="hg-head"><b>희귀약초 경매</b><span><span class="cyc">매주</span> 토요일 저녁 8시 마감 · <span id="aucKinds"></span></span></div><div class="icons" id="homeAucIcons"></div></div>
-  <div class="sechead"><div><div class="eyebrow"><span class="cyc">매주</span> 토요일 저녁 8시 마감</div><h2 id="homeAucH">이번 주 경매</h2><div class="meta nextSat"></div></div><button class="btn sm" data-go="auction">전체 보기</button></div>
-  <div class="grid" id="homeAuc"></div>
-  <div id="homeWins"></div>
 
 
   <div class="trustline hmob" role="list"><span role="listitem">✔ 채취 근거 확인</span><span role="listitem">✔ 산양삼 합격증</span><span role="listitem">✔ 안전결제</span><span role="listitem">✔ 수수료 공개</span></div>
@@ -771,12 +781,6 @@ label.btn{display:inline-block}
   <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>약초 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초가 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
   <div class="clhome" id="clHome"></div>
 
-  <div class="trust">
-    <div><b>채취 근거 확인</b><span>국유림 허가·소유자 동의·본인 임야 중 하나를 운영자가 확인해야 노출</span></div>
-    <div><b>산양삼은 합격증</b><span>한국임업진흥원 품질검사 합격증 번호가 없으면 출품 불가</span></div>
-    <div><b>안전결제</b><span>대금은 보관했다가 수령 확인 후 판매자에게 정산</span></div>
-    <div><b>수수료 공개</b><span>출품료·낙찰수수료를 등록 전에 계산해서 보여줌</span></div>
-  </div>
   </details>
 </section>
 
@@ -1796,8 +1800,9 @@ function sellerRow(uid,ctx){const t=trust(uid),r=sellerRating(uid),own=uid===S.u
   return `<div class="srow">${avaHTML(uid,"sm")}<div><b>${esc(shopName(uid))}</b>${certChip(uid)}${regChip(uid)}<div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} (${r.n}) · `:""}완료 거래 ${t.done}건</div></div><button class="btn sm" type="button" data-profile="${esc(uid)}">프로필</button>${own?"":`<button class="btn sm primary" type="button" data-chat="${esc(uid)}" data-ctx="${esc(ctx||"")}">문의하기</button>`}</div>`}
 function renderHome(){
   {const cnt=c=>live().filter(p=>p.stock>0&&mcat(p.cat)===c).length,ord=[...MKT_ICONS].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();
-    if($("#homeIcons").dataset.k!==key){$("#homeIcons").dataset.k=key;$("#homeIcons").innerHTML=ord.map(c=>soonIco(icoBtn(c,"shop"),!cnt(c))).join("");requestAnimationFrame(paintAll)}}
-  {const la_=liveAucs(),cnt=c=>la_.filter(a=>a.cat===c).length,ai=AUC_ICONS(),ord=[...ai].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();$("#aucKinds").textContent=`${ai.length}가지 · 옆으로 넘겨 보기`;if($("#homeAucIcons").dataset.k!==key){$("#homeAucIcons").dataset.k=key;$("#homeAucIcons").innerHTML=ord.map(c=>soonIco(icoBtn(c,"auction",ASEASON[c]?"제철":""),!cnt(c))).join("");requestAnimationFrame(paintAll)}}
+    const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;
+    if($("#homeIcons").dataset.k!==key){$("#homeIcons").dataset.k=key;$("#homeIcons").innerHTML=show.map(c=>soonIco(icoBtn(c,"shop"),!cnt(c))).join("");$("#homeIcons").style.setProperty("--cols",Math.min(show.length,4));requestAnimationFrame(paintAll)}}
+  {const la_=liveAucs(),cnt=c=>la_.filter(a=>a.cat===c).length,ai=AUC_ICONS(),ord=[...ai].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();$("#aucKinds").textContent=`${ai.length}가지 · 옆으로 넘겨 보기`;const live_=ord.filter(c=>cnt(c));$("#aucKinds").textContent=`${live_.length}가지 진행 중`;$("#homeAucKinds").hidden=!live_.length;if($("#homeAucIcons").dataset.k!==key){$("#homeAucIcons").dataset.k=key;$("#homeAucIcons").innerHTML=live_.map(c=>icoBtn(c,"auction",ASEASON[c]?"제철":"")).join("");requestAnimationFrame(paintAll)}}
   renderUses();renderAlertHome();
   {const first=!S.auctions.some(a=>a.startedAt&&auc(a).ended),e=nextSat(Date.now()),n=liveAucs().length;
     const st=$("#aucStrip");if(st)st.innerHTML=`<span><b>${first?"농마니 첫 경매":"이번 경매"} · ${satLabel(e)} 마감</b><span class="num">${n?`지금 ${n}건 출품 · 남은 시간 <span data-end="${e}">${left(e-Date.now())}</span>`:"지금 출품을 받고 있습니다"}</span></span><i>경매 보기 →</i>`;
@@ -3865,7 +3870,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
     $("#adminTab").hidden=!S.owner;$("#adminMenu").hidden=!S.owner;S.userApi=user;
   }
   if(!db){ban.hidden=false;ban.textContent="저장소에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.";render();return}
-  if(!S.uid){ban.hidden=false;ban.innerHTML='둘러보는 중입니다. <button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button> 하면 주문·입찰·판매를 할 수 있어요.';$("#who").innerHTML='<button type="button" class="btn sm" onclick="nmAuth.open()">로그인</button>'}
+  if(!S.uid){ban.hidden=false;ban.innerHTML='<button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button> 하면 주문·입찰·판매를 할 수 있어요.';$("#who").innerHTML='<button type="button" class="btn sm" onclick="nmAuth.open()">로그인</button>'}
   else $("#who").insertAdjacentHTML("beforeend",' <button type="button" class="btn sm" onclick="nmAuth.signOut()" aria-label="로그아웃">로그아웃</button>');
   if(S.uid&&!S.canWrite){ban.hidden=false;ban.textContent="이 계정은 지금 거래를 할 수 없습니다. 운영자에게 문의해 주세요."}
   const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
