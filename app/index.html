@@ -465,6 +465,11 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .giftopt summary{cursor:pointer;font-weight:700;color:var(--gold-deep)}
 .giftsell{align-items:end}
 @media (max-width:700px){.giftban{padding:12px}.giftban .go{display:none}.giftban b{font-size:17px}}
+.hhead h1{word-break:keep-all}
+.hseason{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.hseason b{color:var(--pine)}
+.hseason .sq{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:13.5px;cursor:pointer}
+.hseason .sq:hover{border-color:var(--pine)}
+@media (max-width:700px){.hhead .hsub.hseason{display:flex;font-size:14px;margin:0}.hhead .hseason>span{width:100%}}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -732,7 +737,7 @@ label.btn{display:inline-block}
       <button class="tab sell" type="button" data-sell="1">+ 팔기</button>
       <button class="tab" role="tab" data-go="seller" aria-selected="false">판매자<span id="dotSeller"></span></button>
       <button class="tab" role="tab" data-go="admin" aria-selected="false" id="adminTab" hidden>운영자<span id="dotAdmin"></span></button>
-      <button class="tab" role="tab" data-go="herbs" aria-selected="false">약초 사전</button>
+      <button class="tab" role="tab" data-go="herbs" aria-selected="false">약초·산나물 사전</button>
       <button class="tab" role="tab" data-go="help" aria-selected="false">고객센터</button>
     </nav>
   </div>
@@ -748,13 +753,13 @@ label.btn{display:inline-block}
   <div class="htop"><div class="hmain">
   <div class="hhead">
     <div class="eyebrow hdirect">농부와 심마니 <b>직거래</b> 장터 · 안전결제</div>
-    <h1>어떤 약초를 <br>찾으세요?</h1>
-    <p class="hsub">심마니가 산에서 캔 약초부터 농부가 밭에서 키운 약초까지</p>
-    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="약초 이름으로 찾기" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="골라 주세요">🧺<span>골라 주세요</span></button></div>
-    <button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>약초 알아보기</b><br><span>약초 300여 가지의 생김새, 옛 문헌 기록, 최근 연구를 약초 사전에서 읽어 보세요</span></div><em aria-hidden="true">›</em></button>
+    <h1>산과 밭에서 온 것, <br>무엇을 찾으세요?</h1>
+    <p class="hsub hseason" id="hSeason"></p>
+    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="약초·산나물 이름으로 찾기" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="골라 주세요">🧺<span>골라 주세요</span></button></div>
+    <button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>약초·산나물 알아보기</b><br><span>약초·산나물 300여 가지의 생김새, 옛 문헌 기록, 최근 연구를 사전에서 읽어 보세요</span></div><em aria-hidden="true">›</em></button>
     <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
     <form class="askbox" id="askBox" hidden>
-      <label for="askQ"><b>어떤 약초인지 기억나는 대로 적어 주세요</b></label>
+      <label for="askQ"><b>어떤 약초·나물인지 기억나는 대로 적어 주세요</b></label>
       <textarea id="askQ" rows="2" maxlength="200" placeholder="예: 잎이 넓고 쌉싸름한 봄 산나물 / 뿌리를 고추장에 무쳐 먹던 하얀 것"></textarea>
       <button class="btn primary" type="submit" id="askGo">물어보기</button>
       <div id="askOut" aria-live="polite"></div>
@@ -766,7 +771,7 @@ label.btn{display:inline-block}
   </div>
   <aside class="hside" aria-label="경매·마켓 요약">
     <div class="hcard mkt">
-      <div class="eyebrow">약초 직거래 마켓</div>
+      <div class="eyebrow">약초·산나물 직거래 마켓</div>
       <div class="hcount num"><span id="sideShop2">0</span><small>개 판매 중</small></div>
       <div class="meta" id="sideShopMix"></div>
       <div class="actions"><button class="btn primary" data-go="shop">마켓 장보기</button><button class="btn" data-go="seller">상품 올리기</button></div>
@@ -860,7 +865,7 @@ label.btn{display:inline-block}
   <div class="menu">
     <button data-go="request"><b>채취 의뢰</b><span>내 요청서와 받은 견적</span></button>
     <button data-go="seller"><b>판매자 센터<span id="dotSeller2"></span></b><span>상품·경매 등록, 주문 처리, 견적 보내기</span></button>
-    <button data-go="herbs"><b>약초 사전</b><span>한국 산나물·약초 300여 가지의 생김새·구별법·고서 기록</span></button>
+    <button data-go="herbs"><b>약초·산나물 사전</b><span>한국 산나물·약초 300여 가지의 생김새·구별법·고서 기록</span></button>
     <button id="nmInstMenu" hidden type="button"><b>📲 홈 화면에 추가</b><span>앱처럼 아이콘을 눌러 바로 열기</span></button>
     <button data-go="help"><b>고객센터</b><span>자주 묻는 질문·1:1 문의·이용 안내</span></button>
     <button data-go="admin" id="adminMenu" hidden><b>운영자</b><span>검수·정산·문제 신고</span></button>
@@ -887,7 +892,7 @@ label.btn{display:inline-block}
 <!-- HERBS (약초 사전) -->
 <section data-view="herbs" hidden>
   <div class="sechead">
-    <div><div class="eyebrow">한국 산나물·약초 · 고서 기록 · 최근 연구</div><h2>약초 사전</h2><div class="meta" id="dictSum"></div></div>
+    <div><div class="eyebrow">한국 산나물·약초 · 고서 기록 · 최근 연구</div><h2>약초·산나물 사전</h2><div class="meta" id="dictSum"></div></div>
     <a class="btn sm" id="ytChannel" href="#" target="_blank" rel="noopener" hidden>유튜브 채널 보기 ↗</a>
   </div>
   <div class="banner">옛 의서의 기록과 최근 연구를 소개하는 곳입니다. 효능을 보장하거나 치료를 권하는 글이 아닙니다. 연구 대부분은 세포·동물 실험이라 사람에게 같은 효과가 있다는 뜻이 아니며, 몸이 불편하면 한의사·의사와 상의하세요.</div>
@@ -1906,7 +1911,14 @@ async function giftToggle(p){const g=giftCfg(),on=inGift(p);let ids=g.ids.filter
 function giftCfgFill(){const g=giftCfg();if(!$("#cfgGift"))return;$("#cfgGift").checked=g.on;$("#cfgGiftTitle").value=(S.site||{}).giftTitle||"";$("#cfgGiftStart").value=g.start;$("#cfgGiftEnd").value=g.end;$("#cfgGiftCut").value=g.cut}
 function giftPreset(k){const y=+kstDay().slice(0,4),P={ny:[`${y}년 연말·새해 선물`,`${y}-11-23`,`${y+1}-01-05`,`${y}-12-21`],seol27:["2027 설 선물","2027-01-11","2027-02-09","2027-02-01"]}[k];if(!P)return;
   $("#cfgGift").checked=true;$("#cfgGiftTitle").value=P[0];$("#cfgGiftStart").value=P[1];$("#cfgGiftEnd").value=P[2];$("#cfgGiftCut").value=P[3];toast("날짜를 채웠습니다. 확인하고 저장을 눌러 주세요")}
-function renderHome(){
+
+/* ---------- 철마다 바뀌는 첫 화면 한 줄 ---------- */
+const SEASONS=[[[3,4,5],"🌱","봄 산나물 철이에요",["곰취","두릅","참나물","취나물"]],[[6,7,8],"☀️","여름 열매·약초 철",["오디","오미자","산딸기","블루베리"]],[[9,10,11],"🍄","가을 버섯·뿌리 철",["송이","능이","더덕","도라지"]],[[12,1,2],"🎁","겨울 약초·선물 철",["산양삼","천마","대추","생강청"]]];
+function seasonNow(){const m=new Date(Date.now()+9*3600e3).getUTCMonth()+1;return SEASONS.find(x=>x[0].includes(m))}
+function renderSeason(){const el=$("#hSeason");if(!el)return;const z=seasonNow();if(el.dataset.k===z[2])return;el.dataset.k=z[2];
+  el.innerHTML=`<span>${z[1]} <b>${z[2]}</b></span> ${z[3].map(n=>`<button type="button" class="sq" data-sq="${n}">${n}</button>`).join("")}`;
+  const q=$("#homeQ");if(q&&!q.value)q.placeholder=`${z[3].slice(0,3).join(", ")}…`}
+function renderHome(){renderSeason();
   {const cnt=c=>live().filter(p=>p.stock>0&&mcat(p.cat)===c).length,ord=[...MKT_ICONS].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();
     const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;
     if($("#homeIcons").dataset.k!==key){$("#homeIcons").dataset.k=key;$("#homeIcons").innerHTML=show.map(c=>soonIco(icoBtn(c,"shop"),!cnt(c))).join("");$("#homeIcons").style.setProperty("--cols",Math.min(show.length,4));requestAnimationFrame(paintAll)}}
@@ -2418,6 +2430,7 @@ document.addEventListener("click",e=>{
   const alb=e.target.closest("[data-alert]");if(alb){toggleAlert(alb.dataset.alert,alb.dataset.ak||"shop");return}
   const alg=e.target.closest("[data-alertgo]");if(alg){const a=S.alerts.find(x=>x.id===alg.dataset.alertgo);if(!a)return;
     if(a.kind==="auction"){S.acat=ACATS.includes(a.key)?a.key:"전체";go("auction")}else{const isC=CATS.includes(a.key);S.cat=isC?a.key:"전체";S.use="";$("#shopQ").value=isC?"":a.key;go("shop")}return}
+  const sq=e.target.closest("[data-sq]");if(sq){$("#homeQ").value=sq.dataset.sq;$("#homeSearch").requestSubmit();return}
   const gf=e.target.closest("[data-gift]");if(gf){openGift(gf.dataset.gift);return}
   const gb=e.target.closest("[data-gift-bulk]");if(gb){if($("#dlg").open)$("#dlg").close();go("request");toast("수량이 많은 선물은 요청서 메모에 ‘선물용 · 받는 곳 ○군데 · 포장 원함’처럼 적어 주세요. 견적은 무료입니다");return}
   const gp=e.target.closest("[data-gpre]");if(gp){giftPreset(gp.dataset.gpre);return}
@@ -2632,9 +2645,9 @@ function medNote(item,cat){const h=findHerb(item||""),c=mcat(cat||"");
 function healthCard(hq){
   return `<div class="hnote" role="note"><b>몸 상태에 맞는 약초는 골라 드릴 수 없어요</b>
     <p>농마니에서 파는 약초와 산나물은 식품이라서, 어떤 증상에 좋은지 알려 드리거나 몸 상태에 맞춰 추천해 드릴 수 없습니다. 증상이 있으시면 의사나 한의사와 먼저 상담해 주세요.</p>
-    ${hq.herbs.length?`<p class="meta">검색어에 들어 있는 품목 이름(${hq.herbs.map(esc).join(", ")})으로 찾은 상품만 아래에 보여 드립니다.</p>`:`<p class="meta">찾는 약초 이름을 알고 계시면 이름으로 검색해 주세요. 예: 도라지, 더덕, 오미자</p>`}
+    ${hq.herbs.length?`<p class="meta">검색어에 들어 있는 품목 이름(${hq.herbs.map(esc).join(", ")})으로 찾은 상품만 아래에 보여 드립니다.</p>`:`<p class="meta">찾는 약초·나물 이름을 알고 계시면 이름으로 검색해 주세요. 예: 곰취, 더덕, 오미자</p>`}
     <button type="button" class="recobtn" data-reco="1" style="margin:4px 0 8px"><i aria-hidden="true">🧺</i><div><b>쓰임새로 골라 드릴게요</b><br><span>누구에게, 어떻게 드실지, 예산만 알려 주세요</span></div></button>
-    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>약초 알아보기</b><br><span>약초마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 약초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
+    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>약초·산나물 알아보기</b><br><span>품목마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 약초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
     <div><div class="meta" style="margin-bottom:6px">드시는 방법이나 받으실 분으로 골라 보시겠어요?</div><div class="usel">${USES.map(u=>`<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span></button>`).join("")}</div></div></div>`}
 const loggedQ=new Set();
 function logHealth(q){const hq=healthQ(q);if(!hq.hit||!S.db)return;const k=hq.kws.sort().join("|");if(loggedQ.has(k))return;loggedQ.add(k);
