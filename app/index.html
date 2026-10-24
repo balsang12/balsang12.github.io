@@ -805,7 +805,7 @@ label.btn{display:inline-block}
   <div class="hhead">
     <div class="eyebrow hdirect">산지 <b>직거래</b> · 안전결제</div>
     <h1>농부와 심마니가 <br>직접 판매하는 산야초</h1>
-    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 산야초 이름" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form></div>
+    <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="예: 잔대, 천문동, 황기, 산삼" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form></div>
     <p class="herblink"><button type="button" data-reco="1">🧺 쇼핑도우미</button><button type="button" data-go="herbs">🌿 산야초 사전</button></p>
   </div>
   <div id="todoHome"></div>
@@ -2159,7 +2159,7 @@ function giftPreset(k){const y=+kstDay().slice(0,4),P={ny:[`${y}년 연말·새�
 const SEASONS=[[[3,4,5],"🌱","봄 산나물 철이에요",["곰취","두릅","참나물","취나물"]],[[6,7,8],"☀️","여름 열매·약초 철",["오디","오미자","산딸기","블루베리"]],[[9,10,11],"🍄","가을 버섯·뿌리 철",["송이","능이","더덕","도라지"]],[[12,1,2],"🎁","귀한 분께만 드리는 최고의 자연선물",["산양삼","천마","대추","생강청"]]];
 function seasonNow(){const m=new Date(Date.now()+9*3600e3).getUTCMonth()+1;return SEASONS.find(x=>x[0].includes(m))}
 function seasonRowHTML(){const z=seasonNow();return `<span>${z[1]} <b>${z[2]}</b></span> ${z[3].map(n=>`<button type="button" class="sq" data-sq="${n}">${n}</button>`).join("")}`}
-function renderSeason(){const z=seasonNow(),q=$("#homeQ");if(q&&!q.value)q.placeholder=`예: ${z[3].slice(0,2).join(", ")}`}
+function renderSeason(){}
 function renderHome(){renderSeason();
   {const cnt=c=>live().filter(p=>p.stock>0&&mcat(p.cat)===c).length,ord=[...MKT_ICONS].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();
     const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;
