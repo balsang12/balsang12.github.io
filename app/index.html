@@ -784,7 +784,7 @@ label.btn{display:inline-block}
       <button class="tab sell" type="button" data-sell="1">+ 팔기</button>
       <button class="tab" role="tab" data-go="seller" aria-selected="false">판매자<span id="dotSeller"></span></button>
       <button class="tab" role="tab" data-go="admin" aria-selected="false" id="adminTab" hidden>운영자<span id="dotAdmin"></span></button>
-      <button class="tab" role="tab" data-go="herbs" aria-selected="false">약초·산나물 사전</button>
+      <button class="tab" role="tab" data-go="herbs" aria-selected="false">산야초 사전</button>
       <button class="tab" role="tab" data-go="help" aria-selected="false">고객센터</button>
     </nav>
   </div>
@@ -844,11 +844,11 @@ label.btn{display:inline-block}
   <div class="trustline hmob" role="list"><span role="listitem">✔ 채취 근거 확인</span><span role="listitem">✔ 산양삼 합격증</span><span role="listitem">✔ 안전결제</span><span role="listitem">✔ 수수료 공개</span></div>
   <button class="reqcta hmob" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 농부·심마니가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
   <details class="more">
-    <summary>농마니 더 알아보기 (판매자 · 약초·산나물 사전)</summary>
+    <summary>농마니 더 알아보기 (판매자 · 산야초 사전)</summary>
   <div class="sechead"><div><h2>활동 중인 농부·심마니</h2><div class="meta">프로필에서 후기와 거래 기록을 보고 1:1로 문의하세요</div></div></div>
   <div class="plist" id="homeSellers"></div>
 
-  <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>약초·산나물 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초·산나물이 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
+  <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>산야초 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초·산나물이 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
   <div class="clhome" id="clHome"></div>
 
   </details>
@@ -906,7 +906,7 @@ label.btn{display:inline-block}
   <div class="menu">
     <button data-go="request"><b>채취 의뢰</b><span>내 요청서와 받은 견적</span></button>
     <button data-go="seller"><b>판매자 센터<span id="dotSeller2"></span></b><span>상품·경매 등록, 주문 처리, 견적 보내기</span></button>
-    <button data-go="herbs"><b>약초·산나물 사전</b><span>한국 산나물·약초 300여 가지의 생김새·구별법·고서 기록</span></button>
+    <button data-go="herbs"><b>산야초 사전</b><span>한국 산나물·약초 300여 가지의 생김새·구별법·고서 기록</span></button>
     <button id="nmInstMenu" hidden type="button"><b>📲 홈 화면에 추가</b><span>앱처럼 아이콘을 눌러 바로 열기</span></button>
     <button data-go="help"><b>고객센터</b><span>자주 묻는 질문·1:1 문의·이용 안내</span></button>
     <button data-go="admin" id="adminMenu" hidden><b>운영자</b><span>검수·정산·문제 신고</span></button>
@@ -933,7 +933,7 @@ label.btn{display:inline-block}
 <!-- HERBS (약초 사전) -->
 <section data-view="herbs" hidden>
   <div class="sechead">
-    <div><div class="eyebrow">한국 산나물·약초 · 고서 기록 · 최근 연구</div><h2>약초·산나물 사전</h2><div class="meta" id="dictSum"></div></div>
+    <div><div class="eyebrow">한국 산나물·약초 · 고서 기록 · 최근 연구</div><h2>산야초 사전</h2><div class="meta" id="dictSum"></div></div>
     <a class="btn sm" id="ytChannel" href="#" target="_blank" rel="noopener" hidden>유튜브 채널 보기 ↗</a>
   </div>
   <form class="askbox" id="askBox">
@@ -944,7 +944,7 @@ label.btn{display:inline-block}
   </form>
   <div class="banner">옛 의서의 기록과 최근 연구를 소개하는 곳입니다. 효능을 보장하거나 치료를 권하는 글이 아닙니다. 연구 대부분은 세포·동물 실험이라 사람에게 같은 효과가 있다는 뜻이 아니며, 몸이 불편하면 한의사·의사와 상의하세요.</div>
   <div class="dtool">
-    <input id="clQ" placeholder="이름·다른 이름·한자로 찾기 (예: 딱주, 桔梗)" aria-label="약초 사전 검색">
+    <input id="clQ" placeholder="이름·다른 이름·한자로 찾기 (예: 딱주, 桔梗)" aria-label="산야초 사전 검색">
     <select id="dictF" aria-label="구분"><option value="">구분 전체</option><option value="ok">식용 원료</option><option value="caution">식용 · 주의</option><option value="check">식품원료 확인 필요</option><option value="hanyak">한약재 전용</option><option value="ban">독초</option></select>
     <select id="dictH" aria-label="자료"><option value="">자료 전체</option><option value="classic">고서 기록 있음</option><option value="papers">최근 연구 있음</option><option value="video">영상 있음</option><option value="season">이번 달 제철</option><option value="look">구별법 있음</option></select>
   </div>
@@ -1048,7 +1048,7 @@ label.btn{display:inline-block}
           <div class="field"><label for="sPermit">채취 근거</label><select id="sPermit"><option>본인 소유 임야·재배</option><option>국유림 임산물 채취 허가</option><option>사유림 소유자 동의서</option><option>국유림 보호협약(마을 양여)</option><option>산 임차 계약</option></select></div>
         </div>
         <div class="field" id="certWrap" hidden><label for="sCert">친환경 인증번호</label><input id="sCert" placeholder="예: 제00-00-0-000호"></div>
-        <div class="field"><label for="sPhoto">사진 (선택)</label><div class="photo-pick"><input id="sPhoto" type="file" accept="image/*"><img id="sPhotoPrev" alt="" hidden></div></div><div class="field" id="sShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="sShare" style="margin-top:5px"> <span>이 사진을 <b>약초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 약초 백과에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="sSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
+        <div class="field"><label for="sPhoto">사진 (선택)</label><div class="photo-pick"><input id="sPhoto" type="file" accept="image/*"><img id="sPhotoPrev" alt="" hidden></div></div><div class="field" id="sShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="sShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 약초 백과에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="sSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
         <div id="procWrap" hidden>
           <div class="notice">가공품은 영업 신고(허가)를 한 곳에서 만든 것만 팔 수 있습니다. 운영자가 신고 번호를 확인한 뒤 판매가 시작됩니다. 일반식품이라 효능은 쓸 수 없습니다.</div>
           <div class="row2">
@@ -1120,7 +1120,7 @@ label.btn{display:inline-block}
         <div class="field" id="videoWrap" hidden><label for="aVideo" id="videoLbl">인증 영상 링크 (30만 원 이상 필수)</label><input id="aVideo" type="url" placeholder="https:// 유튜브·네이버 동영상 등 링크"><span class="meta">당일 날짜를 쓴 메모, 저울 위 물건, 채취 장소가 30초 안에 나오게 찍어 주세요.</span></div>
         <div class="notice" id="aTier"></div>
         <div class="field"><label for="aDur">마감</label><select id="aDur"><option value="sat" selected>토요일 저녁 8시 정기 경매</option><option value="600000">10분 (시험용)</option></select><span class="meta" id="aDurNote"></span></div>
-        <div class="field"><label for="aPhoto">실물 사진 (1장, 필수)</label><div class="photo-pick"><input id="aPhoto" type="file" accept="image/*"><img id="aPhotoPrev" alt="" hidden></div></div><div class="field" id="aShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aShare" style="margin-top:5px"> <span>이 사진을 <b>약초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 약초 백과에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="aSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
+        <div class="field"><label for="aPhoto">실물 사진 (1장, 필수)</label><div class="photo-pick"><input id="aPhoto" type="file" accept="image/*"><img id="aPhotoPrev" alt="" hidden></div></div><div class="field" id="aShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 약초 백과에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="aSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
         <div class="field"><label for="aDesc">설명</label><textarea id="aDesc" rows="3" placeholder="채취 장소의 환경, 잔뿌리·뇌두 상태, 보관 방법"></textarea></div>
         <div class="notice" id="aClaim">효능·질병 표현(예: "암에 좋은")은 쓸 수 없습니다. 크기·모양·채취 과정 위주로 적어 주세요.</div>
         <div class="feebox num" id="aFee"></div>
@@ -1187,7 +1187,7 @@ label.btn{display:inline-block}
       <div class="panel"><h3>채취지 확인</h3><p class="meta" style="margin:0 0 8px">판매자가 등록한 산입니다. 한 번 확인하면 그 산에서 캔 산삼은 근거가 자동으로 확인됩니다.</p><div class="list" id="siteQueue"></div></div>
       <div class="panel"><h3>채취 증빙 확인</h3><p class="meta" style="margin:0 0 8px">서류 사진은 운영자만 봅니다. 이름·지번이 출품 정보와 맞는지 보고 확인해 주세요.</p><div class="list" id="proofQueue"></div></div>
       <div class="panel"><h3>산주 찾기 요청</h3><p class="meta" style="margin:0 0 8px">산림조합에 지번으로 산주를 문의하고, 동의서를 받도록 연결합니다.</p><div class="list" id="landQueue"></div></div>
-      <div class="panel"><h3>약초 사전 오류 신고</h3><div class="list" id="herbReports"></div></div>
+      <div class="panel"><h3>산야초 사전 오류 신고</h3><div class="list" id="herbReports"></div></div>
       <div class="panel"><h3>정산 대기 (수령 확인 완료)</h3><div class="list" id="payouts"></div></div>
       <div class="panel"><h3>손님이 찾은 몸 상태 낱말</h3><div class="meta">검색창에 증상이나 질병 낱말을 넣은 횟수입니다(최근 90일). 누가 찾았는지는 저장하지 않습니다. 한의원 제휴나 기능성 원료 사업을 정할 때 참고하세요.</div><div class="hq-list" id="hqList"></div></div>
       <div class="panel"><h3>견적 이용료</h3>
@@ -1286,7 +1286,7 @@ label.btn{display:inline-block}
     </div>
     <div>
       <h3>품목 사전</h3>
-      <p class="meta" style="margin:0 0 6px">이 표는 판매 가능 여부를 정리한 것입니다. 이름을 누르면 약초 사전에서 고서 기록과 최근 연구를 볼 수 있습니다.</p>
+      <p class="meta" style="margin:0 0 6px">이 표는 판매 가능 여부를 정리한 것입니다. 이름을 누르면 산야초 사전에서 고서 기록과 최근 연구를 볼 수 있습니다.</p>
       <p class="meta" id="herbSum"></p>
       <div class="toolbar" style="margin-block:10px"><input id="herbQ" placeholder="이름·다른 이름으로 찾기 (예: 명이, 딱주)" aria-label="품목 사전 검색"><select id="herbF" aria-label="구분"><option value="">구분 전체</option><option value="ok">식용 원료</option><option value="caution">식용 · 주의</option><option value="check">식품원료 확인 필요</option><option value="hanyak">한약재 전용 · 판매 불가</option><option value="ban">독초 · 판매 불가</option></select></div>
       <div class="tbl" style="max-height:420px;overflow:auto"><table><thead><tr><th>품목</th><th>다른 이름</th><th>분류</th><th>구분</th><th>메모</th></tr></thead><tbody id="herbTable"></tbody></table></div>
@@ -2931,7 +2931,7 @@ function healthCard(hq){
     <p>농마니에서 파는 약초와 산나물은 식품이라서, 어떤 증상에 좋은지 알려 드리거나 몸 상태에 맞춰 추천해 드릴 수 없습니다. 증상이 있으시면 의사나 한의사와 먼저 상담해 주세요.</p>
     ${hq.herbs.length?`<p class="meta">검색어에 들어 있는 품목 이름(${hq.herbs.map(esc).join(", ")})으로 찾은 상품만 아래에 보여 드립니다.</p>`:`<p class="meta">찾는 약초·나물 이름을 알고 계시면 이름으로 검색해 주세요. 예: 곰취, 더덕, 오미자</p>`}
     <button type="button" class="recobtn" data-reco="1" style="margin:4px 0 8px"><i aria-hidden="true">🧺</i><div><b>쓰임새로 골라 드릴게요</b><br><span>누구에게, 어떻게 드실지, 예산만 알려 주세요</span></div></button>
-    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>산야초 알아보기</b><br><span>품목마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 약초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
+    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>산야초 알아보기</b><br><span>품목마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 산야초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
     <div><div class="meta" style="margin-bottom:6px">드시는 방법이나 받으실 분으로 골라 보시겠어요?</div><div class="usel">${USES.map(u=>`<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span></button>`).join("")}</div></div></div>`}
 const loggedQ=new Set();
 function logHealth(q){const hq=healthQ(q);if(!hq.hit||!S.db)return;const k=hq.kws.sort().join("|");if(loggedQ.has(k))return;loggedQ.add(k);
@@ -4111,7 +4111,7 @@ function openDict(name){
   </div></div>`;
   const faqHTML=faq.length?`<div class="sec faq"><h3>자주 묻는 질문</h3>${faq.map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div>`:"";
   dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button>
-   <div style="padding-right:40px"><div class="eyebrow">${esc(x.cat)} · 약초 사전</div><h2 style="font-size:26px">${esc(name)} ${hanOf(name)?`<span class="han" style="font-size:22px">${esc(hanOf(name))}</span>`:""}</h2>${x.alias.length?`<div class="meta">다른 이름: ${esc(x.alias.join(", "))}</div>`:""}${tagWords(name).length&&!isBlocked(x.st)?`<div class="taglist">${tagWords(name).map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}${c?.old?`<div class="meta">동의보감의 우리말 이름: ${esc(c.old)}</div>`:""}<div class="actions" style="margin-top:6px"><span class="chip ${x.st==="ok"?"ok":isBlocked(x.st)?"hot":"gold"}">${ST_LABEL[x.st]}</span></div></div>
+   <div style="padding-right:40px"><div class="eyebrow">${esc(x.cat)} · 산야초 사전</div><h2 style="font-size:26px">${esc(name)} ${hanOf(name)?`<span class="han" style="font-size:22px">${esc(hanOf(name))}</span>`:""}</h2>${x.alias.length?`<div class="meta">다른 이름: ${esc(x.alias.join(", "))}</div>`:""}${tagWords(name).length&&!isBlocked(x.st)?`<div class="taglist">${tagWords(name).map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}${c?.old?`<div class="meta">동의보감의 우리말 이름: ${esc(c.old)}</div>`:""}<div class="actions" style="margin-top:6px"><span class="chip ${x.st==="ok"?"ok":isBlocked(x.st)?"hot":"gold"}">${ST_LABEL[x.st]}</span></div></div>
    ${trustHTML}${photos}${facts}${ban?body+look+lkHTML+fieldHTML:look+lkHTML+fieldHTML+prep+body}${faqHTML}
    ${ban?"":`<div><h3 style="font-size:18px;margin-bottom:8px">관련 영상</h3>
     <div class="vlist">${vids.length?vids.map(v=>`<div class="vcard"><span class="play" aria-hidden="true"><i></i></span><div>${safeUrl(v.url)?`<a href="${esc(safeUrl(v.url))}" target="_blank" rel="noopener">${esc(v.title||"유튜브 영상")}</a>`:esc(v.title||"")}<div class="meta">유튜브에서 열립니다</div></div>${S.owner?`<button class="btn sm danger" type="button" data-vdel="${esc(v.id)}">삭제</button>`:""}</div>`).join(""):'<div class="meta">아직 연결된 영상이 없습니다.</div>'}</div>
@@ -4127,7 +4127,7 @@ function openDict(name){
     if(await guard(()=>S.db.doc("videos/"+b.dataset.vdel).delete(),"영상 연결을 지웠습니다"))openDict(name)});
   if($("#phForm"))$("#phForm").onsubmit=async e=>{e.preventDefault();if(!$("#phConsent").checked){toast("직접 찍은 사진인지와 공개 동의를 확인해 주세요");return}const f=$("#phFile").files[0];if(!f){toast("사진을 골라 주세요");return}
     let data;try{data=await shrinkPhoto(f)}catch(_){toast("사진을 읽지 못했습니다. 다른 사진을 골라 주세요");return}
-    if(await guard(()=>S.db.collection("herbphotos").add({herb:name,data,part:$("#phPart").value,credit:$("#phCredit").value.trim().slice(0,40),caption:$("#phCap").value.trim().slice(0,80),by:S.uid,source:"약초 사전",consent:true,status:S.owner?"approved":"pending",createdAt:Date.now()}),S.owner?"사진을 올렸습니다":"사진을 올렸습니다. 운영자가 확인하면 공개 백과에도 실립니다")){if(S.owner)saveThumb(name,data);$("#phFile").value="";$("#phCap").value="";$("#phConsent").checked=false}};
+    if(await guard(()=>S.db.collection("herbphotos").add({herb:name,data,part:$("#phPart").value,credit:$("#phCredit").value.trim().slice(0,40),caption:$("#phCap").value.trim().slice(0,80),by:S.uid,source:"산야초 사전",consent:true,status:S.owner?"approved":"pending",createdAt:Date.now()}),S.owner?"사진을 올렸습니다":"사진을 올렸습니다. 운영자가 확인하면 공개 백과에도 실립니다")){if(S.owner)saveThumb(name,data);$("#phFile").value="";$("#phCap").value="";$("#phConsent").checked=false}};
   watchPhotos(name);watchField(name);
   if($("#fnKind")){const sync=()=>{const k=$("#fnKind").value;$("#fnNameWrap").hidden=k!=="name";$("#fnMonWrap").hidden=k!=="harvest"};$("#fnKind").onchange=sync;sync();
     $("#fnForm").onsubmit=async e=>{e.preventDefault();const kind=$("#fnKind").value,region=$("#fnRegion").value.trim(),months=[...dlg.querySelectorAll("#fnMonWrap input:checked")].map(x=>+x.value),val=$("#fnName").value.trim();
@@ -4181,7 +4181,7 @@ $("#ytClear").onclick=()=>guard(()=>S.db.doc("settings/site").set({...S.site,ytC
 async function sharePhoto(p,data,itemText,caption){
   const c=$("#"+p+"Share");if(!c||!c.checked||!data)return;
   const hh=findHerb(itemText)||guessHerb(itemText);
-  if(!hh||isBlocked(hh.st)){toast("사진은 올렸지만, 약초 사전에서 맞는 품목을 찾지 못해 사전에는 넣지 않았습니다");return}
+  if(!hh||isBlocked(hh.st)){toast("사진은 올렸지만, 산야초 사전에서 맞는 품목을 찾지 못해 사전에는 넣지 않았습니다");return}
   await guard(()=>S.db.collection("herbphotos").add({herb:hh.name,data,part:$("#"+p+"SharePart").value,credit:shopName(S.uid),caption:String(caption||"").slice(0,80),by:S.uid,source:p==="s"?"마켓 상품":"경매",consent:true,status:S.owner?"approved":"pending",createdAt:Date.now()}));
   c.checked=false;$("#"+p+"SharePart").hidden=true;
 }
@@ -4301,18 +4301,18 @@ $("#askBox").onsubmit=async e=>{e.preventDefault();const q=$("#askQ").value.trim
   if(q.length<4){toast("기억나는 생김새나 먹던 방법을 조금 더 적어 주세요");return}
   logHealth(q);
   const health=HEALTH_CUE.test(q),note=health?`<div class="notice">농마니는 효능·치료 질문에는 답하지 않습니다. 생김새와 먹는 법으로 찾아 드렸어요.</div>`:"";
-  if(!S.sample){out.innerHTML=`<div class="notice">지금은 물어보기를 쓸 수 없습니다. 약초 사전에서 사진과 생김새로 찾아보세요.</div><button class="btn" type="button" data-go="herbs">약초 사전 열기</button>`;return}
-  $("#askGo").disabled=true;out.innerHTML='<div class="meta">약초 사전에서 찾는 중…</div>';
+  if(!S.sample){out.innerHTML=`<div class="notice">지금은 물어보기를 쓸 수 없습니다. 산야초 사전에서 사진과 생김새로 찾아보세요.</div><button class="btn" type="button" data-go="herbs">산야초 사전 열기</button>`;return}
+  $("#askGo").disabled=true;out.innerHTML='<div class="meta">산야초 사전에서 찾는 중…</div>';
   try{
     const names=HERBS.filter(h=>!isBlocked(h.st)).map(h=>h.name).join(", ");
     const r=await S.sample.json(`손님이 이름을 모르는 한국 약초·산나물·버섯·열매를 설명했습니다. 아래 목록에서 가장 가까운 것을 최대 3개 고르고, 생김새·먹는 법·제철로만 왜 그런지 한 문장씩 쓰세요. 효능·질병·건강 효과는 절대 쓰지 마세요. 맞는 게 없으면 빈 배열로 답하세요.\n손님 설명: ${q}\n목록: ${names}\nJSON으로만 답하세요: {"items":[{"name":"","why":""}]}`);
     const its=(Array.isArray(r?.items)?r.items:[]).map(x=>({h:findHerb(x?.name),why:String(x?.why||"").slice(0,120)})).filter(x=>x.h&&!isBlocked(x.h.st)).slice(0,3);
     out.innerHTML=note+(its.length?`<div class="askres">${its.map(({h,why})=>{const n=live().filter(p=>p.stock>0&&matchQ(h.name,(p.item||"")+p.name)).length;
       return `<div><b>${esc(h.name)}</b>${why?`<span>${esc(why)}</span>`:""}<span class="actions"><button class="btn sm" type="button" data-askdict="${esc(h.name)}">사전에서 확인</button><button class="btn sm ${n?"primary":""}" type="button" data-askshop="${esc(h.name)}">${n?`마켓 상품 ${n}개 보기`:"마켓에서 찾기"}</button></span></div>`}).join("")}<p class="meta" style="margin:0">AI가 짐작한 것이라 틀릴 수 있습니다. 사전의 사진과 구별법으로 꼭 확인하세요.</p></div>`
-      :`<div class="notice">비슷한 약초를 찾지 못했습니다. 잎·뿌리 모양, 색, 캐는 계절을 더 적어 주시거나 약초 사전을 둘러보세요.</div><button class="btn" type="button" data-go="herbs">약초 사전 열기</button>`);
+      :`<div class="notice">비슷한 약초를 찾지 못했습니다. 잎·뿌리 모양, 색, 캐는 계절을 더 적어 주시거나 산야초 사전을 둘러보세요.</div><button class="btn" type="button" data-go="herbs">산야초 사전 열기</button>`);
     out.querySelectorAll("[data-askdict]").forEach(b=>b.onclick=()=>openDict(b.dataset.askdict));
     out.querySelectorAll("[data-askshop]").forEach(b=>b.onclick=()=>{S.cat="전체";S.use="";$("#shopQ").value=b.dataset.askshop;go("shop")});
-  }catch(err){out.innerHTML=`<div class="notice">지금은 답을 받지 못했습니다. 잠시 뒤 다시 물어보시거나 약초 사전에서 찾아보세요.</div><button class="btn" type="button" data-go="herbs">약초 사전 열기</button>`}
+  }catch(err){out.innerHTML=`<div class="notice">지금은 답을 받지 못했습니다. 잠시 뒤 다시 물어보시거나 산야초 사전에서 찾아보세요.</div><button class="btn" type="button" data-go="herbs">산야초 사전 열기</button>`}
   finally{$("#askGo").disabled=false}};
 $("#thumbFill").onclick=async()=>{if(!S.db)return;const b=$("#thumbFill");b.disabled=true;$("#thumbNote").textContent="사진을 불러오는 중…";
   try{const s=await S.db.collection("herbphotos").where("status","==","approved").limit(500).get();const ps=s.docs.map(d=>d.data()).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));let n=0;
