@@ -40,7 +40,7 @@
   --gold:#E2B45E; --gold-ink:#1F1503; --gold-soft:#352A16; --gold-deep:#F0C878;
   --berry:#E57F95; --berry-soft:#3A2128; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6;word-break:keep-all;overflow-wrap:break-word}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.3}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--pine);outline-offset:2px}
@@ -757,7 +757,7 @@ label.btn{display:inline-block}
     <h1>심마니가 캔 약초, <br>농부가 키운 산나물</h1>
     <p class="hsub hseason" id="hSeason"></p>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="약초·산나물 이름으로 찾기" aria-label="품목 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="쇼핑도우미">🧺<span>쇼핑도우미</span></button></div>
-    <button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>약초·산나물 알아보기</b><br><span>약초·산나물 300여 가지의 생김새, 옛 문헌 기록, 최근 연구를 사전에서 읽어 보세요</span></div><em aria-hidden="true">›</em></button>
+    <button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>약초·산나물 알아보기</b><br><span>약초·산나물 300여 가지의 생김새와 옛 문헌 기록, 최근 연구를 읽어 보세요</span></div><em aria-hidden="true">›</em></button>
     <div class="hask"><span>이름을 잘 모르세요?</span><button type="button" id="askOpen" aria-expanded="false">생김새로 물어보기</button></div>
     <form class="askbox" id="askBox" hidden>
       <label for="askQ"><b>어떤 약초·나물인지 기억나는 대로 적어 주세요</b></label>
@@ -805,11 +805,11 @@ label.btn{display:inline-block}
   <div class="trustline hmob" role="list"><span role="listitem">✔ 채취 근거 확인</span><span role="listitem">✔ 산양삼 합격증</span><span role="listitem">✔ 안전결제</span><span role="listitem">✔ 수수료 공개</span></div>
   <button class="reqcta hmob" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 농부·심마니가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
   <details class="more">
-    <summary>농마니 더 알아보기 (판매자 · 약초 사전)</summary>
+    <summary>농마니 더 알아보기 (판매자 · 약초·산나물 사전)</summary>
   <div class="sechead"><div><h2>활동 중인 농부·심마니</h2><div class="meta">프로필에서 후기와 거래 기록을 보고 1:1로 문의하세요</div></div></div>
   <div class="plist" id="homeSellers"></div>
 
-  <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>약초 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초가 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
+  <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>약초·산나물 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초·산나물이 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
   <div class="clhome" id="clHome"></div>
 
   </details>
@@ -4052,7 +4052,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
     $("#adminTab").hidden=!S.owner;$("#adminMenu").hidden=!S.owner;S.userApi=user;
   }
   if(!db){ban.hidden=false;ban.textContent="저장소에 연결하지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.";render();return}
-  if(!S.uid){ban.hidden=false;ban.innerHTML='<button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button> 하면 주문·입찰·판매를 할 수 있어요.';$("#who").innerHTML='<button type="button" class="btn sm" onclick="nmAuth.open()">로그인</button>'}
+  if(!S.uid){$("#who").innerHTML='<button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button>'}
   else $("#who").insertAdjacentHTML("beforeend",' <button type="button" class="btn sm" onclick="nmAuth.signOut()" aria-label="로그아웃">로그아웃</button>');
   if(S.uid&&!S.canWrite){ban.hidden=false;ban.textContent="이 계정은 지금 거래를 할 수 없습니다. 운영자에게 문의해 주세요."}
   const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
