@@ -342,9 +342,10 @@ td.r,th.r{text-align:right}
 .bnav .sellb i svg{stroke:var(--pine-ink);stroke-width:2.4}
 .bnav .sellb span{color:var(--pine);font-weight:700}
 .hchat{display:none;border:0;background:none;position:relative;padding:6px;color:var(--ink);cursor:pointer}
-.hchat svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
+.hchat .hl{display:block;font-size:11.5px;font-weight:600;line-height:1.1;margin-top:1px}
+.hchat svg{display:block;margin:0 auto;width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
 .hchat .bd{position:absolute;top:0;right:-2px;min-width:16px;padding:0 4px;border-radius:999px;background:var(--berry);color:#fff;font-size:10px;line-height:16px}
-@media (max-width:860px){.hchat{display:block;position:absolute;right:max(10px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}header .nav{padding-right:52px}header .wrap{position:relative}}
+@media (max-width:860px){.hchat{display:block;text-align:center;position:absolute;right:max(10px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}header .nav{padding-right:52px}header .wrap{position:relative}}
 .wz>*,.wz .fld,.wz label{min-width:0}.wz input,.wz select,.wz textarea{width:100%;box-sizing:border-box}
 .tab.sell{background:var(--pine);color:var(--pine-ink)!important;border-radius:999px;padding-inline:14px}
 .wz{max-width:560px;margin:0 auto;width:100%;display:grid;gap:18px;font-size:17px}
@@ -727,7 +728,7 @@ label.btn{display:inline-block}
     <div class="logo" translate="no"><b>농부와 <i>심마니</i></b><small>애칭 농마니</small></div>
     <a class="nmlang" href="global.html" translate="no" lang="en" aria-label="English, 中文, 日本語">🌐 EN · 中文 · 日本語</a>
     <div class="who" id="who"></div>
-    <button class="hchat" type="button" data-go="chat" aria-label="대화"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H10l-5 4z"/></svg><span class="bd" id="bdChat" hidden></span></button>
+    <button class="hchat" type="button" data-go="chat" aria-label="대화"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H10l-5 4z"/></svg><span class="hl">대화</span><span class="bd" id="bdChat" hidden></span></button>
     <nav class="tabs" role="tablist" aria-label="화면">
       <button class="tab" role="tab" data-go="home" aria-selected="true">홈</button>
       <button class="tab" role="tab" data-go="shop" aria-selected="false">마켓</button>
