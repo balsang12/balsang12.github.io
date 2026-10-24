@@ -501,6 +501,14 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .qdlbl{font-size:12.5px;margin:0 0 4px}.qdlbl[hidden]{display:none}
 .bulkform{padding:18px 16px 16px}
 #openReqs .actions{flex-wrap:wrap}#openReqs .actions input{flex:1 1 96px;min-width:88px}#openReqs .actions input[id^="qn-"]{flex-basis:100%}#openReqs .actions .btn{flex:1 1 100%}
+.revthumbs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 0}.revthumbs img{width:76px;height:76px;object-fit:cover;border-radius:10px;background:var(--sunk)}
+.revthumbs span{position:relative}.revthumbs span button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:var(--ink);color:var(--surface);cursor:pointer;line-height:22px;padding:0}
+.rvreply{margin-top:6px;padding:8px 10px;border-radius:10px;background:var(--pine-soft);font-size:14px}.rvreply b{color:var(--pine);margin-right:4px}
+.rvsum{display:flex;gap:16px;align-items:center;margin:4px 0 8px}.rvavg{display:grid;justify-items:center}.rvavg b{font-size:30px;line-height:1.1}
+.rvbars{flex:1;display:grid;gap:3px;font-size:12.5px;min-width:0}.rvbars div{display:grid;grid-template-columns:30px 1fr 24px;gap:6px;align-items:center}
+.rvbars i{height:7px;border-radius:99px;background:var(--sunk);overflow:hidden}.rvbars i b{display:block;height:100%;background:var(--gold)}
+.revtodo{border:1px solid var(--gold);background:var(--gold-soft);border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.rv .actions input{flex:1;min-width:0}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -1994,6 +2002,23 @@ function openBulk(){const dlg=$("#dlg");openA=null;const tm=new Date(Date.now()+
     const ok=await guard(()=>S.db.collection("requests").add({item:item.slice(0,60),qty:count,unit:"개",form:"선물용",grow:"상관없음",due:$("#bkDue").value,region:"전국",memo:memo.slice(0,300),bulk,buyerId:S.uid,status:"모집중",createdAt:Date.now()}),"대량 요청서를 올렸습니다. 견적이 오면 채취 의뢰 화면에서 볼 수 있어요");
     if(ok){dlg.close();go("request")}};
   if(!dlg.open)dlg.showModal();dlg.scrollTop=0;applyWrite()}
+
+/* ---------- 후기: 사진·답글·분포·효능 문구 ---------- */
+function revClaim(t){t=String(t||"");return CLAIMS.find(w=>t.includes(w))||CLAIMS_INTL.find(w=>t.toLowerCase().includes(w.toLowerCase()))||""}
+function revItemHTML(r,showDate){const own=S.uid&&r.sellerId===S.uid,bad=!!revClaim(r.text);
+  return `<div class="item sunk rv"><div class="itop"><span class="star">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</span>${showDate||true?`<span class="meta num">${day(r.createdAt)}${r.auctionId?" · 경매 낙찰":""}</span>`:""}</div>
+   ${bad?'<div class="meta">건강 효과에 관한 표현이 있어 내용을 가렸어요.</div>':`<div>${esc(r.text)}</div>`}
+   ${(r.photos||[]).length?`<div class="revthumbs">${r.photos.slice(0,3).map((u,i)=>`<img src="${esc(u)}" alt="후기 사진 ${i+1}" loading="lazy">`).join("")}</div>`:""}
+   ${r.reply?`<div class="rvreply"><b>판매자 답글</b> ${esc(r.reply)}</div>`:own?`<div class="actions"><input id="rr-${esc(r.id)}" maxlength="500" placeholder="손님께 답글 달기" aria-label="답글"><button class="btn sm primary" data-act="replyR" data-id="${esc(r.id)}">답글 달기</button></div>`:""}</div>`}
+function revBoxHTML(rs,f){if(!rs.length)return '<h3 style="font-size:17px">구매 후기 0개</h3><div class="meta">수령 확인한 구매자만 후기를 쓸 수 있습니다.</div>';
+  const n=rs.length,avg=rs.reduce((a,b)=>a+b.rating,0)/n,ph=rs.filter(r=>(r.photos||[]).length),cnt=k=>rs.filter(r=>r.rating===k).length,list=f==="photo"?ph:rs;
+  return `<h3 style="font-size:17px">구매 후기 ${n}개</h3>
+   <div class="rvsum"><div class="rvavg"><b class="num">${avg.toFixed(1)}</b><span class="star">${"★".repeat(Math.round(avg))}${"☆".repeat(5-Math.round(avg))}</span></div>
+    <div class="rvbars">${[5,4,3,2,1].map(k=>`<div><span>${k}점</span><i><b style="width:${Math.round(cnt(k)/n*100)}%"></b></i><span class="num">${cnt(k)}</span></div>`).join("")}</div></div>
+   <div class="gtiers"><button type="button" data-rvf="all" aria-pressed="${f!=="photo"}">전체 ${n}</button><button type="button" data-rvf="photo" aria-pressed="${f==="photo"}">📷 사진 후기 ${ph.length}</button></div>
+   ${list.length?list.map(r=>revItemHTML(r)).join(""):'<div class="meta">사진 후기가 아직 없어요.</div>'}`}
+function revTodoHTML(){if(!S.uid)return "";const l=S.reviews.filter(r=>r.sellerId===S.uid&&!r.reply).sort((a,b)=>b.createdAt-a.createdAt);if(!l.length)return "";
+  return `<div class="revtodo"><b>💬 답글을 기다리는 후기 ${l.length}개</b><p class="meta" style="margin:2px 0 6px">불만 후기에도 정중히 답하면 다른 손님의 믿음이 커져요. 후기는 지울 수 없고 답글만 달 수 있어요.</p>${l.slice(0,5).map(r=>`<div class="meta">‘${esc((S.products.find(x=>x.id===r.productId)||S.auctions.find(x=>x.id===r.auctionId)||{}).name||(S.auctions.find(x=>x.id===r.auctionId)||{}).title||"")}’</div>${revItemHTML(r)}`).join("")}</div>`}
 function sellerRow(uid,ctx){const t=trust(uid),r=sellerRating(uid),own=uid===S.uid;
   return `<div class="srow">${avaHTML(uid,"sm")}<div><b>${esc(shopName(uid))}</b>${certChip(uid)}${regChip(uid)}${invChip(uid)}<div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} (${r.n}) · `:""}완료 거래 ${t.done}건</div>${respHTML(uid)}</div><button class="btn sm" type="button" data-profile="${esc(uid)}">프로필</button>${own?"":`<button class="btn sm primary" type="button" data-chat="${esc(uid)}" data-ctx="${esc(ctx||"")}">문의하기</button>`}</div>`}
 
@@ -2175,6 +2200,7 @@ function myBidsHTML(){
       else if(dd==="발송완료")act=`<div class="meta">송장: ${esc(a.courier)} ${esc(a.tracking)} · ${day(a.shippedAt+CONFIRM_MS)}까지 확인이 없으면 자동 수령 확인</div><div class="actions"><button class="btn sm primary" data-act="recvAuc" data-id="${a.id}">물건 받았어요</button></div><div class="actions"><input id="dp-${a.id}" placeholder="설명과 다른 점 (사진·중량·상태)" aria-label="문제 내용"><button class="btn sm danger" data-act="disputeA" data-id="${a.id}">문제 신고</button></div>`;
       else if(dd==="분쟁")act=`<div class="meta">문제 신고 접수: ${esc(a.disputeReason)} · 운영자가 확인 중이며 대금은 보관 중입니다.</div>`;
       else if(dd==="환불")act=`<div class="meta">판매자 책임으로 환불 처리되었습니다.</div>`;
+      else if(["수령확인","정산완료"].includes(dd)&&!S.reviews.some(r=>r.auctionId===a.id))act=`<div class="actions"><button class="btn sm" data-act="reviewA" data-id="${a.id}">후기 쓰기</button></div>`;
     }else st=(a.skip||[]).includes(S.uid)?"구매 포기":"패찰";
     return `<div class="item ${won_?"win":"sunk"}" ><div class="itop"><b>${esc(a.title)}</b>${statusChip(won_?(dealEff(a)||"낙찰"):st)}</div>
       <div class="meta num">내 최고 입찰 ${mine?won(mine.amount):"-"} · 현재가 ${won(x.cur)} · ${x.ended?"마감 "+day(x.end):"남은 시간 "+left(x.end-Date.now())}</div>
@@ -2230,7 +2256,7 @@ function renderSeller(){renderSites();
   $("#sellerStats").innerHTML=`<div class="stat"><span class="meta">총 판매 (경매 포함)</span><b class="num">${won(sales)}</b></div><div class="stat"><span class="meta">진행 중 경매</span><b class="num">${myA.filter(a=>auc(a).phase==="진행중").length}건</b></div><div class="stat"><span class="meta">정산 예정 (수수료 제외)</span><b class="num">${won(pend)}</b></div><div class="stat"><span class="meta">정산 완료</span><b class="num">${won(done)}</b></div>`;
   $("#sellerAucs").innerHTML=S.uid?sellerAucHTML():`<div class="empty">로그인하면 내 경매가 보입니다.</div>`;
   const myOs=[...myO].sort((a,b)=>(b.status==="결제완료")-(a.status==="결제완료")||(a.status==="결제완료"?shipBy(a)-shipBy(b):b.createdAt-a.createdAt));
-  $("#sellerOrders").innerHTML=myO.length?sendPlanHTML(myO)+myOs.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
+  $("#sellerOrders").innerHTML=revTodoHTML()+(myO.length?sendPlanHTML(myO)+myOs.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
     <div class="meta num">${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}</div>
     ${o.delivery==="fwd"?`<div class="notice">해외 손님 · <b>배송대행지</b>로 보내는 주문입니다. 아래 메모의 대행업체 회원번호(사서함 번호)를 받는 분 이름 옆에 꼭 적어 주세요.</div>`:o.lang?`<div class="meta">해외 손님 주문 (한국 내 배송)</div>`:""}
     ${o.memo?`<div class="meta">배송 메모: ${esc(o.memo)}</div>`:""}
@@ -2238,7 +2264,7 @@ function renderSeller(){renderSites();
     ${ordRate(o)<FEE?`<div class="meta"><span class="chip ok">단골 주문</span> 이 손님의 ${REPEAT_FROM}번째 이상 주문이라 수수료가 7%입니다.</div>`:""}
     ${o.status==="결제완료"?`<div class="meta">송장에는 개인 휴대폰 대신 택배사 <b>안심번호</b>를 적어 주세요.</div>`:""}
     ${o.status==="결제완료"?`<div class="actions"><select id="cr-${o.id}" aria-label="택배사"><option>CJ대한통운</option><option>우체국택배</option><option>한진택배</option><option>롯데택배</option></select><input id="tr-${o.id}" placeholder="송장번호" aria-label="송장번호"><button class="btn sm primary" data-act="ship" data-id="${o.id}">발송 처리</button></div>`:o.tracking?`<div class="meta">송장 ${esc(o.courier)} ${esc(o.tracking)}</div>`:""}
-    </div>`).join(""):`<div class="empty">아직 받은 주문이 없습니다.</div>`;
+    </div>`).join(""):`<div class="empty">아직 받은 주문이 없습니다.</div>`);
   const canInv=!!(S.sellers[S.uid]||{}).biz;
   const open=S.requests.filter(r=>r.status==="모집중"&&r.buyerId!==S.uid).sort((a,b)=>(canInv?(!!b.bulk?.invoice-!!a.bulk?.invoice):0)||(!!b.bulk-!!a.bulk)||b.createdAt-a.createdAt);
   $("#openReqs").innerHTML=!me?`<div class="empty">상점 정보를 저장하면 구매자 의뢰에 견적을 보낼 수 있습니다.</div>`:open.length?open.map(r=>{
@@ -2492,11 +2518,12 @@ function openProduct(id){
       const proc=sib.filter(isProc),raw=sib.filter(x=>!isProc(x));if(!sib.length)return "";
       const row=(t,l)=>l.length?`<div><div class="meta" style="margin:6px 0">${t}</div><div class="actions">${l.slice(0,6).map(x=>`<button class="btn sm" type="button" data-xp="${esc(x.id)}">${esc(x.name)} · ${won(x.price)}</button>`).join("")}</div></div>`:"";
       return `<div class="bids"><h3 style="font-size:17px">${esc(key)} 다른 상품</h3>${isProc(p)?row("원료 그대로 사기",raw)+row("다른 가공품",proc):row("이 원료로 만든 가공품",proc)+row("다른 농가의 "+esc(key),raw)}</div>`})()}
-   <div class="bids"><h3 style="font-size:17px">구매 후기 ${rs.length}개</h3>${rs.length?rs.map(r=>`<div class="item sunk"><span class="star">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</span><div>${esc(r.text)}</div></div>`).join(""):'<div class="meta">수령 확인한 구매자만 후기를 쓸 수 있습니다.</div>'}</div>
+   <div class="bids" id="revBox">${revBoxHTML(rs,"all")}</div>
    ${p.stock>0&&!own?`<div class="buybar"><div class="meta qdlbl" id="qdLbl" hidden></div><div class="qty"><span style="display:flex;align-items:center;gap:8px"><button type="button" id="minus" aria-label="줄이기">−</button><b class="num" id="qv">1</b><button type="button" id="plus" aria-label="늘리기">+</button><span style="white-space:nowrap">× ${esc(p.unit)}</span></span><span class="meta" style="white-space:nowrap" id="shipLbl">배송비 ${won(ship)} 포함</span></div>
     <div class="bbrow"><button class="btn" type="button" data-chat="${esc(p.sellerId)}" data-ctx="${esc(p.name)} 문의">문의</button><button class="btn primary needWrite" id="buy" type="button"><b class="num" id="tot"></b>&nbsp;${BETA()?"오픈 알림":"구매하기"}</button></div></div>`:""}</div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
   if($("#gPick"))$("#gPick").onclick=()=>giftToggle(p);
+  $("#revBox")?.addEventListener("click",ev=>{const f=ev.target.closest("[data-rvf]");if(f){$("#revBox").innerHTML=revBoxHTML(rs,f.dataset.rvf)}});
   if($("#buy")){
     const wf=()=>$("#gOpt")?.open&&$("#gWrap")?.checked?(p.giftWrap||0):0;
     let sc={};const upd=()=>{sc=shipCalc(p,qty,{island:$("#oIsland")?.checked,gift:!!$("#gOpt")?.open});ship=sc.ship;$("#qv").textContent=qty;$("#tot").textContent=won(subOf(p,qty)+ship+wf());const qdl=$("#qdLbl");if(qdl){const q=qdPct(p,qty),nx=(p.qd||[]).find(x=>x.n>qty);qdl.innerHTML=q?`<span class="chip ok">${q}% 할인 · -${won(p.price*qty-subOf(p,qty))}</span>`:nx?`${nx.n}개부터 ${nx.pct}% 할인`:"";qdl.hidden=!qdl.innerHTML}
@@ -2519,16 +2546,23 @@ function openProduct(id){
   applyWrite();if(!dlg.open)dlg.showModal();dlg.scrollTop=0;requestAnimationFrame(paintAll);
 }
 function openReview(o){
-  let rating=5;const dlg=$("#dlg");openA=null;
+  let rating=5,photos=[];const dlg=$("#dlg");openA=null;
   dlg.innerHTML=`<form class="dinfo" id="revForm" style="position:relative"><button class="close" aria-label="닫기" type="button">×</button>
   <h2 style="font-size:22px">${esc(o.productName)} 후기</h2>
   <div class="rstars" id="stars">${[1,2,3,4,5].map(i=>`<button type="button" data-s="${i}" aria-label="${i}점">★</button>`).join("")}</div>
-  <div class="field"><label for="revText">어땠나요?</label><textarea id="revText" rows="4" required placeholder="신선도, 손질 상태, 포장, 향과 맛"></textarea></div>
+  <div class="field"><label for="revText">어땠나요?</label><textarea id="revText" rows="4" required placeholder="신선도, 손질 상태, 포장, 향과 맛"></textarea>
+   <p class="meta" style="margin:4px 0 0">병이 나았다·혈압이 내렸다 같은 건강 효과는 적을 수 없어요. 상품 상태와 맛, 포장 이야기를 들려주세요.</p></div>
+  <div class="field"><label for="revPh">사진 (선택, 3장까지)</label><input id="revPh" type="file" accept="image/*" multiple><div class="revthumbs" id="revPrev"></div></div>
   <button class="btn primary" type="submit">후기 올리기</button></form>`;
   const ps=()=>dlg.querySelectorAll("#stars button").forEach(b=>b.classList.toggle("on",+b.dataset.s<=rating));ps();
   dlg.querySelectorAll("#stars button").forEach(b=>b.onclick=()=>{rating=+b.dataset.s;ps()});
   dlg.querySelector(".close").onclick=()=>dlg.close();
-  $("#revForm").onsubmit=async e=>{e.preventDefault();if(await guard(()=>S.db.collection("reviews").add({productId:o.productId,orderId:o.id,buyerId:S.uid,sellerId:o.sellerId,rating,text:$("#revText").value.slice(0,1000),createdAt:Date.now()}),"후기를 올렸습니다"))dlg.close()};
+  const prev=()=>{$("#revPrev").innerHTML=photos.map((u,i)=>`<span><img src="${u}" alt="후기 사진 ${i+1}"><button type="button" data-rmph="${i}" aria-label="사진 빼기">×</button></span>`).join("");$("#revPrev").querySelectorAll("[data-rmph]").forEach(b=>b.onclick=()=>{photos.splice(+b.dataset.rmph,1);prev()})};
+  $("#revPh").onchange=async e=>{for(const f of [...e.target.files].slice(0,3-photos.length)){try{photos.push(await shrinkPhoto(f))}catch(_){toast("사진을 읽지 못했습니다. 다른 사진을 골라 주세요")}}e.target.value="";prev()};
+  $("#revForm").onsubmit=async e=>{e.preventDefault();const text=$("#revText").value.trim();
+    const hit=revClaim(text);if(hit){toast(`‘${hit}’ 같은 건강 효과 표현은 후기에 쓸 수 없어요. 상품 상태·맛·포장 이야기로 고쳐 주세요`);return}
+    if(PII.test(text)){toast("전화번호·계좌·링크는 후기에 적을 수 없어요");return}
+    if(await guard(()=>S.db.collection("reviews").add({productId:o.productId||null,orderId:o.id||null,...(o.auctionId?{auctionId:o.auctionId}:{}),buyerId:S.uid,sellerId:o.sellerId,rating,text:text.slice(0,1000),...(photos.length?{photos}:{}),createdAt:Date.now()}),"후기를 올렸습니다"))dlg.close()};
   dlg.showModal();
 }
 
@@ -2583,6 +2617,9 @@ const ACT={
   async cancel(id){const o=S.orders.find(x=>x.id===id);await guard(async()=>{await S.db.doc("orders/"+id).update({status:"취소"});const p=S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})},"주문을 취소했습니다")},
   async receive(id){await guard(()=>S.db.doc("orders/"+id).update({status:"수령확인",receivedAt:Date.now()}),"수령을 확인했습니다")},
   review(id){openReview(S.orders.find(o=>o.id===id))},
+  reviewA(id){const a=S.auctions.find(x=>x.id===id);if(a)openReview({auctionId:a.id,productName:a.title,sellerId:a.sellerId})},
+  async replyR(id){const t=($("#rr-"+id)?.value||"").trim();if(!t){toast("답글을 적어 주세요");return}if(PII.test(t)){toast("전화번호·계좌·링크는 적을 수 없어요");return}const hit=revClaim(t);if(hit){toast(`‘${hit}’ 같은 건강 효과 표현은 답글에도 쓸 수 없어요`);return}
+    await guard(()=>S.db.doc("reviews/"+id).update({reply:t.slice(0,500),replyAt:Date.now()}),"답글을 달았습니다")},
   async ship(id){const t=$("#tr-"+id).value.trim();if(!t){toast("송장번호를 입력하세요");return}await guard(()=>S.db.doc("orders/"+id).update({status:"발송완료",courier:$("#cr-"+id).value,tracking:t.slice(0,40),shippedAt:Date.now()}),"발송 처리했습니다")},
   async quote(id){const price=+$("#qp-"+id).value,days=+$("#qd-"+id).value;if(!price||!days){toast("총액과 소요일을 입력하세요");return}
     const cost=credCost(),bal=credBal(S.uid).bal;
@@ -4112,7 +4149,7 @@ function openProfile(uid){
    ${own?'<div class="notice">내 상점입니다. 소개 글은 판매자 센터에서 고칠 수 있습니다.</div>':`<button class="btn primary" type="button" data-chat="${esc(uid)}" data-ctx="">1:1 문의하기</button>`}
    ${as.length?`<h3 style="font-size:18px">진행 중인 경매</h3><div class="grid">${as.map(aucCard).join("")}</div>`:""}
    <h3 style="font-size:18px">판매 중인 상품</h3>${ps.length?`<div class="grid">${ps.map(card).join("")}</div>`:'<div class="meta">지금 판매 중인 상품이 없습니다. 문의로 채취 가능 여부를 물어보세요.</div>'}
-   <h3 style="font-size:18px">받은 후기</h3>${rv.length?`<div class="list">${rv.map(x=>`<div class="item sunk"><span class="star">${"★".repeat(x.rating)}${"☆".repeat(5-x.rating)}</span><div>${esc(x.text)}</div><div class="meta num">${day(x.createdAt)}</div></div>`).join("")}</div>`:'<div class="meta">수령 확인한 구매자만 후기를 쓸 수 있습니다.</div>'}
+   <h3 style="font-size:18px">받은 후기</h3>${rv.length?`<div class="list">${rv.map(x=>revItemHTML(x,true)).join("")}</div>`:'<div class="meta">수령 확인한 구매자만 후기를 쓸 수 있습니다.</div>'}
   </div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
   if(!dlg.open)dlg.showModal();dlg.scrollTop=0;requestAnimationFrame(paintAll);

@@ -1,0 +1,2 @@
+-- applied as migration nm_review_guard (2026-10-24): sellers may only add reply/replyAt to reviews; only the author or admin may delete a review.
+-- see Supabase migration history for the exact body.
