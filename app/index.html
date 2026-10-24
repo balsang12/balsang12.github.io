@@ -514,8 +514,9 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .subbox{border:1px solid var(--pine);background:color-mix(in srgb,var(--pine) 7%,var(--surface));border-radius:12px;padding:10px 12px;margin:0 0 12px;display:grid;gap:8px}
 .subbox .actions{flex-wrap:wrap}.subbox .actions input{flex:1 1 120px;min-width:0}
 .herbbox{max-width:640px;border:1px solid color-mix(in srgb,var(--pine) 35%,transparent);border-radius:14px;background:color-mix(in srgb,var(--pine) 8%,var(--surface));overflow:hidden}
-.herbbox .herbcard{border:0;border-radius:0;background:transparent;max-width:none}
-.herbbox .askgo{display:block;width:100%;border:0;border-top:1px dashed color-mix(in srgb,var(--pine) 30%,transparent);background:transparent;padding:10px 16px;text-align:left;font:inherit;font-size:14px;color:var(--pine);cursor:pointer}
+.herbbox{display:flex;align-items:stretch}.herbbox .herbcard{flex:1;min-width:0;border:0;border-radius:0;background:transparent;max-width:none;padding:9px 12px;gap:8px}
+.herbbox .herbcard i{font-size:19px}.herbbox .herbcard b{font-size:15.5px}.herbbox .herbcard br,.herbbox .herbcard span{display:none}.herbbox .herbcard em{font-size:18px}
+.herbbox .askgo{display:flex;align-items:center;gap:5px;flex:none;width:auto;white-space:nowrap;border:0;border-left:1px dashed color-mix(in srgb,var(--pine) 30%,transparent);background:transparent;padding:10px 16px;text-align:left;font:inherit;font-size:14px;color:var(--pine);cursor:pointer}
 .herbbox .askgo:hover{background:color-mix(in srgb,var(--pine) 6%,transparent)}
 section[data-view="herbs"] .askbox{margin:0 0 16px;scroll-margin-top:96px}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
@@ -803,7 +804,7 @@ label.btn{display:inline-block}
     <div class="eyebrow hdirect">산지 <b>직거래</b> · 안전결제</div>
     <h1>농부와 심마니가 <br>직접 판매하는 산야초</h1>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 산야초 이름" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="쇼핑도우미">🧺<span>쇼핑도우미</span></button></div>
-    <div class="herbbox"><button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>산야초 알아보기</b><br><span>산야초 300여 가지의 생김새와 옛 문헌 기록, 최근 연구를 읽어 보세요</span></div><em aria-hidden="true">›</em></button><button type="button" class="askgo" data-askgo="1">🔍 이름을 모르면 <b>생김새로 찾기</b></button></div>
+    <div class="herbbox"><button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>산야초 알아보기</b><br><span>산야초 300여 가지의 생김새와 옛 문헌 기록, 최근 연구를 읽어 보세요</span></div><em aria-hidden="true">›</em></button><button type="button" class="askgo" data-askgo="1">🔍 <b>생김새로 찾기</b></button></div>
   </div>
   <div id="todoHome"></div>
   <div id="alertHome"></div>
