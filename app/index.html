@@ -521,6 +521,13 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .herbbox .askgo{display:flex;align-items:center;gap:5px;flex:none;width:auto;white-space:nowrap;border:0;border-left:1px dashed color-mix(in srgb,var(--pine) 30%,transparent);background:transparent;padding:10px 16px;text-align:left;font:inherit;font-size:14px;color:var(--pine);cursor:pointer}
 .herbbox .askgo:hover{background:color-mix(in srgb,var(--pine) 6%,transparent)}
 section[data-view="herbs"] .askbox{margin:0 0 16px;scroll-margin-top:96px}
+.hauclist{max-width:640px;margin-top:14px}.hauclist .hg-head{margin-bottom:8px}.hauclist .hg-head .nextSat{font-size:12px;color:var(--muted)}
+.alist,#homeAuc.alist{display:grid;gap:6px;grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important}.arow{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 10px 6px 6px;font:inherit;color:var(--ink);cursor:pointer}
+.athumb{width:52px;height:52px;border-radius:9px;overflow:hidden;background:var(--sunk);display:block}.athumb canvas,.athumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ainfo{display:grid;min-width:0}.ainfo b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ainfo .meta{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aprice{display:grid;justify-items:end}.aprice b{font-size:14.5px;color:var(--gold-deep)}.aprice .meta{font-size:12px}
+#homeWins{gap:4px;margin-top:8px}.aline{display:block;width:100%;text-align:left;border:0;background:none;padding:2px 4px;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.aline .meta{margin-right:4px}
+.hmore{display:block;margin:8px 0 0 auto;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--gold-deep);cursor:pointer;padding:4px}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -810,7 +817,11 @@ label.btn{display:inline-block}
   </div>
   <div id="todoHome"></div>
   <div id="alertHome"></div>
+  <div class="giftwrap" id="giftBan" hidden></div>
   <div class="hgroup mkt"><div class="hg-head"><b>마켓 장보기</b><span id="mktSub">정한 값에 바로 구매</span></div><div class="icons" id="homeIcons"></div></div>
+  <div class="hgroup auc hauclist"><div class="hg-head"><b id="homeAucH">이번 경매</b><span class="nextSat"></span></div>
+   <div id="homeAuc" class="alist"></div><div id="homeWins"></div>
+   <button class="hmore" type="button" data-go="auction">경매 전체 보기 ›</button></div>
   </div>
   <aside class="hside" aria-label="경매·마켓 요약">
     <div class="hcard mkt">
@@ -831,11 +842,7 @@ label.btn{display:inline-block}
   </aside>
   </div>
 
-  <div class="giftwrap" id="giftBan" hidden></div>
-  <div class="hgroup auc hauc" id="homeAucKinds"><div class="hg-head"><b>희귀약초 경매</b><span><span class="cyc">매주</span> 토요일 저녁 8시 마감 · <span id="aucKinds"></span></span></div><div class="icons" id="homeAucIcons"></div></div>
-  <div class="sechead"><div><div class="eyebrow"><span class="cyc">매주</span> 토요일 저녁 8시 마감</div><h2 id="homeAucH">이번 주 경매</h2><div class="meta nextSat"></div></div><button class="btn sm" data-go="auction">전체 보기</button></div>
-  <div class="grid" id="homeAuc"></div>
-  <div id="homeWins"></div>
+  <div id="homeAucKinds" hidden><span id="aucKinds"></span><div id="homeAucIcons"></div></div>
 
   <div class="sechead"><div><div class="eyebrow">정한 값에 바로 구매 · 안전결제</div><h2>마켓 인기 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
   <div class="grid" id="homeShop"></div>
@@ -1884,6 +1891,12 @@ function paintAll(){
 function shrinkPhoto(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{let q=.8,size=900;const draw=()=>{const k=Math.min(1,size/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",q)};let u=draw();while(u.length>110000&&size>320){size-=120;q=Math.max(.55,q-.05);u=draw()}res(u)};im.src=r.result};r.readAsDataURL(file)})}
 
 /* ---------- 카드 ---------- */
+function aucRow(a){const x=auc(a),ms=x.end-Date.now();
+  return `<button class="arow" type="button" data-open-a="${esc(a.id)}"><span class="athumb">${thumbHTML(a,"aid")}</span><span class="ainfo"><b>${esc(a.title)}</b><span class="meta">${a.grow?.startsWith("자연산")?"심마니 자연산":"재배"} · ${esc(a.region)}${x.count?` · 입찰 ${x.count}회`:""}</span></span><span class="aprice"><b class="num">${won(x.cur)}</b>${x.phase==="진행중"?`<span class="meta num" data-end="${x.end}">${left(ms)}</span>`:`<span class="meta">${esc(x.phase==="유찰"?"유찰":"마감")}</span>`}</span></button>`}
+function homeWinsHTML(){const w=recentWins(1),up=S.auctions.filter(a=>a.status==="검수대기"&&!a.demo);let h="";
+  if(w.length){const {a,x}=w[0];h+=`<button class="aline" type="button" data-open-a="${esc(a.id)}"><span class="meta">최근 낙찰</span> ${esc(a.title)} <b class="num">${won(x.winner.amount)}</b></button>`}
+  if(up.length){const cats=[...new Set(up.map(a=>a.cat==="기타 귀한 임산물"||a.cat==="기타"?(a.item||a.cat):a.cat))];h+=`<div class="aline"><span class="meta">다음 경매 예고</span> ${esc(cats.slice(0,3).join("·"))} <b class="num">${up.length}점</b> 검수 중</div>`}
+  return h}
 function aucCard(a){
   const x=auc(a),ms=x.end-Date.now(),watched=LS.watch.includes(a.id);
   const chips=[proofChip(a),a.grow?.startsWith("자연산")?'<span class="chip solid">심마니 자연산</span>':'<span class="chip ok">재배</span>',a.cert?'<span class="chip ok">합격증 확인</span>':"",a.appraise?'<span class="chip gold">감정서</span>':"",a.demo?'<span class="chip">예시</span>':""].join("");
@@ -2164,7 +2177,7 @@ function renderHome(){renderSeason();
   {const cnt=c=>live().filter(p=>p.stock>0&&mcat(p.cat)===c).length,ord=[...MKT_ICONS].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();
     const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;
     if($("#homeIcons").dataset.k!==key){$("#homeIcons").dataset.k=key;$("#homeIcons").innerHTML=show.map(c=>soonIco(icoBtn(c,"shop"),!cnt(c))).join("");$("#homeIcons").style.setProperty("--cols",Math.min(show.length,4));requestAnimationFrame(paintAll)}}
-  {const la_=liveAucs(),cnt=c=>la_.filter(a=>a.cat===c).length,ai=AUC_ICONS(),ord=[...ai].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();$("#aucKinds").textContent=`${ai.length}가지 · 옆으로 넘겨 보기`;const live_=ord.filter(c=>cnt(c));$("#aucKinds").textContent=`${live_.length}가지 진행 중`;$("#homeAucKinds").hidden=!live_.length;if($("#homeAucIcons").dataset.k!==key){$("#homeAucIcons").dataset.k=key;$("#homeAucIcons").innerHTML=live_.map(c=>icoBtn(c,"auction",ASEASON[c]?"제철":"")).join("");requestAnimationFrame(paintAll)}}
+  {const la_=liveAucs(),cnt=c=>la_.filter(a=>a.cat===c).length,ai=AUC_ICONS(),ord=[...ai].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();$("#aucKinds").textContent=`${ai.length}가지 · 옆으로 넘겨 보기`;const live_=ord.filter(c=>cnt(c));$("#aucKinds").textContent=`${live_.length}가지 진행 중`;$("#homeAucKinds").hidden=true;if($("#homeAucIcons").dataset.k!==key){$("#homeAucIcons").dataset.k=key;$("#homeAucIcons").innerHTML=live_.map(c=>icoBtn(c,"auction",ASEASON[c]?"제철":"")).join("");requestAnimationFrame(paintAll)}}
   renderUses();renderAlertHome();renderGiftBan();
   {const first=!S.auctions.some(a=>a.startedAt&&auc(a).ended),e=nextSat(Date.now()),n=liveAucs().length;
     const st=$("#aucStrip");if(st)st.innerHTML=`<span><b>${first?"농마니 첫 경매":"이번 경매"} · ${satLabel(e)} 마감</b><span class="num">${n?`지금 ${n}건 출품 · 남은 시간 <span data-end="${e}">${left(e-Date.now())}</span>`:"지금 출품을 받고 있습니다"}</span></span><i>경매 보기 →</i>`;
@@ -2174,7 +2187,7 @@ function renderHome(){renderSeason();
   const sl=Object.keys(S.sellers).map(id=>({id,t:trust(id),r:sellerRating(id)})).sort((a,b)=>(b.t.cert-a.t.cert)||(respFast(b.id)-respFast(a.id))||(b.t.done-a.t.done)||(b.r.n-a.r.n)).slice(0,6);
   $("#homeSellers").innerHTML=sl.length?sl.map(({id,t,r})=>{const s=S.sellers[id];return `<button class="prow" type="button" data-profile="${esc(id)}">${avaHTML(id)}<div><b>${esc(s.shopName)}</b>${t.cert?' <span class="chip ok">인증</span>':""}<div class="meta">${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div><div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} 후기 ${r.n} · `:""}완료 거래 ${t.done}건</div></div><span class="meta">›</span></button>`}).join(""):emptyBox("아직 상점을 연 농부·심마니가 없습니다.",'<button class="btn" data-go="seller">내 상점 열기</button>');
   const la=liveAucs().sort((a,b)=>proofFirst(a,b)||auc(a).end-auc(b).end).slice(0,4);
-  $("#homeAuc").classList.toggle("hrow",la.length>0);$("#homeAuc").innerHTML=la.length?la.map(aucCard).join(""):emptyBox(`이번 경매에 올라온 물건이 아직 없습니다. 경매는 ${cyc()} 토요일 저녁 8시에 한꺼번에 마감합니다. 첫 출품 3번은 출품료가 무료입니다.`,'<button class="btn gold" data-go="seller">경매 출품 신청</button>');
+  $("#homeAuc").innerHTML=la.length?la.map(aucRow).join(""):emptyBox(`이번 경매에 올라온 물건이 아직 없습니다. 경매는 ${cyc()} 토요일 저녁 8시에 한꺼번에 마감합니다. 첫 출품 3번은 출품료가 무료입니다.`,'<button class="btn gold" data-go="seller">경매 출품 신청</button>');
   {const e=nextSat(Date.now()),sl=$("#sideLeft");if(sl){sl.dataset.end=e;sl.textContent=left(e-Date.now());$("#sideAuc").textContent=liveAucs().length;$("#sideShop").textContent=live().filter(p=>p.stock>0).length}}
   const ps=live().filter(p=>p.stock>0).sort((a,b)=>(soldOf(b.id)+ratingOf(b.id).n)-(soldOf(a.id)+ratingOf(a.id).n)||b.createdAt-a.createdAt).slice(0,8);
   {const all=live().filter(p=>p.stock>0),wild=all.filter(p=>p.grow===GROWS[0]).length;
@@ -3301,7 +3314,7 @@ const waitN=c=>c?(S.alerts||[]).filter(a=>a.kind==="auction"&&a.key===c).length:
 function renderAucExtras(){
   document.querySelectorAll(".cyc").forEach(e=>e.textContent=cyc());
   document.querySelectorAll(".nextSat").forEach(e=>e.textContent="다음 마감: "+satLabel(nextSat(Date.now())));
-  if($("#homeWins"))$("#homeWins").innerHTML=winsHTML(3)+upNextHTML();
+  if($("#homeWins"))$("#homeWins").innerHTML=homeWinsHTML();
   const ac=S.acat&&S.acat!=="전체"?S.acat:"",wn=waitN(ac),lv=$("#aucState")?.value==="live";
   const row=ac&&lv&&liveAucs().some(a=>a.cat===ac)?`<div class="alertrow"><span>${wn?`<b class="num">${wn}명</b>이 ${esc(ac)} 경매를 기다리고 있습니다`:`다음 ${esc(ac)} 경매 소식을 받아 보세요`}</span>${alertBtn(ac,"auction")}</div>`:"";
   if($("#aucExtra"))$("#aucExtra").innerHTML=row+upNextHTML()+(lv?winsHTML(5):"");
