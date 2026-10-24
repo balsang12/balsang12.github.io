@@ -606,7 +606,7 @@ function pcard(p){return `<button type="button" class="card" data-pid="${esc(p.i
   <div class="price num">${won(p.price)} <span class="approx">${esc(t("per")(unitT(p.unit)))} · ${esc(approx(p.price))}</span></div></div></button>`}
 function renderMkt(){const ps=S.products.filter(p=>p.status==="판매중"&&!p.demo&&!(S.susp&&S.susp.has(p.sellerId))).filter(p=>S.mcat==="전체"||mcat(p.cat)===S.mcat).sort((a,b)=>(b.stock>0)-(a.stock>0)||(!!b.proofOk)-(!!a.proofOk)||b.createdAt-a.createdAt);
   $("#mlist").innerHTML=ps.length?ps.map(pcard).join(""):`<div class="empty">${esc(t("noMkt"))}</div>`}
-function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;S.dlgKind="p";const d=$("#dlg"),ship=p.form==="생물"?5000:3500;let qty=1;
+function openP(id){const p=S.products.find(x=>x.id===id);if(!p)return;S.open=id;S.dlgKind="p";const d=$("#dlg"),sc_=((S.sellers||{})[p.sellerId]||{}).ship||{},ship=p.form==="생물"?(sc_.fresh!=null?+sc_.fresh:5000):(sc_.dry!=null?+sc_.dry:3500);let qty=1;
   const care=CARE[p.item],gv=t("growV")[p.grow];
   d.innerHTML=`<div class="dlg"><button class="x" type="button" aria-label="Close" id="dx">×</button>
    <div class="thumb">${p.photo?`<img src="${esc(p.photo)}" alt="${esc(pname(p))}">`:""}</div>

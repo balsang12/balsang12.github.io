@@ -478,6 +478,9 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .resp{font-size:13px}.resp .chip{font-size:11.5px}
 .qr{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 0;scrollbar-width:none}.qr[hidden]{display:none}
 .qr button{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.shipset{border:1px solid var(--line);border-radius:12px;padding:8px 12px 10px;margin:4px 0 10px}.shipset legend{font-weight:700;padding:0 4px}
+.ochk{display:flex;gap:8px;align-items:center;font-size:14px;margin:6px 0}.ochk input{width:18px;height:18px;flex:none;margin:0}
+.shipnote{font-size:13.5px;line-height:1.6;background:var(--sunk);border-radius:10px;padding:8px 10px;margin:6px 0}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -976,6 +979,12 @@ label.btn{display:inline-block}
           <div class="field"><label for="shRegType">경영체 등록 (선택)</label><select id="shRegType"><option value="">없음</option><option>농업경영체</option><option>임업경영체</option></select></div>
           <div class="field"><label for="shRegNo">등록번호</label><input id="shRegNo" inputmode="numeric" placeholder="등록확인서의 번호"></div>
         </div>
+        <fieldset class="shipset"><legend>배송비</legend>
+          <div class="row2"><div class="field"><label for="shShipDry">건조·가공품 배송비 (원)</label><input id="shShipDry" type="number" min="0" max="30000" step="500" class="num" placeholder="3500"></div>
+          <div class="field"><label for="shShipFresh">생물 배송비 (아이스박스 포함, 원)</label><input id="shShipFresh" type="number" min="0" max="30000" step="500" class="num" placeholder="5000"></div></div>
+          <div class="row2"><div class="field"><label for="shFreeOver">이 금액 이상이면 무료배송 (원, 없으면 0)</label><input id="shFreeOver" type="number" min="0" step="1000" class="num" placeholder="0"></div>
+          <div class="field"><label for="shIsland">제주·도서산간 추가 (원)</label><input id="shIsland" type="number" min="0" max="30000" step="500" class="num" placeholder="3000"></div></div>
+          <p class="meta" style="margin:0">같은 손님이 이틀 안에 내 상품을 더 사면 배송비는 한 번만 받고 한 상자로 묶어 보냅니다.</p></fieldset>
         <div class="field"><label for="shBiz">사업자등록 (선택)</label><select id="shBiz"><option value="">아직 없음</option><option>면세사업자</option><option>과세사업자</option></select></div>
         <div class="notice">농업경영체(농관원)·임업경영체(산림청) 등록번호를 넣으면 운영자 확인 뒤 <b>인증 판매자</b> 배지와 등록 표시가 붙습니다. 온라인에서 꾸준히 파시려면 세무서에 사업자등록이 필요합니다. 생물·말린 약초는 부가세 면세라 <b>면세사업자</b>로 등록하면 되고, 청·즙·가루 같은 가공품은 과세사업자와 식품 영업신고가 필요합니다. 자세한 내용은 이용 안내의 판매자 안내서를 보세요.</div>
         <button class="btn needWrite" type="submit">상점 정보 저장</button>
@@ -988,7 +997,7 @@ label.btn{display:inline-block}
         <div class="field"><label for="sName">상품명</label><input id="sName" required placeholder="예: 3년근 약도라지 1kg"></div>
         <div class="row2">
           <div class="field"><label for="sCat">분류</label><select id="sCat"></select></div>
-          <div class="field"><label for="sForm">형태</label><select id="sForm"><option>생물</option><option>건조</option><option>덖음·차</option></select></div>
+          <div class="field"><label for="sForm">형태</label><select id="sForm"><option>생물</option><option>건조</option><option>덖음·차</option></select><p class="meta freshtip" style="margin:4px 0 0">🧊 생물은 아이스박스·아이스팩으로, 물기를 빼서 포장하고 <b>월~목에만</b> 보내 주세요.</p></div>
         </div>
         <div class="row2">
           <div class="field"><label for="sPrice">가격(원)</label><input id="sPrice" type="number" min="1000" step="100" class="num" required></div>
@@ -1901,6 +1910,32 @@ const QR_SELLER=["문의 감사합니다. 확인하고 바로 답드릴게요.",
 const QR_BUYER=["언제 캔 건가요?","크기는 어느 정도인가요?","언제 보내 주시나요?","사진 더 볼 수 있을까요?"];
 function qrHTML(other){const l=S.sellers[S.uid]&&!S.sellers[other]?QR_SELLER:S.sellers[other]?QR_BUYER:[];return l.map(t=>`<button type="button" data-qr="${esc(t)}">${esc(t)}</button>`).join("")}
 function qrBind(){const q=$("#qr");if(!q)return;q.hidden=!q.children.length;q.querySelectorAll("[data-qr]").forEach(b=>b.onclick=()=>{const ta=$("#cText");ta.value=(ta.value.trim()?ta.value.trim()+" ":"")+b.dataset.qr;ta.focus()})}
+
+/* ---------- 배송: 판매자 배송비 · 묶음 배송 · 발송 기한 ---------- */
+function shipCfg(uid){const c=(S.sellers[uid]||{}).ship||{},n=(v,d)=>Number.isFinite(+v)&&v!==""&&v!=null?+v:d;return {dry:n(c.dry,3500),fresh:n(c.fresh,5000),free:n(c.free,0),island:n(c.island,3000)}}
+const BUNDLE_MS=48*3600e3;
+function bundleRoot(p){if(!S.uid)return null;return S.orders.filter(o=>o.buyerId===S.uid&&o.sellerId===p.sellerId&&o.status==="결제완료"&&!o.gift&&Date.now()-o.createdAt<BUNDLE_MS).sort((a,b)=>a.createdAt-b.createdAt)[0]||null}
+function shipCalc(p,qty,o){const c=shipCfg(p.sellerId),base=p.form==="생물"?c.fresh:c.dry,sub=p.price*qty;
+  const free=c.free>0&&sub>=c.free,freeLeft=c.free>0&&!free?c.free-sub:0;let ship=free?0:base,bundle=null;
+  if(!o.gift){const r=bundleRoot(p);if(r){const root=r.bundleWith?S.orders.find(x=>x.id===r.bundleWith)||r:r,grp=S.orders.filter(x=>x.id===root.id||x.bundleWith===root.id);
+    const paid=grp.reduce((t,x)=>t+(x.ship||0)-(x.island?c.island:0),0);ship=Math.max(0,ship-paid);bundle={...r,bundleWith:root.id,productName:root.productName};
+    if(o.island&&!grp.some(x=>x.island))ship+=c.island;return {ship,bundle,island:!!o.island&&!grp.some(x=>x.island),freeLeft:0}}}
+  if(o.island)ship+=c.island;return {ship,bundle,island:!!o.island,freeLeft}}
+function shipSpec(p){const c=shipCfg(p.sellerId),b=p.form==="생물"?c.fresh:c.dry;
+  return `${p.form==="생물"?"아이스박스 · ":""}${b?won(b):"무료"}${c.free>0&&b?` · ${won(c.free)} 이상 무료`:""}${c.island?` · 제주·도서산간 +${won(c.island)}`:""}${p.form==="생물"?"<br><span class=\"meta\">생물은 월~목에 발송해요</span>":""}`}
+function shipOptHTML(p){const c=shipCfg(p.sellerId);return `<div id="oBundle" class="notice" hidden></div><p class="meta" id="oFree" hidden style="margin:4px 0"></p>${c.island?`<label class="ochk"><input type="checkbox" id="oIsland"> 제주·도서산간으로 받아요 (+${won(c.island)})</label>`:""}`}
+const kWD=t=>new Date(t+9*3600e3).getUTCDay();
+function kDayEnd(t){const d=new Date(t+9*3600e3);d.setUTCHours(23,59,0,0);return d.getTime()-9*3600e3}
+function shipDue(t,fresh){let d=t+3*864e5;while((fresh?[5,6,0]:[0]).includes(kWD(d)))d+=864e5;return kDayEnd(d)}
+const ordDue=o=>o.shipDue||shipDue(o.createdAt,o.fresh);
+const kDayLabel=t=>{const d=new Date(t+9*3600e3);return `${d.getUTCMonth()+1}월 ${d.getUTCDate()}일(${"일월화수목금토"[d.getUTCDay()]})`};
+function shipNoteSeller(o){if(o.status!=="결제완료")return "";const due=ordDue(o),late=Date.now()>due,wd=kWD(Date.now()),grp=o.bundleWith?S.orders.find(x=>x.id===o.bundleWith):S.orders.find(x=>x.bundleWith===o.id);
+  return `<div class="shipnote">${late?`<span class="chip hot">발송 기한 지남</span> 손님이 바로 취소할 수 있어요. 오늘 꼭 보내 주세요.`:`📦 <b>${kDayLabel(due)}까지</b> 보내 주세요.`}
+   ${grp?`<br>🚚 <b>묶음 배송</b> · ‘${esc(grp.productName)}’ 주문과 한 상자로 보내고, 송장번호도 같은 번호를 넣어 주세요.`:""}${o.island?"<br>🏝 제주·도서산간 배송입니다.":""}
+   ${o.fresh?`<br>🧊 생물: 아이스박스·아이스팩, 물기 빼서 포장${[5,6,0].includes(wd)?" · <b>오늘은 보내지 말고 월요일에 보내 주세요</b> (주말 택배 창고에서 상할 수 있어요)":" · 월~목에만 발송"}`:""}</div>`}
+function shipNoteBuyer(o){const e=ordEff(o);
+  if(o.status==="결제완료"){const due=ordDue(o);return `<div class="meta">${Date.now()>due?`<span class="chip hot">발송 기한 지남</span> 판매자가 기한 안에 보내지 않았어요. 아래에서 바로 취소할 수 있어요.`:`${kDayLabel(due)}까지 발송 예정${o.fresh?" (생물은 월~목 발송)":""}`}${o.bundleWith?" · 앞 주문과 묶음 배송":""}</div>`}
+  if(e==="발송완료"&&o.fresh)return `<div class="meta">🧊 생물은 받은 뒤 <b>24시간 안에</b> 상태를 확인해 주세요. 상했으면 사진을 찍어 두고 아래 ‘문제 신고’로 알려 주세요.</div>`;return ""}
 function sellerRow(uid,ctx){const t=trust(uid),r=sellerRating(uid),own=uid===S.uid;
   return `<div class="srow">${avaHTML(uid,"sm")}<div><b>${esc(shopName(uid))}</b>${certChip(uid)}${regChip(uid)}<div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} (${r.n}) · `:""}완료 거래 ${t.done}건</div>${respHTML(uid)}</div><button class="btn sm" type="button" data-profile="${esc(uid)}">프로필</button>${own?"":`<button class="btn sm primary" type="button" data-chat="${esc(uid)}" data-ctx="${esc(ctx||"")}">문의하기</button>`}</div>`}
 
@@ -2053,7 +2088,7 @@ function renderMy(){
     const reviewed=S.reviews.some(r=>r.orderId===o.id);
     return `<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(ordEff(o))}</div>
     <div class="meta num">${esc(shopName(o.sellerId))} · ${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}${o.fromQuote?" · 견적 주문":""}${o.gift?" · 🎁 선물":""}</div>
-    ${OSTEPS.includes(ordEff(o))?flow(ordEff(o)):""}${o.status==="분쟁"?`<div class="meta">문제 신고 접수: ${esc(o.disputeReason)} · 운영자 확인 중</div>`:""}
+    ${OSTEPS.includes(ordEff(o))?flow(ordEff(o)):""}${shipNoteBuyer(o)}${o.status==="분쟁"?`<div class="meta">문제 신고 접수: ${esc(o.disputeReason)} · 운영자 확인 중</div>`:""}
     ${o.tracking?`<div class="meta">송장: ${esc(o.courier||"")} ${esc(o.tracking)}</div>`:""}
     <div class="actions">
       ${o.status==="결제완료"?`<button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
@@ -2084,7 +2119,7 @@ function sellerAucHTML(){
 function renderSeller(){renderSites();
   const me=S.sellers[S.uid];
   $("#shopLabel").textContent=me?`${me.shopName} · ${me.role||""} · ${me.region} · ${trust(S.uid).cert?"인증 판매자":"일반 판매자 (문제없는 거래 3건이면 인증)"}`:"상점 정보를 먼저 저장해 주세요";aucUI();
-  if(me&&document.activeElement?.form?.id!=="shopForm"){$("#shName").value=me.shopName;$("#shRegion").value=me.region;$("#shBio").value=me.bio||"";if(me.role)$("#shRole").value=me.role;$("#shRegType").value=me.regType||"";$("#shRegNo").value=me.regNo||"";$("#shBiz").value=me.biz||""}
+  if(me&&document.activeElement?.form?.id!=="shopForm"){$("#shName").value=me.shopName;$("#shRegion").value=me.region;$("#shBio").value=me.bio||"";if(me.role)$("#shRole").value=me.role;$("#shRegType").value=me.regType||"";$("#shRegNo").value=me.regNo||"";$("#shBiz").value=me.biz||"";const sc=shipCfg(S.uid);$("#shShipDry").value=sc.dry;$("#shShipFresh").value=sc.fresh;$("#shFreeOver").value=sc.free;$("#shIsland").value=sc.island}
   const myO=S.orders.filter(o=>o.sellerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
   const myA=S.auctions.filter(a=>a.sellerId===S.uid);
   const aucDone=myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");
@@ -2097,7 +2132,7 @@ function renderSeller(){renderSites();
     <div class="meta num">${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}</div>
     ${o.delivery==="fwd"?`<div class="notice">해외 손님 · <b>배송대행지</b>로 보내는 주문입니다. 아래 메모의 대행업체 회원번호(사서함 번호)를 받는 분 이름 옆에 꼭 적어 주세요.</div>`:o.lang?`<div class="meta">해외 손님 주문 (한국 내 배송)</div>`:""}
     ${o.memo?`<div class="meta">배송 메모: ${esc(o.memo)}</div>`:""}
-    ${giftNote(o)}
+    ${giftNote(o)}${shipNoteSeller(o)}
     ${ordRate(o)<FEE?`<div class="meta"><span class="chip ok">단골 주문</span> 이 손님의 ${REPEAT_FROM}번째 이상 주문이라 수수료가 7%입니다.</div>`:""}
     ${o.status==="결제완료"?`<div class="meta">송장에는 개인 휴대폰 대신 택배사 <b>안심번호</b>를 적어 주세요.</div>`:""}
     ${o.status==="결제완료"?`<div class="actions"><select id="cr-${o.id}" aria-label="택배사"><option>CJ대한통운</option><option>우체국택배</option><option>한진택배</option><option>롯데택배</option></select><input id="tr-${o.id}" placeholder="송장번호" aria-label="송장번호"><button class="btn sm primary" data-act="ship" data-id="${o.id}">발송 처리</button></div>`:o.tracking?`<div class="meta">송장 ${esc(o.courier)} ${esc(o.tracking)}</div>`:""}
@@ -2331,7 +2366,7 @@ function fillAuction(id,refresh){
 /* ---------- 마켓 상세 ---------- */
 function openProduct(id){
   const p=S.products.find(x=>x.id===id);if(!p)return;openA=null;
-  let qty=1;const ship=p.form==="생물"?5000:3500,own=p.sellerId===S.uid,dlg=$("#dlg");
+  let qty=1,ship=shipCalc(p,1,{}).ship;const own=p.sellerId===S.uid,dlg=$("#dlg");
   const backGift=S.fromGift?`<button class="btn sm" type="button" data-gift="${esc(S.fromGift)}" style="margin-bottom:8px">← 선물 코너로</button>`:"",gMode=!!S.fromGift;S.fromGift=null;
   const rs=S.reviews.filter(r=>r.productId===id).sort((a,b)=>b.createdAt-a.createdAt);
   dlg.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button>
@@ -2343,23 +2378,27 @@ function openProduct(id){
     ${p.desc?`<p style="margin:0">${esc(p.desc)}</p>`:""}
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
-    <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${won(ship)}</dd>${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
+    <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${shipSpec(p)}</dd>${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
     ${faqHTML(p)}
     ${S.owner?`<div class="actions"><button class="btn sm gold" type="button" id="gPick">${inGift(p)?"🎁 선물 코너에서 빼기":"🎁 선물 코너에 넣기"}</button></div>`:""}
-    ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+giftOptHTML(p):own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
+    ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p):own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
    </div>
    ${(()=>{const key=p.item||guessHerb(p.name)?.name;if(!key)return "";const sib=live().filter(x=>x.id!==p.id&&(x.item||guessHerb(x.name)?.name)===key&&x.stock>0);
       const proc=sib.filter(isProc),raw=sib.filter(x=>!isProc(x));if(!sib.length)return "";
       const row=(t,l)=>l.length?`<div><div class="meta" style="margin:6px 0">${t}</div><div class="actions">${l.slice(0,6).map(x=>`<button class="btn sm" type="button" data-xp="${esc(x.id)}">${esc(x.name)} · ${won(x.price)}</button>`).join("")}</div></div>`:"";
       return `<div class="bids"><h3 style="font-size:17px">${esc(key)} 다른 상품</h3>${isProc(p)?row("원료 그대로 사기",raw)+row("다른 가공품",proc):row("이 원료로 만든 가공품",proc)+row("다른 농가의 "+esc(key),raw)}</div>`})()}
    <div class="bids"><h3 style="font-size:17px">구매 후기 ${rs.length}개</h3>${rs.length?rs.map(r=>`<div class="item sunk"><span class="star">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</span><div>${esc(r.text)}</div></div>`).join(""):'<div class="meta">수령 확인한 구매자만 후기를 쓸 수 있습니다.</div>'}</div>
-   ${p.stock>0&&!own?`<div class="buybar"><div class="qty"><span style="display:flex;align-items:center;gap:8px"><button type="button" id="minus" aria-label="줄이기">−</button><b class="num" id="qv">1</b><button type="button" id="plus" aria-label="늘리기">+</button><span style="white-space:nowrap">× ${esc(p.unit)}</span></span><span class="meta" style="white-space:nowrap">배송비 ${won(ship)} 포함</span></div>
+   ${p.stock>0&&!own?`<div class="buybar"><div class="qty"><span style="display:flex;align-items:center;gap:8px"><button type="button" id="minus" aria-label="줄이기">−</button><b class="num" id="qv">1</b><button type="button" id="plus" aria-label="늘리기">+</button><span style="white-space:nowrap">× ${esc(p.unit)}</span></span><span class="meta" style="white-space:nowrap" id="shipLbl">배송비 ${won(ship)} 포함</span></div>
     <div class="bbrow"><button class="btn" type="button" data-chat="${esc(p.sellerId)}" data-ctx="${esc(p.name)} 문의">문의</button><button class="btn primary needWrite" id="buy" type="button"><b class="num" id="tot"></b>&nbsp;${BETA()?"오픈 알림":"구매하기"}</button></div></div>`:""}</div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
   if($("#gPick"))$("#gPick").onclick=()=>giftToggle(p);
   if($("#buy")){
     const wf=()=>$("#gOpt")?.open&&$("#gWrap")?.checked?(p.giftWrap||0):0;
-    const upd=()=>{$("#qv").textContent=qty;$("#tot").textContent=won(p.price*qty+ship+wf())};upd();
+    let sc={};const upd=()=>{sc=shipCalc(p,qty,{island:$("#oIsland")?.checked,gift:!!$("#gOpt")?.open});ship=sc.ship;$("#qv").textContent=qty;$("#tot").textContent=won(p.price*qty+ship+wf());
+      $("#shipLbl").textContent=ship?`배송비 ${won(ship)} 포함`:sc.bundle?"묶음 배송 · 배송비 0원":"무료배송";
+      const bn=$("#oBundle");if(bn){bn.hidden=!sc.bundle;if(sc.bundle)bn.innerHTML=`🚚 이틀 안에 주문한 <b>${esc(sc.bundle.productName)}</b>과 한 상자로 묶어 보내요. 배송비는 ${sc.ship?won(sc.ship)+"만 더":"더 내지 않아도"} 돼요.`}
+      const fr=$("#oFree");if(fr){fr.hidden=!(sc.freeLeft>0);if(sc.freeLeft>0)fr.textContent=`${won(sc.freeLeft)} 더 담으면 무료배송`}};upd();
+    $("#oIsland")&&($("#oIsland").onchange=upd);
     if($("#gOpt")){if(gMode)$("#gOpt").open=true;$("#gOpt").addEventListener("toggle",upd);$("#gWrap")&&($("#gWrap").onchange=upd);upd()}
     $("#minus").onclick=()=>{if(qty>1){qty--;upd()}};$("#plus").onclick=()=>{if(qty<p.stock){qty++;upd()}};
     $("#buy").onclick=async()=>{
@@ -2368,7 +2407,7 @@ function openProduct(id){
       $("#buy").disabled=true;
       const ok=await guard(async()=>{const fresh=(await S.db.doc("products/"+p.id).get()).data();if(!fresh||fresh.stock<qty)throw{code:"stock"};
         const gf=$("#gOpt")?.open?{card:$("#gCard").value.trim().slice(0,60),date:$("#gDate").value||"",wrap:!!$("#gWrap")?.checked,wrapFee:wf(),hidePrice:$("#gHide").checked}:null;
-        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:p.price*qty+ship+wf(),buyerId:S.uid,sellerId:p.sellerId,memo:$("#oMemo").value.slice(0,300),...(gf?{gift:gf}:{}),status:"결제완료",createdAt:Date.now()});
+        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:p.price*qty+ship+wf(),buyerId:S.uid,sellerId:p.sellerId,memo:$("#oMemo").value.slice(0,300),...(gf?{gift:gf}:{}),...(sc.island?{island:true}:{}),...(sc.bundle?{bundleWith:sc.bundle.bundleWith||sc.bundle.id}:{}),fresh:p.form==="생물",shipDue:shipDue(Date.now(),p.form==="생물"),status:"결제완료",createdAt:Date.now()});
         await S.db.doc("products/"+p.id).update({stock:fresh.stock-qty})},"주문했습니다. 내 거래에서 진행 상황을 볼 수 있어요");
       if(ok){dlg.close();go("my")}else $("#buy").disabled=false};
   }
@@ -2569,7 +2608,10 @@ proofUI();
 $("#sItem").addEventListener("input",()=>{const h=herbNote($("#sItemNote"),$("#sItem").value);if(h&&CATS.includes(mcat(h.cat))&&$("#sCat").value!=="가공품")$("#sCat").value=mcat(h.cat)});
 $("#herbList").innerHTML=HERBS.filter(h=>!isBlocked(h.st)).flatMap(h=>[h.name,...h.alias]).map(n=>`<option value="${esc(n)}"></option>`).join("");$("#sGrow").addEventListener("change",shopUI);
 
-$("#shopForm").onsubmit=e=>{e.preventDefault();const rt=$("#shRegType").value,rn=rt?$("#shRegNo").value.replace(/[^0-9-]/g,"").slice(0,30):"";if(rt&&rn.length<6){toast("등록확인서의 번호를 정확히 넣어 주세요");return}guard(()=>S.db.doc("sellers/"+S.uid).set({shopName:$("#shName").value.trim().slice(0,40),role:$("#shRole").value,region:$("#shRegion").value.trim().slice(0,40),bio:$("#shBio").value.slice(0,300),regType:rt,regNo:rn,biz:$("#shBiz").value,updatedAt:Date.now()}),"상점 정보를 저장했습니다")};
+$("#shopForm").onsubmit=e=>{e.preventDefault();const rt=$("#shRegType").value,rn=rt?$("#shRegNo").value.replace(/[^0-9-]/g,"").slice(0,30):"";if(rt&&rn.length<6){toast("등록확인서의 번호를 정확히 넣어 주세요");return}const cl=(id,d)=>{const v=$("#"+id).value;return v===""?d:Math.max(0,Math.min(id==="shFreeOver"?10000000:30000,Math.round(+v/100)*100||0))};
+  const shipC={dry:cl("shShipDry",3500),fresh:cl("shShipFresh",5000),free:cl("shFreeOver",0),island:cl("shIsland",3000)};
+  const {id:_omit,...prev}=S.sellers[S.uid]||{};
+  guard(()=>S.db.doc("sellers/"+S.uid).set({...prev,ship:shipC,shopName:$("#shName").value.trim().slice(0,40),role:$("#shRole").value,region:$("#shRegion").value.trim().slice(0,40),bio:$("#shBio").value.slice(0,300),regType:rt,regNo:rn,biz:$("#shBiz").value,updatedAt:Date.now()}),"상점 정보를 저장했습니다")};
 $("#aucForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast("직거래 유도 신고로 판매가 정지되었습니다. 운영자에게 문의해 주세요");return}
   if(!S.sellers[S.uid]){toast("위에서 상점 정보를 먼저 저장해 주세요");return}
   const cat=$("#aCat").value,st=+$("#aStart").value,bn=+$("#aBuyNow").value||0;
