@@ -27,7 +27,7 @@ HEAD = """<meta name="description" content="농부와 심마니 직거래 장터
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="농마니">
-<meta property="og:title" content="농부와 심마니 직거래 장터">
+<meta property="og:title" content="농부와 심마니 직거래">
 <meta property="og:description" content="산에서 캔 약초, 밭에서 키운 산나물을 직접 사고파는 장터">
 <meta property="og:image" content="https://nongmani.com/seller/og.png">
 """
