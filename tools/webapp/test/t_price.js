@@ -1,0 +1,16 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:390,height:844},locale:'ko-KR',serviceWorkers:'block'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript('window.__SESSION={user:{id:"s2"}};\n'+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);
+await p.evaluate(()=>go('seller'));await p.waitForTimeout(300);
+const id=await p.evaluate(()=>S.products.find(x=>x.sellerId==='s2'&&x.name==='약도라지 3년근').id);
+await p.fill('#pr-'+id,'21000');await p.click(`[data-act="priceP"][data-id="${id}"]`);await p.waitForTimeout(500);
+const u=await p.evaluate(id=>window.__calls.filter(c=>c[0]==='rpc'&&c[1]==='doc_update'&&c[2].p_id===id).pop(),id);
+ok(u&&u[2].p_patch.price===21000&&u[2].p_patch.priceLog.slice(-1)[0].from===24000&&u[2].p_patch.priceLog.slice(-1)[0].to===21000,'price changed with log');
+ok((await p.locator('#toast').innerText()).includes('24,000원 → 21,000원'),'toast shows change');
+await p.fill('#pr-'+id,'1500000');await p.click(`[data-act="priceP"][data-id="${id}"]`);await p.waitForTimeout(500);
+const u2=await p.evaluate(id=>window.__calls.filter(c=>c[0]==='rpc'&&c[1]==='doc_update'&&c[2].p_id===id).pop(),id);
+ok(u2&&u2[2].p_patch.proofNeed==='photo'&&u2[2].p_patch.proofDue>Date.now(),'raising over threshold requires proof');
+await p.locator(`[data-act="priceP"][data-id="${id}"]`).scrollIntoViewIfNeeded();await p.locator(`[data-act="priceP"][data-id="${id}"]`).locator('xpath=ancestor::div[contains(@class,"item")]').first().screenshot({path:path.join(__dirname,'price_item.png')});
+ok(errs.length===0,'no errors '+errs.join('|'));await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();
