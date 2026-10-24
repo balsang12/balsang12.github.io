@@ -483,10 +483,11 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .shipnote{font-size:13.5px;line-height:1.6;background:var(--sunk);border-radius:10px;padding:8px 10px;margin:6px 0}
 .glast{font-size:12px;color:var(--pine);margin:0 0 4px;font-weight:600}.glast.late{color:var(--berry)}
 .gthemes button{font-weight:600}
+.gslogan{font-family:var(--display);color:var(--gold-deep);font-size:15px;font-weight:700}.giftban .gt>span.gslogan{color:var(--gold-deep);font-size:14.5px}
 .setbox{border:1px solid var(--gold);background:var(--gold-soft);border-radius:12px;padding:10px 12px;margin-top:6px}.setbox ul{margin:6px 0 0;padding-left:20px}
 .sendplan{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px;font-size:14px}
 .pcard{max-width:360px;margin:0 auto;border:1px solid var(--line);border-radius:14px;padding:18px;background:#fffdf7;color:#1d2a20;font-size:14px;line-height:1.6}
-.pc-top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #e6dcc4;padding-bottom:8px;margin-bottom:10px}.pc-logo{font-family:var(--display);font-size:18px;color:#2B5B41}.pc-logo b{color:#8A5B0B}.pc-sub{font-size:12px;color:#6b6b5e}
+.pc-top{display:flex;flex-direction:column;gap:2px;border-bottom:1px solid #e6dcc4;padding-bottom:8px;margin-bottom:10px}.pc-logo{font-family:var(--display);font-size:18px;color:#2B5B41}.pc-logo b{color:#8A5B0B}.pc-sub{font-size:13px;color:#8A5B0B;font-weight:600}
 .pc-who{display:flex;gap:12px;align-items:center}.pc-name{font-size:18px}.pc-bio{margin:10px 0;font-style:italic}
 .pc-dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0}.pc-dl dt{color:#6b6b5e}.pc-dl dd{margin:0}
 .pc-badges{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;color:#2B5B41;margin:6px 0}.pc-msg{border-top:1px dashed #d8ccb0;padding-top:8px;margin:8px 0 0;font-size:15px}
@@ -2003,6 +2004,7 @@ const giftCfg=()=>{const s=S.site||{};return {on:!!s.giftOn,title:s.giftTitle||"
 const giftLive=()=>{const g=giftCfg(),t=kstDay();return g.on&&g.start&&g.end&&g.start<=t&&t<=g.end};
 const inGift=p=>{const g=giftCfg();return g.ids.includes(p.id)||((!!p.gift||!!p.set)&&!g.hide.includes(p.id))};
 const giftList=()=>{const g=giftCfg();return live().filter(p=>p.stock>0&&inGift(p)).sort((a,b)=>(g.ids.includes(b.id)-g.ids.includes(a.id))||(!!b.set-!!a.set)||a.price-b.price)};
+const GIFT_SLOGAN="귀한 분께만 드리는 최고의 자연선물";
 const GTIERS=[["all","전체",0,Infinity],["t1","5만 원 이하",0,50000],["t2","5~15만 원",50001,150000],["t3","15~30만 원",150001,300000],["t4","30만 원 이상",300001,Infinity]];
 /* 받는 분별 묶음: 쇼핑도우미 선물 질문과 같은 기준 */
 const keepsP=p=>p.form!=="생물";
@@ -2020,12 +2022,12 @@ function giftTag(p){const t=p.price<=150000?'<span class="chip ok">선물 한도
 function renderGiftBan(){const el=$("#giftBan");if(!el)return;const g=giftCfg(),lv=giftLive(),pre=!lv&&S.owner&&g.on;
   if(!lv&&!pre){el.hidden=true;el.innerHTML="";return}
   const n=giftList().length,ct=giftCutText(),dl=giftDaysLeft();el.hidden=false;
-  el.innerHTML=`<button class="giftban" type="button" data-gift="all"><span class="gi" aria-hidden="true">🎁</span><span class="gt"><b>${esc(g.title)} 코너${pre?' <span class="chip">미리보기 · 손님에겐 아직 안 보임</span>':""}${dl!=null&&dl>=0&&dl<=3?` <span class="chip hot">마감 D-${dl}</span>`:""}</b><span>${n?`${n}가지 · 마음 전하는 실속 선물부터 귀한 산양삼까지`:"선물 상품을 모으고 있어요"}${ct?` · <em>${esc(ct)}</em>`:""}</span></span><span class="go">보러 가기 →</span></button>
+  el.innerHTML=`<button class="giftban" type="button" data-gift="all"><span class="gi" aria-hidden="true">🎁</span><span class="gt"><b>${esc(g.title)} 코너${pre?' <span class="chip">미리보기 · 손님에겐 아직 안 보임</span>':""}${dl!=null&&dl>=0&&dl<=3?` <span class="chip hot">마감 D-${dl}</span>`:""}</b><span class="gslogan">${GIFT_SLOGAN}</span><span>${n?`${n}가지 · 마음 전하는 실속 선물부터 귀한 산양삼까지`:"선물 상품을 모으고 있어요"}${ct?` · <em>${esc(ct)}</em>`:""}</span></span><span class="go">보러 가기 →</span></button>
   <div class="gtiers" role="list">${GTHEMES.slice(1).map(([k,l])=>`<button type="button" role="listitem" data-gift="all|${k}">${l}</button>`).join("")}</div>`}
 function openGift(key){const [tk,th]=String(key||"all").split("|"),g=giftCfg(),T=GTIERS.find(x=>x[0]===tk)||GTIERS[0],H=GTHEMES.find(x=>x[0]===th)||GTHEMES[0],dlg=$("#dlg");openA=null;
   const all=giftList().filter(H[2]),inT=t=>p=>p.price>=t[2]&&p.price<=t[3],list=all.filter(inT(T)),ct=giftCutText(),cur=`${T[0]}|${H[0]}`;
   dlg.innerHTML=`<div class="dlg giftdlg"><button class="close" aria-label="닫기" type="button">×</button>
-   <div class="eyebrow">농부와 심마니 직거래 · 채취 근거 확인 상품</div><h2 style="font-size:24px;margin:2px 0 6px">🎁 ${esc(g.title)}</h2>
+   <div class="eyebrow">농부와 심마니 직거래 · 채취 근거 확인 상품</div><h2 style="font-size:24px;margin:2px 0 2px">🎁 ${esc(g.title)}</h2><p class="gslogan" style="margin:0 0 10px">${GIFT_SLOGAN}</p>
    ${ct?`<div class="notice" style="margin:0 0 10px">📦 ${esc(ct)}${g.cut&&kstDay()<=g.cut?" · 받는 날을 고르면 판매자가 그 날짜에 맞춰 보냅니다":""}</div>`:""}
    <div class="meta" style="margin:0 0 4px">누구에게 보내세요?</div>
    <div class="gtiers gthemes" role="tablist">${GTHEMES.map(([k,l])=>`<button type="button" role="tab" data-gift="${T[0]}|${k}" aria-pressed="${k===H[0]}">${l}</button>`).join("")}</div>
@@ -2059,7 +2061,7 @@ function openProdCard(oid){const o=S.orders.find(x=>x.id===oid);if(!o)return;con
   dlg.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button>
    <p class="meta noprint" style="margin:0 0 8px">상자에 넣을 생산자 카드예요. 인쇄하거나 화면을 캡처해서 출력해 주세요. (명함 두 장 크기)</p>
    <div class="pcard" id="pcard">
-    <div class="pc-top"><span class="pc-logo">농부와 <b>심마니</b></span><span class="pc-sub">산지에서 직접 보낸 선물</span></div>
+    <div class="pc-top"><span class="pc-logo">농부와 <b>심마니</b></span><span class="pc-sub">${GIFT_SLOGAN}</span></div>
     <div class="pc-who">${avaHTML(o.sellerId,"big")}<div><b class="pc-name">${esc(s.shopName||"")}</b><div>${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div></div></div>
     ${s.bio?`<p class="pc-bio">“${esc(s.bio)}”</p>`:""}
     <dl class="pc-dl"><dt>보내는 것</dt><dd>${esc(o.productName)}</dd>${pp.faq?.harv?`<dt>캔 날</dt><dd>${esc(pp.faq.harv)}</dd>`:""}${pp.region?`<dt>산지</dt><dd>${esc(pp.region)}</dd>`:""}${pp.faq?.keep?`<dt>보관</dt><dd>${esc(pp.faq.keep)}</dd>`:""}</dl>
@@ -2085,7 +2087,7 @@ function giftPreset(k){const y=+kstDay().slice(0,4),P={ny:[`${y}년 연말·새�
   $("#cfgGift").checked=true;$("#cfgGiftTitle").value=P[0];$("#cfgGiftStart").value=P[1];$("#cfgGiftEnd").value=P[2];$("#cfgGiftCut").value=P[3];toast("날짜를 채웠습니다. 확인하고 저장을 눌러 주세요")}
 
 /* ---------- 철마다 바뀌는 첫 화면 한 줄 ---------- */
-const SEASONS=[[[3,4,5],"🌱","봄 산나물 철이에요",["곰취","두릅","참나물","취나물"]],[[6,7,8],"☀️","여름 열매·약초 철",["오디","오미자","산딸기","블루베리"]],[[9,10,11],"🍄","가을 버섯·뿌리 철",["송이","능이","더덕","도라지"]],[[12,1,2],"🎁","겨울 약초·선물 철",["산양삼","천마","대추","생강청"]]];
+const SEASONS=[[[3,4,5],"🌱","봄 산나물 철이에요",["곰취","두릅","참나물","취나물"]],[[6,7,8],"☀️","여름 열매·약초 철",["오디","오미자","산딸기","블루베리"]],[[9,10,11],"🍄","가을 버섯·뿌리 철",["송이","능이","더덕","도라지"]],[[12,1,2],"🎁","귀한 분께만 드리는 최고의 자연선물",["산양삼","천마","대추","생강청"]]];
 function seasonNow(){const m=new Date(Date.now()+9*3600e3).getUTCMonth()+1;return SEASONS.find(x=>x[0].includes(m))}
 function renderSeason(){const el=$("#hSeason");if(!el)return;const z=seasonNow();if(el.dataset.k===z[2])return;el.dataset.k=z[2];
   el.innerHTML=`<span>${z[1]} <b>${z[2]}</b></span> ${z[3].map(n=>`<button type="button" class="sq" data-sq="${n}">${n}</button>`).join("")}`;
