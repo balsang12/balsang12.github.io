@@ -481,6 +481,17 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .shipset{border:1px solid var(--line);border-radius:12px;padding:8px 12px 10px;margin:4px 0 10px}.shipset legend{font-weight:700;padding:0 4px}
 .ochk{display:flex;gap:8px;align-items:center;font-size:14px;margin:6px 0}.ochk input{width:18px;height:18px;flex:none;margin:0}
 .shipnote{font-size:13.5px;line-height:1.6;background:var(--sunk);border-radius:10px;padding:8px 10px;margin:6px 0}
+.glast{font-size:12px;color:var(--pine);margin:0 0 4px;font-weight:600}.glast.late{color:var(--berry)}
+.gthemes button{font-weight:600}
+.setbox{border:1px solid var(--gold);background:var(--gold-soft);border-radius:12px;padding:10px 12px;margin-top:6px}.setbox ul{margin:6px 0 0;padding-left:20px}
+.sendplan{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px;font-size:14px}
+.pcard{max-width:360px;margin:0 auto;border:1px solid var(--line);border-radius:14px;padding:18px;background:#fffdf7;color:#1d2a20;font-size:14px;line-height:1.6}
+.pc-top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #e6dcc4;padding-bottom:8px;margin-bottom:10px}.pc-logo{font-family:var(--display);font-size:18px;color:#2B5B41}.pc-logo b{color:#8A5B0B}.pc-sub{font-size:12px;color:#6b6b5e}
+.pc-who{display:flex;gap:12px;align-items:center}.pc-name{font-size:18px}.pc-bio{margin:10px 0;font-style:italic}
+.pc-dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0}.pc-dl dt{color:#6b6b5e}.pc-dl dd{margin:0}
+.pc-badges{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;color:#2B5B41;margin:6px 0}.pc-msg{border-top:1px dashed #d8ccb0;padding-top:8px;margin:8px 0 0;font-size:15px}
+.pc-foot{text-align:right;font-size:11px;color:#8a8a7a;margin-top:8px}
+@media print{body.printcard *{visibility:hidden}body.printcard #pcard,body.printcard #pcard *{visibility:visible}body.printcard #pcard{position:fixed;left:0;top:0;border:1px solid #ccc}}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -1032,6 +1043,9 @@ label.btn{display:inline-block}
           <div class="field"><label for="sFqSize">크기·상태는요?</label><input id="sFqSize" maxlength="60" placeholder="예: 뿌리 길이 15cm 안팎, 10~12뿌리"></div></div>
           <div class="row2"><div class="field"><label for="sFqKeep">어떻게 보관하나요?</label><input id="sFqKeep" maxlength="60" placeholder="예: 신문지에 싸서 냉장 2주"></div>
           <div class="field"><label for="sFqShip">언제 보내 주나요?</label><input id="sFqShip" maxlength="60" placeholder="예: 주문 다음 날 발송, 주말 제외"></div></div></details>
+        <details class="faqform setform"><summary>🎁 선물세트로 올리기 <span class="meta">(구성품을 적으면 선물 코너 앞쪽에 보여요)</span></summary>
+          <div class="field"><label for="sSetItems">구성품 (한 줄에 하나, 최대 8개)</label><textarea id="sSetItems" rows="3" placeholder="예: 더덕 500g&#10;도라지청 1병&#10;오미자차 20포"></textarea></div>
+          <div class="field"><label for="sSetIntro">받는 분께 드리는 소개 (120자)</label><input id="sSetIntro" maxlength="120" placeholder="예: 지리산 자락에서 직접 캔 더덕과 집에서 담근 도라지청을 함께 담았습니다"></div></details>
         <div class="row2 giftsell"><label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="sGift"> 🎁 선물 포장 가능 (명절 선물 코너에 함께 보여요)</label>
           <div class="field"><label for="sGiftWrap">선물 포장비 (원, 무료면 0)</label><input id="sGiftWrap" type="number" min="0" max="50000" step="500" value="0" class="num"></div></div>
         <div class="field"><label for="sProof" id="sProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="sProof" type="file" accept="image/*"><img id="sProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
@@ -1865,7 +1879,7 @@ function ratingOf(pid){const r=S.reviews.filter(x=>x.productId===pid);return r.l
 function card(p){
   const r=ratingOf(p.id);
   return `<button class="card" data-pid="${esc(p.id)}">
-   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${(p.grow||"").startsWith("자연산")?'<span class="chip solid">심마니 채취</span>':isCert(p)?'<span class="chip ok">인증 재배</span>':'<span class="chip ok">농부 재배</span>'}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
+   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${(p.grow||"").startsWith("자연산")?'<span class="chip solid">심마니 채취</span>':isCert(p)?'<span class="chip ok">인증 재배</span>':'<span class="chip ok">농부 재배</span>'}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
    <div class="cbody">
     <div class="meta">${esc(p.region)} · ${esc(p.form)}</div>
     <h3>${esc(p.name)}</h3>
@@ -1929,12 +1943,12 @@ function kDayEnd(t){const d=new Date(t+9*3600e3);d.setUTCHours(23,59,0,0);return
 function shipDue(t,fresh){let d=t+3*864e5;while((fresh?[5,6,0]:[0]).includes(kWD(d)))d+=864e5;return kDayEnd(d)}
 const ordDue=o=>o.shipDue||shipDue(o.createdAt,o.fresh);
 const kDayLabel=t=>{const d=new Date(t+9*3600e3);return `${d.getUTCMonth()+1}월 ${d.getUTCDate()}일(${"일월화수목금토"[d.getUTCDay()]})`};
-function shipNoteSeller(o){if(o.status!=="결제완료")return "";const due=ordDue(o),late=Date.now()>due,wd=kWD(Date.now()),grp=o.bundleWith?S.orders.find(x=>x.id===o.bundleWith):S.orders.find(x=>x.bundleWith===o.id);
-  return `<div class="shipnote">${late?`<span class="chip hot">발송 기한 지남</span> 손님이 바로 취소할 수 있어요. 오늘 꼭 보내 주세요.`:`📦 <b>${kDayLabel(due)}까지</b> 보내 주세요.`}
+function shipNoteSeller(o){if(o.status!=="결제완료")return "";const due=shipBy(o),late=Date.now()>due,sd=sendOn(o),wd=kWD(Date.now()),grp=o.bundleWith?S.orders.find(x=>x.id===o.bundleWith):S.orders.find(x=>x.bundleWith===o.id);
+  return `<div class="shipnote">${late?`<span class="chip hot">발송 기한 지남</span> 손님이 바로 취소할 수 있어요. 오늘 꼭 보내 주세요.`:sd?`📅 <b>${kDayLabel(due)}</b>에 보내 주세요 (받는 날 ${esc(mdKo(o.gift.date))}${o.fresh?" · 너무 일찍 보내면 상할 수 있어요":""})`:`📦 <b>${kDayLabel(due)}까지</b> 보내 주세요.`}
    ${grp?`<br>🚚 <b>묶음 배송</b> · ‘${esc(grp.productName)}’ 주문과 한 상자로 보내고, 송장번호도 같은 번호를 넣어 주세요.`:""}${o.island?"<br>🏝 제주·도서산간 배송입니다.":""}
    ${o.fresh?`<br>🧊 생물: 아이스박스·아이스팩, 물기 빼서 포장${[5,6,0].includes(wd)?" · <b>오늘은 보내지 말고 월요일에 보내 주세요</b> (주말 택배 창고에서 상할 수 있어요)":" · 월~목에만 발송"}`:""}</div>`}
 function shipNoteBuyer(o){const e=ordEff(o);
-  if(o.status==="결제완료"){const due=ordDue(o);return `<div class="meta">${Date.now()>due?`<span class="chip hot">발송 기한 지남</span> 판매자가 기한 안에 보내지 않았어요. 아래에서 바로 취소할 수 있어요.`:`${kDayLabel(due)}까지 발송 예정${o.fresh?" (생물은 월~목 발송)":""}`}${o.bundleWith?" · 앞 주문과 묶음 배송":""}</div>`}
+  if(o.status==="결제완료"){const due=shipBy(o);return `<div class="meta">${Date.now()>due?`<span class="chip hot">발송 기한 지남</span> 판매자가 기한 안에 보내지 않았어요. 아래에서 바로 취소할 수 있어요.`:sendOn(o)?`${kDayLabel(due)}에 발송 예정 · ${esc(mdKo(o.gift.date))} 도착 맞춤`:`${kDayLabel(due)}까지 발송 예정${o.fresh?" (생물은 월~목 발송)":""}`}${o.bundleWith?" · 앞 주문과 묶음 배송":""}</div>`}
   if(e==="발송완료"&&o.fresh)return `<div class="meta">🧊 생물은 받은 뒤 <b>24시간 안에</b> 상태를 확인해 주세요. 상했으면 사진을 찍어 두고 아래 ‘문제 신고’로 알려 주세요.</div>`;return ""}
 function sellerRow(uid,ctx){const t=trust(uid),r=sellerRating(uid),own=uid===S.uid;
   return `<div class="srow">${avaHTML(uid,"sm")}<div><b>${esc(shopName(uid))}</b>${certChip(uid)}${regChip(uid)}<div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} (${r.n}) · `:""}완료 거래 ${t.done}건</div>${respHTML(uid)}</div><button class="btn sm" type="button" data-profile="${esc(uid)}">프로필</button>${own?"":`<button class="btn sm primary" type="button" data-chat="${esc(uid)}" data-ctx="${esc(ctx||"")}">문의하기</button>`}</div>`}
@@ -1944,39 +1958,81 @@ const wrapFee=v=>Math.max(0,Math.min(50000,Math.round((+v||0)/100)*100));
 const kstDay=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
 const giftCfg=()=>{const s=S.site||{};return {on:!!s.giftOn,title:s.giftTitle||"명절 선물",start:s.giftStart||"",end:s.giftEnd||"",cut:s.giftCut||"",ids:Array.isArray(s.giftIds)?s.giftIds:[],hide:Array.isArray(s.giftHide)?s.giftHide:[]}};
 const giftLive=()=>{const g=giftCfg(),t=kstDay();return g.on&&g.start&&g.end&&g.start<=t&&t<=g.end};
-const inGift=p=>{const g=giftCfg();return g.ids.includes(p.id)||(!!p.gift&&!g.hide.includes(p.id))};
-const giftList=()=>{const g=giftCfg();return live().filter(p=>p.stock>0&&inGift(p)).sort((a,b)=>(g.ids.includes(b.id)-g.ids.includes(a.id))||a.price-b.price)};
+const inGift=p=>{const g=giftCfg();return g.ids.includes(p.id)||((!!p.gift||!!p.set)&&!g.hide.includes(p.id))};
+const giftList=()=>{const g=giftCfg();return live().filter(p=>p.stock>0&&inGift(p)).sort((a,b)=>(g.ids.includes(b.id)-g.ids.includes(a.id))||(!!b.set-!!a.set)||a.price-b.price)};
 const GTIERS=[["all","전체",0,Infinity],["t1","5만 원 이하",0,50000],["t2","5~15만 원",50001,150000],["t3","15~30만 원",150001,300000],["t4","30만 원 이상",300001,Infinity]];
+/* 받는 분별 묶음: 쇼핑도우미 선물 질문과 같은 기준 */
+const keepsP=p=>p.form!=="생물";
+const GTHEMES=[["any","모두",()=>true],["parents","👵 부모님께",p=>p.price>=30000||RECO_GIFT.includes(p.item||"")||!!p.set],["boss","🙇 은사·윗분께",p=>p.price<=150000&&keepsP(p)],["biz","🏢 거래처 대량",p=>p.price<=50000&&p.stock>=10],["light","💌 가볍게 마음만",p=>p.price<=30000]];
 const mdKo=d=>{const [,m,dd]=String(d).split("-");return `${+m}월 ${+dd}일`};
-function giftCutText(){const g=giftCfg();if(!g.cut)return "";return kstDay()<=g.cut?`${mdKo(g.cut)}까지 주문하면 제때 받아요`:"택배 마감이 지났어요 · 도착이 늦을 수 있어요"}
+const isoDay=t=>new Date(t+9*3600e3).toISOString().slice(0,10);
+const dayTs=d=>Date.parse(d+"T12:00:00+09:00");
+function giftDaysLeft(){const g=giftCfg();if(!g.cut)return null;return Math.round((dayTs(g.cut)-dayTs(kstDay()))/864e5)}
+function giftCutText(){const g=giftCfg();if(!g.cut)return "";const d=giftDaysLeft();return d<0?"택배 마감이 지났어요 · 도착이 늦을 수 있어요":d===0?"오늘이 택배 마감일이에요":`${mdKo(g.cut)}까지 주문하면 제때 받아요${d<=3?` · 마감 D-${d}`:""}`}
+/* 상품마다 명절 전 도착 마지막 주문일: 생물은 월~목에만 보내므로 마감일이 금~일이면 그 주 목요일로 당김 */
+function lastOrderDay(p){const g=giftCfg();if(!g.cut)return "";let t=dayTs(g.cut);if(p.form==="생물")while([5,6,0].includes(kWD(t)))t-=864e5;return isoDay(t)}
 function giftTag(p){const t=p.price<=150000?'<span class="chip ok">선물 한도 15만 원 안</span>':p.price<=300000?'<span class="chip gold">명절 기간 한도 30만 원 안</span>':'<span class="chip">프리미엄</span>';
-  return `<div class="gtag">${t}${p.gift?`<span class="chip">🎁 포장${p.giftWrap?" +"+won(p.giftWrap):" 무료"}</span>`:""}</div>`}
+  const lo=lastOrderDay(p),late=lo&&kstDay()>lo;
+  return `<div class="gtag">${t}${p.gift?`<span class="chip">🎁 포장${p.giftWrap?" +"+won(p.giftWrap):" 무료"}</span>`:""}</div>${lo?`<div class="glast ${late?"late":""}">${late?"명절 전 도착이 어려워요":`📦 ${esc(mdKo(lo))}까지 주문하면 명절 전 도착`}</div>`:""}`}
 function renderGiftBan(){const el=$("#giftBan");if(!el)return;const g=giftCfg(),lv=giftLive(),pre=!lv&&S.owner&&g.on;
   if(!lv&&!pre){el.hidden=true;el.innerHTML="";return}
-  const n=giftList().length,ct=giftCutText();el.hidden=false;
-  el.innerHTML=`<button class="giftban" type="button" data-gift="all"><span class="gi" aria-hidden="true">🎁</span><span class="gt"><b>${esc(g.title)} 코너${pre?' <span class="chip">미리보기 · 손님에겐 아직 안 보임</span>':""}</b><span>${n?`${n}가지 · 마음 전하는 실속 선물부터 귀한 산양삼까지`:"선물 상품을 모으고 있어요"}${ct?` · <em>${esc(ct)}</em>`:""}</span></span><span class="go">보러 가기 →</span></button>
-  <div class="gtiers" role="list">${GTIERS.slice(1).map(([k,l])=>`<button type="button" role="listitem" data-gift="${k}">${l}</button>`).join("")}<button type="button" data-gift-bulk="1">🏢 회사·단체 대량</button></div>`}
-function openGift(tier){const g=giftCfg(),T=GTIERS.find(x=>x[0]===tier)||GTIERS[0],dlg=$("#dlg");openA=null;
-  const all=giftList(),list=all.filter(p=>p.price>=T[2]&&p.price<=T[3]),ct=giftCutText();
+  const n=giftList().length,ct=giftCutText(),dl=giftDaysLeft();el.hidden=false;
+  el.innerHTML=`<button class="giftban" type="button" data-gift="all"><span class="gi" aria-hidden="true">🎁</span><span class="gt"><b>${esc(g.title)} 코너${pre?' <span class="chip">미리보기 · 손님에겐 아직 안 보임</span>':""}${dl!=null&&dl>=0&&dl<=3?` <span class="chip hot">마감 D-${dl}</span>`:""}</b><span>${n?`${n}가지 · 마음 전하는 실속 선물부터 귀한 산양삼까지`:"선물 상품을 모으고 있어요"}${ct?` · <em>${esc(ct)}</em>`:""}</span></span><span class="go">보러 가기 →</span></button>
+  <div class="gtiers" role="list">${GTHEMES.slice(1).map(([k,l])=>`<button type="button" role="listitem" data-gift="all|${k}">${l}</button>`).join("")}</div>`}
+function openGift(key){const [tk,th]=String(key||"all").split("|"),g=giftCfg(),T=GTIERS.find(x=>x[0]===tk)||GTIERS[0],H=GTHEMES.find(x=>x[0]===th)||GTHEMES[0],dlg=$("#dlg");openA=null;
+  const all=giftList().filter(H[2]),inT=t=>p=>p.price>=t[2]&&p.price<=t[3],list=all.filter(inT(T)),ct=giftCutText(),cur=`${T[0]}|${H[0]}`;
   dlg.innerHTML=`<div class="dlg giftdlg"><button class="close" aria-label="닫기" type="button">×</button>
    <div class="eyebrow">농부와 심마니 직거래 · 채취 근거 확인 상품</div><h2 style="font-size:24px;margin:2px 0 6px">🎁 ${esc(g.title)}</h2>
-   ${ct?`<div class="notice" style="margin:0 0 10px">📦 ${esc(ct)}${g.cut&&kstDay()<=g.cut?" · 받는 날을 고르면 판매자가 날짜에 맞춰 보냅니다":""}</div>`:""}
-   <div class="gtiers" role="tablist">${GTIERS.map(([k,l])=>`<button type="button" role="tab" data-gift="${k}" aria-pressed="${k===T[0]}">${l}${k==="all"?"":` <small class="num">${all.filter(p=>p.price>=GTIERS.find(x=>x[0]===k)[2]&&p.price<=GTIERS.find(x=>x[0]===k)[3]).length}</small>`}</button>`).join("")}</div>
-   <div class="grid hrow0 giftgrid" style="margin-top:12px">${list.length?list.map(p=>card(p).replace('<div class="cbody">','<div class="cbody">'+giftTag(p))).join(""):emptyBox(all.length?"이 가격대 선물이 아직 없습니다. 다른 가격대를 눌러 보세요.":"선물 상품을 모으고 있어요. 입고되면 이 코너에 보입니다.","")}</div>
+   ${ct?`<div class="notice" style="margin:0 0 10px">📦 ${esc(ct)}${g.cut&&kstDay()<=g.cut?" · 받는 날을 고르면 판매자가 그 날짜에 맞춰 보냅니다":""}</div>`:""}
+   <div class="meta" style="margin:0 0 4px">누구에게 보내세요?</div>
+   <div class="gtiers gthemes" role="tablist">${GTHEMES.map(([k,l])=>`<button type="button" role="tab" data-gift="${T[0]}|${k}" aria-pressed="${k===H[0]}">${l}</button>`).join("")}</div>
+   <div class="gtiers" role="tablist">${GTIERS.map(t=>`<button type="button" role="tab" data-gift="${t[0]}|${H[0]}" aria-pressed="${t[0]===T[0]}">${t[1]}${t[0]==="all"?"":` <small class="num">${all.filter(inT(t)).length}</small>`}</button>`).join("")}</div>
+   ${H[0]==="biz"?`<div class="notice" style="margin:10px 0 0">🏢 10개 넘게 보내시면 견적을 받아 보세요. 받는 곳이 여러 군데여도 한 번에 맡길 수 있어요. <button class="btn sm gold" type="button" data-gift-bulk="1">무료 견적 받기</button></div>`:""}
+   <div class="grid hrow0 giftgrid" style="margin-top:12px">${list.length?list.map(p=>card(p).replace('<div class="cbody">','<div class="cbody">'+giftTag(p))).join(""):emptyBox(all.length?"이 가격대 선물이 아직 없습니다. 다른 가격대를 눌러 보세요.":"이 묶음에 맞는 선물을 모으고 있어요. 다른 묶음을 눌러 보세요.","")}</div>
    <div class="actions" style="margin-top:14px"><button class="btn gold" type="button" data-go="auction">🏔 귀한 산삼은 경매에서</button><button class="btn" type="button" data-gift-bulk="1">🏢 회사·단체 대량 주문 (견적 무료)</button></div>
-   <p class="meta" style="margin:12px 0 0;line-height:1.6">‘한도 안’ 표시는 공무원·교사·언론인 등에게 보낼 때 참고하시라고 붙였습니다. 청탁금지법상 농수산물·농수산가공품 선물은 평소 15만 원, 설·추석 기간에는 30만 원까지입니다 (상품 1개 값 기준 · 배송비·포장비 제외). 정확한 적용은 국민권익위원회에 확인해 주세요.</p></div>`;
+   <p class="meta" style="margin:12px 0 0;line-height:1.6">선물마다 생산자 카드(누가 어디서 캤는지)를 넣어 보낼 수 있어요. ‘한도 안’ 표시는 공무원·교사·언론인 등에게 보낼 때 참고하시라고 붙였습니다. 청탁금지법상 농수산물·농수산가공품 선물은 평소 15만 원, 설·추석 기간에는 30만 원까지입니다 (상품 1개 값 기준 · 배송비·포장비 제외). 정확한 적용은 국민권익위원회에 확인해 주세요.</p></div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
-  dlg.querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>{S.fromGift=T[0]},true));
+  dlg.querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>{S.fromGift=cur},true));
   if(!dlg.open)dlg.showModal();dlg.scrollTop=0;requestAnimationFrame(paintAll)}
-function giftOptHTML(p){const tm=new Date(Date.now()+9*3600e3+2*864e5).toISOString().slice(0,10);
+function giftOptHTML(p){const tm=new Date(Date.now()+9*3600e3+2*864e5).toISOString().slice(0,10),lo=lastOrderDay(p),gl=typeof giftLive==="function"&&giftLive();
   return `<details class="giftopt" id="gOpt"><summary>🎁 선물로 보내기</summary>
+   ${gl&&lo?`<p class="meta" style="margin:4px 0 6px">${kstDay()>lo?"지금 주문하면 명절 전에 도착하기 어려워요.":`📦 <b>${esc(mdKo(lo))}까지</b> 주문하면 명절 전에 도착해요.`}</p>`:""}
    <div class="field"><label for="gCard">카드 문구 (60자까지)</label><input id="gCard" maxlength="60" placeholder="예: 새해 복 많이 받으세요. 늘 건강하세요"></div>
-   <div class="field"><label for="gDate">받고 싶은 날 (선택)</label><input id="gDate" type="date" min="${tm}"></div>
-   ${p.gift?`<label class="gchk"><input type="checkbox" id="gWrap" checked> 선물 포장 ${p.giftWrap?"+"+won(p.giftWrap):"(무료)"}</label>`:`<p class="meta" style="margin:0 0 6px">이 상품은 선물 포장을 하지 않습니다</p>`}
+   <div class="field"><label for="gDate">받고 싶은 날 (선택 · 고르면 판매자가 그날에 맞춰 보내요)</label><input id="gDate" type="date" min="${tm}"></div>
+   ${p.gift||p.set?`<label class="gchk"><input type="checkbox" id="gWrap" checked> 선물 포장 ${p.giftWrap?"+"+won(p.giftWrap):"(무료)"}</label>`:`<p class="meta" style="margin:0 0 6px">이 상품은 선물 포장을 하지 않습니다</p>`}
+   <label class="gchk"><input type="checkbox" id="gPc" checked> 생산자 카드 넣기 (누가 어디서 캤는지 · 무료)</label>
    <label class="gchk"><input type="checkbox" id="gHide" checked> 받는 분에게 가격이 안 보이게 (명세서 빼기)</label>
    <p class="meta" style="margin:6px 0 0">받는 분 이름·주소는 결제할 때 따로 적습니다. 주문자와 다른 곳으로 보낼 수 있어요.</p></details>`}
 function giftNote(o){const g=o.gift;if(!g)return "";
-  return `<div class="notice">🎁 <b>선물 주문</b>${g.wrap?` · 선물 포장${g.wrapFee?" ("+won(g.wrapFee)+")":""}`:""}${g.date?` · <b>${esc(mdKo(g.date))}</b> 도착 희망`:""}${g.hidePrice?" · <b>가격이 적힌 명세서를 넣지 마세요</b>":""}${g.card?`<br>카드 문구: “${esc(g.card)}”`:""}</div>`}
+  return `<div class="notice">🎁 <b>선물 주문</b>${g.wrap?` · 선물 포장${g.wrapFee?" ("+won(g.wrapFee)+")":""}`:""}${g.date?` · <b>${esc(mdKo(g.date))}</b> 도착 희망`:""}${g.hidePrice?" · <b>가격이 적힌 명세서를 넣지 마세요</b>":""}${g.card?`<br>카드 문구: “${esc(g.card)}”`:""}${g.prodCard?`<div class="actions" style="margin-top:6px"><button class="btn sm gold" type="button" data-pcard="${esc(o.id)}">🪪 생산자 카드 만들기·인쇄</button></div>`:""}</div>`}
+/* ---------- 선물세트 ---------- */
+function setRead(pre){const items=($("#"+pre+"Items")?.value||"").split(/\n|,/).map(x=>x.trim()).filter(Boolean).slice(0,8).map(x=>x.slice(0,40)),intro=($("#"+pre+"Intro")?.value||"").trim().slice(0,120);
+  if([...items,intro].some(v=>PII.test(v)))return {bad:true};return items.length?{set:{items,intro}}:{}}
+function setHTML(p){if(!p.set)return "";return `<div class="setbox"><b>🎁 선물세트 구성</b><ul>${p.set.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${p.set.intro?`<p class="meta" style="margin:4px 0 0">“${esc(p.set.intro)}”</p>`:""}</div>`}
+/* ---------- 생산자 카드 ---------- */
+function openProdCard(oid){const o=S.orders.find(x=>x.id===oid);if(!o)return;const s=S.sellers[o.sellerId]||{},pp=S.products.find(x=>x.id===o.productId)||{},t=trust(o.sellerId);
+  const badges=[pp.proofOk?"채취 근거 확인":"",/인증/.test(pp.grow||"")?"인증 재배":"",pp.cert?"품질 검사 "+pp.cert:"",t.cert?"농마니 인증 판매자":""].filter(Boolean);
+  const dlg=$("#dlg");openA=null;
+  dlg.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button>
+   <p class="meta noprint" style="margin:0 0 8px">상자에 넣을 생산자 카드예요. 인쇄하거나 화면을 캡처해서 출력해 주세요. (명함 두 장 크기)</p>
+   <div class="pcard" id="pcard">
+    <div class="pc-top"><span class="pc-logo">농부와 <b>심마니</b></span><span class="pc-sub">산지에서 직접 보낸 선물</span></div>
+    <div class="pc-who">${avaHTML(o.sellerId,"big")}<div><b class="pc-name">${esc(s.shopName||"")}</b><div>${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div></div></div>
+    ${s.bio?`<p class="pc-bio">“${esc(s.bio)}”</p>`:""}
+    <dl class="pc-dl"><dt>보내는 것</dt><dd>${esc(o.productName)}</dd>${pp.faq?.harv?`<dt>캔 날</dt><dd>${esc(pp.faq.harv)}</dd>`:""}${pp.region?`<dt>산지</dt><dd>${esc(pp.region)}</dd>`:""}${pp.faq?.keep?`<dt>보관</dt><dd>${esc(pp.faq.keep)}</dd>`:""}</dl>
+    ${badges.length?`<div class="pc-badges">${badges.map(b=>`<span>✔ ${esc(b)}</span>`).join("")}</div>`:""}
+    ${o.gift?.card?`<p class="pc-msg">${esc(o.gift.card)}</p>`:""}
+    <div class="pc-foot">nongmani.com</div>
+   </div>
+   <div class="actions noprint" style="margin-top:12px"><button class="btn primary" type="button" id="pcPrint">인쇄하기</button></div></div>`;
+  dlg.querySelector(".close").onclick=()=>dlg.close();
+  $("#pcPrint").onclick=()=>{document.body.classList.add("printcard");try{window.print()}catch(e){toast("인쇄가 막혀 있어요. 화면을 캡처해서 출력해 주세요")}setTimeout(()=>document.body.classList.remove("printcard"),500)};
+  if(!dlg.open)dlg.showModal();dlg.scrollTop=0}
+/* ---------- 예약 주문: 받는 날에 맞춘 발송일 ---------- */
+function sendOn(o){const d=o.gift?.date;if(!d)return null;let t=dayTs(d)-2*864e5;if(o.fresh)while([5,6,0].includes(kWD(t)))t-=864e5;else while(kWD(t)===0)t-=864e5;return Math.max(kDayEnd(t),kDayEnd(o.createdAt))}
+const shipBy=o=>sendOn(o)||ordDue(o);
+function sendPlanHTML(list){const m=new Map();list.filter(o=>o.status==="결제완료").forEach(o=>{const k=isoDay(shipBy(o));m.set(k,(m.get(k)||0)+1)});if(!m.size)return "";
+  const today=kstDay();return `<div class="sendplan"><b>📅 보낼 날짜별</b> ${[...m.entries()].sort().map(([k,n])=>`<span class="chip ${k<today?"hot":k===today?"gold":""}">${k<today?"지남 · ":k===today?"오늘 · ":""}${esc(kDayLabel(dayTs(k)))} ${n}건</span>`).join(" ")}</div>`}
 async function giftToggle(p){const g=giftCfg(),on=inGift(p);let ids=g.ids.filter(x=>x!==p.id),hide=g.hide.filter(x=>x!==p.id);
   if(on){if(p.gift)hide.push(p.id)}else ids.unshift(p.id);
   const v={giftIds:ids.slice(0,200),giftHide:hide.slice(0,200),updatedAt:Date.now()};
@@ -2128,7 +2184,8 @@ function renderSeller(){renderSites();
   const done=myO.filter(o=>o.status==="정산완료").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+aucDone.filter(o=>o.a.deal==="정산완료").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
   $("#sellerStats").innerHTML=`<div class="stat"><span class="meta">총 판매 (경매 포함)</span><b class="num">${won(sales)}</b></div><div class="stat"><span class="meta">진행 중 경매</span><b class="num">${myA.filter(a=>auc(a).phase==="진행중").length}건</b></div><div class="stat"><span class="meta">정산 예정 (수수료 제외)</span><b class="num">${won(pend)}</b></div><div class="stat"><span class="meta">정산 완료</span><b class="num">${won(done)}</b></div>`;
   $("#sellerAucs").innerHTML=S.uid?sellerAucHTML():`<div class="empty">로그인하면 내 경매가 보입니다.</div>`;
-  $("#sellerOrders").innerHTML=myO.length?myO.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
+  const myOs=[...myO].sort((a,b)=>(b.status==="결제완료")-(a.status==="결제완료")||(a.status==="결제완료"?shipBy(a)-shipBy(b):b.createdAt-a.createdAt));
+  $("#sellerOrders").innerHTML=myO.length?sendPlanHTML(myO)+myOs.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
     <div class="meta num">${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}</div>
     ${o.delivery==="fwd"?`<div class="notice">해외 손님 · <b>배송대행지</b>로 보내는 주문입니다. 아래 메모의 대행업체 회원번호(사서함 번호)를 받는 분 이름 옆에 꼭 적어 주세요.</div>`:o.lang?`<div class="meta">해외 손님 주문 (한국 내 배송)</div>`:""}
     ${o.memo?`<div class="meta">배송 메모: ${esc(o.memo)}</div>`:""}
@@ -2153,6 +2210,7 @@ function renderSeller(){renderSites();
     ${p.status==="반려"&&p.rejectReason?`<div class="meta" style="color:var(--berry)">반려 사유: ${esc(p.rejectReason)}</div>`:""}${proofMissing(p)?`<div class="notice" style="margin-top:6px">${p.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${p.proofDue?day(p.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${p.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(p.proofNote)}</span>`:""}
       <div class="actions" style="margin-top:6px"><input id="pl-${p.id}" type="file" accept="image/*" aria-label="근거 사진"><input id="pp-${p.id}" placeholder="본인 산 지번" aria-label="본인 산 지번" style="max-width:200px"><button class="btn sm primary" data-act="proofLater" data-id="products:${p.id}">근거 보내기</button></div>`}</div>`:""}
     <div class="actions"><input id="st-${p.id}" type="number" min="0" value="${p.stock}" aria-label="재고" style="max-width:90px" class="num"><button class="btn sm" data-act="stock" data-id="${p.id}">재고 변경</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}${p.cat!=="가공품"?`<button class="btn sm" data-act="dupP" data-id="${p.id}">이걸로 하나 더</button>`:""}<button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div>
+    <details class="faqform"><summary>🎁 선물세트 ${p.set?`<span class="chip gold">구성 ${p.set.items.length}가지</span>`:'<span class="meta">구성품을 적으면 선물세트가 돼요</span>'}</summary><div class="field"><label for="msItems-${p.id}">구성품 (한 줄에 하나)</label><textarea id="msItems-${p.id}" rows="3">${esc((p.set?.items||[]).join("\n"))}</textarea></div><div class="field"><label for="msIntro-${p.id}">받는 분께 드리는 소개</label><input id="msIntro-${p.id}" maxlength="120" value="${esc(p.set?.intro||"")}"></div><div class="actions"><button class="btn sm primary" data-act="setP" data-id="${p.id}">저장</button></div></details>
     <details class="faqform"><summary>자주 묻는 질문 ${faqCount(p)?`<span class="chip ok">${faqCount(p)}/4 채움</span>`:'<span class="chip gold">비어 있음 · 채우면 문의가 줄어요</span>'}</summary>${FAQ_Q.map(([k,q,ph])=>`<div class="field"><label for="fq${k}-${p.id}">${q}</label><input id="fq${k}-${p.id}" maxlength="60" placeholder="${ph}" value="${esc((p.faq||{})[k]||"")}"></div>`).join("")}<div class="actions"><button class="btn sm primary" data-act="faqP" data-id="${p.id}">저장</button></div></details>
     <div class="actions"><span class="meta">🎁 선물 포장 ${p.gift?`<b>가능</b>${p.giftWrap?` · 포장비 ${won(p.giftWrap)}`:" · 무료"}`:"안 함"}</span><input id="gw-${p.id}" type="number" min="0" max="50000" step="500" value="${p.giftWrap||0}" aria-label="선물 포장비" style="max-width:90px" class="num"><button class="btn sm" data-act="giftP" data-id="${p.id}">${p.gift?"포장비 저장":"선물 포장 켜기"}</button>${p.gift?`<button class="btn sm" data-act="giftOff" data-id="${p.id}">끄기</button>`:""}</div>
     </div>`).join(""):`<div class="empty">등록한 마켓 상품이 없습니다.</div>`;
@@ -2379,7 +2437,7 @@ function openProduct(id){
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
     <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${shipSpec(p)}</dd>${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
-    ${faqHTML(p)}
+    ${setHTML(p)}${faqHTML(p)}
     ${S.owner?`<div class="actions"><button class="btn sm gold" type="button" id="gPick">${inGift(p)?"🎁 선물 코너에서 빼기":"🎁 선물 코너에 넣기"}</button></div>`:""}
     ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p):own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
    </div>
@@ -2406,7 +2464,7 @@ function openProduct(id){
       if(BETA()){await betaStop((findHerb(p.item)||guessHerb(p.name)||{}).name||p.name,"market");return}
       $("#buy").disabled=true;
       const ok=await guard(async()=>{const fresh=(await S.db.doc("products/"+p.id).get()).data();if(!fresh||fresh.stock<qty)throw{code:"stock"};
-        const gf=$("#gOpt")?.open?{card:$("#gCard").value.trim().slice(0,60),date:$("#gDate").value||"",wrap:!!$("#gWrap")?.checked,wrapFee:wf(),hidePrice:$("#gHide").checked}:null;
+        const gf=$("#gOpt")?.open?{card:$("#gCard").value.trim().slice(0,60),date:$("#gDate").value||"",wrap:!!$("#gWrap")?.checked,wrapFee:wf(),hidePrice:$("#gHide").checked,prodCard:!!$("#gPc")?.checked}:null;
         await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:p.price*qty+ship+wf(),buyerId:S.uid,sellerId:p.sellerId,memo:$("#oMemo").value.slice(0,300),...(gf?{gift:gf}:{}),...(sc.island?{island:true}:{}),...(sc.bundle?{bundleWith:sc.bundle.bundleWith||sc.bundle.id}:{}),fresh:p.form==="생물",shipDue:shipDue(Date.now(),p.form==="생물"),status:"결제완료",createdAt:Date.now()});
         await S.db.doc("products/"+p.id).update({stock:fresh.stock-qty})},"주문했습니다. 내 거래에서 진행 상황을 볼 수 있어요");
       if(ok){dlg.close();go("my")}else $("#buy").disabled=false};
@@ -2492,6 +2550,9 @@ const ACT={
       await S.db.collection("orders").add({productId:null,requestId:r.id,fromQuote:true,productName:`${r.item} (${r.form})`,unit:`${r.qty}${r.unit}`,qty:1,unitPrice:q.price,ship:0,total:q.price,buyerId:S.uid,sellerId:q.sellerId,memo:r.memo||"",status:"결제완료",createdAt:Date.now()})},"테스트 결제를 마쳤습니다. 채취인이 작업을 시작합니다");if(ok)go("my")},
   async closeReq(id){await guard(()=>S.db.doc("requests/"+id).update({status:"마감"}),"요청을 닫았습니다")},
   async stock(id){const v=Math.max(0,+$("#st-"+id).value||0);await guard(()=>S.db.doc("products/"+id).update({stock:v}),"재고를 바꿨습니다")},
+  async setP(id){const r=setRead("ms");const items=($("#msItems-"+id)?.value||"").split(/\n|,/).map(x=>x.trim()).filter(Boolean).slice(0,8).map(x=>x.slice(0,40)),intro=($("#msIntro-"+id)?.value||"").trim().slice(0,120);
+    if([...items,intro].some(v=>PII.test(v))){toast("전화번호·계좌·링크는 넣을 수 없어요");return}
+    await guard(()=>S.db.doc("products/"+id).update({set:items.length?{items,intro}:null}),items.length?"선물세트로 저장했습니다. 선물 코너에 보입니다":"선물세트 표시를 뺐습니다")},
   async faqP(id){const f={};FAQ_Q.forEach(([k])=>{const v=($("#fq"+k+"-"+id)?.value||"").trim().slice(0,60);if(v)f[k]=v});
     if(Object.values(f).some(v=>PII.test(v))){toast("전화번호·계좌·링크는 넣을 수 없어요");return}
     await guard(()=>S.db.doc("products/"+id).update({faq:f}),"자주 묻는 질문을 저장했습니다. 상품 화면에 보입니다")},
@@ -2513,6 +2574,7 @@ document.addEventListener("click",e=>{
   const alg=e.target.closest("[data-alertgo]");if(alg){const a=S.alerts.find(x=>x.id===alg.dataset.alertgo);if(!a)return;
     if(a.kind==="auction"){S.acat=ACATS.includes(a.key)?a.key:"전체";go("auction")}else{const isC=CATS.includes(a.key);S.cat=isC?a.key:"전체";S.use="";$("#shopQ").value=isC?"":a.key;go("shop")}return}
   const sq=e.target.closest("[data-sq]");if(sq){$("#homeQ").value=sq.dataset.sq;$("#homeSearch").requestSubmit();return}
+  const pcd=e.target.closest("[data-pcard]");if(pcd){openProdCard(pcd.dataset.pcard);return}
   const gf=e.target.closest("[data-gift]");if(gf){openGift(gf.dataset.gift);return}
   const gb=e.target.closest("[data-gift-bulk]");if(gb){if($("#dlg").open)$("#dlg").close();go("request");toast("수량이 많은 선물은 요청서 메모에 ‘선물용 · 받는 곳 ○군데 · 포장 원함’처럼 적어 주세요. 견적은 무료입니다");return}
   const gp=e.target.closest("[data-gpre]");if(gp){giftPreset(gp.dataset.gpre);return}
@@ -2647,7 +2709,7 @@ $("#sellForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast(
   const pNeedS=pr?"basic":proofNeed(itemRaw,g,+$("#sPrice").value),pErrS=pr?($("#sOath").checked?"":"‘법을 지켜 채취·생산했습니다’에 체크해 주세요"):proofCheck({item:itemRaw,grow:g,price:+$("#sPrice").value,oath:$("#sOath").checked,photo:sProof,cert:$("#sCert").value});if(pErrS){toast(pErrS);return}
   const sSiteId=pr?"":$("#sSite").value,pRefS=sSiteId?"":await saveProof(sProof,{permit:$("#sPermit").value,parcel:$("#sParcel").value,title:$("#sName").value.trim(),kind:"products"});S.lastSite=sSiteId;if(pRefS===null)return;S.lastProofRef=pRefS;
   const autoP=AUTO_ST.includes(pst);
-  const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:itemRaw.slice(0,30),itemStatus:pst,name:$("#sName").value.trim().slice(0,60),cat:$("#sCat").value,form:$("#sForm").value,price:+$("#sPrice").value,unit:$("#sUnit").value,region:$("#sRegion").value.trim().slice(0,40),stock:+$("#sStock").value,permit:$("#sPermit").value,grow:g,cert:$("#sCert").value.trim().slice(0,40),photo:sPhoto,desc:$("#sDesc").value.slice(0,1000),gift:!!$("#sGift")?.checked,giftWrap:wrapFee($("#sGiftWrap")?.value),faq:faqRead("sFq"),...proofFields(pNeedS,pRefS,sSiteId),auto:autoP,...(pr?{proc:{biz:$("#pBiz").value,bizNo:pv("pBizNo").slice(0,40),maker:pv("pMaker").slice(0,80),ingr:pv("pIngr").slice(0,200),vol:pv("pVol").slice(0,40),shelf:pv("pShelf").slice(0,40)}}:{}),sellerId:S.uid,status:autoP?"판매중":"검수대기",createdAt:Date.now()}),autoP?(pr?"바로 판매를 시작했습니다. 운영자가 영업 신고 번호를 확인하면 정산됩니다":"바로 판매를 시작했습니다"):"검수 요청을 보냈습니다");
+  const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:itemRaw.slice(0,30),itemStatus:pst,name:$("#sName").value.trim().slice(0,60),cat:$("#sCat").value,form:$("#sForm").value,price:+$("#sPrice").value,unit:$("#sUnit").value,region:$("#sRegion").value.trim().slice(0,40),stock:+$("#sStock").value,permit:$("#sPermit").value,grow:g,cert:$("#sCert").value.trim().slice(0,40),photo:sPhoto,desc:$("#sDesc").value.slice(0,1000),gift:!!$("#sGift")?.checked,giftWrap:wrapFee($("#sGiftWrap")?.value),faq:faqRead("sFq"),...(()=>{const r=setRead("sSet");return r.bad?{}:r})(),...proofFields(pNeedS,pRefS,sSiteId),auto:autoP,...(pr?{proc:{biz:$("#pBiz").value,bizNo:pv("pBizNo").slice(0,40),maker:pv("pMaker").slice(0,80),ingr:pv("pIngr").slice(0,200),vol:pv("pVol").slice(0,40),shelf:pv("pShelf").slice(0,40)}}:{}),sellerId:S.uid,status:autoP?"판매중":"검수대기",createdAt:Date.now()}),autoP?(pr?"바로 판매를 시작했습니다. 운영자가 영업 신고 번호를 확인하면 정산됩니다":"바로 판매를 시작했습니다"):"검수 요청을 보냈습니다");
   if(ok){await sharePhoto("s",sPhoto,itemRaw,$("#sName").value.trim()+" · "+$("#sRegion").value.trim());$("#sItem").value="";$("#sItemNote").hidden=true;$("#sName").value="";$("#sDesc").value="";$("#sPrice").value="";sPhoto="";sProof="";$("#sParcel").value="";$("#sSite").value="";$("#sPhoto").value="";$("#sProof").value="";$("#sPhotoPrev").hidden=true;$("#sProofPrev").hidden=true;$("#sOath").checked=false;["pBizNo","pMaker","pIngr","pVol","pShelf"].forEach(k=>$("#"+k).value="")}};
 
 /* ---------- 견적 충전금 (숨고식, 원화) ---------- */
