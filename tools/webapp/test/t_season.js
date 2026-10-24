@@ -5,7 +5,7 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 for(const [w,h,name] of [[390,844,'phone'],[1280,900,'laptop']]){
  const ctx=await b.newContext({viewport:{width:w,height:h},serviceWorkers:'block',locale:'ko-KR'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
  await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript('window.__SESSION={user:{id:"buyer"}};\n'+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);
- ok((await p.locator('.hhead h1').innerText()).includes('농부가 키운 산나물'),name+' h1');
+ ok((await p.locator('.hhead h1').innerText()).includes('누가 어디서 캤는지'),name+' h1');
  ok(await p.locator('#hSeason').isVisible(),name+' season line visible: '+await p.locator('#hSeason').innerText());
  await p.screenshot({path:path.join(__dirname,'season_'+name+'.png')});
  await p.locator('#hSeason .sq').first().click();await p.waitForTimeout(300);
