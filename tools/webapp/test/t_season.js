@@ -6,9 +6,11 @@ for(const [w,h,name] of [[390,844,'phone'],[1280,900,'laptop']]){
  const ctx=await b.newContext({viewport:{width:w,height:h},serviceWorkers:'block',locale:'ko-KR'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
  await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript('window.__SESSION={user:{id:"buyer"}};\n'+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);
  ok((await p.locator('.hhead h1').innerText()).includes('직접 판매하는 산야초'),name+' h1');
- ok(await p.locator('#hSeason').isVisible(),name+' season line visible: '+await p.locator('#hSeason').innerText());
+ ok(await p.locator('#hSeason').count()===0,name+' season line moved off home');
+ await p.locator('[data-reco]:visible').first().click();await p.waitForTimeout(250);
+ ok(await p.locator('#dlg .recoseason').isVisible(),name+' season row inside shopping helper: '+await p.locator('#dlg .recoseason').innerText());
  await p.screenshot({path:path.join(__dirname,'season_'+name+'.png')});
- await p.locator('#hSeason .sq').first().click();await p.waitForTimeout(300);
- ok(await p.evaluate(()=>S.view)==='shop'&&(await p.inputValue('#shopQ')).length>0,name+' chip searches: '+await p.inputValue('#shopQ'));
+ await p.locator('#dlg .recoseason .sq').first().click();await p.waitForTimeout(300);
+ ok(await p.evaluate(()=>S.view)==='shop'&&!(await p.evaluate(()=>$("#dlg").open))&&(await p.inputValue('#shopQ')).length>0,name+' chip searches: '+await p.inputValue('#shopQ'));
  ok(errs.length===0,name+' no errors '+errs.join('|'));await ctx.close()}
 await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();

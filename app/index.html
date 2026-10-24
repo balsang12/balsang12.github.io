@@ -468,6 +468,7 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .giftsell{align-items:end}
 @media (max-width:700px){.giftban{padding:12px}.giftban .go{display:none}.giftban b{font-size:17px}}
 .hhead h1{word-break:keep-all}
+.recoseason{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .hseason{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.hseason b{color:var(--pine)}
 .hseason .sq{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:13.5px;cursor:pointer}
 .hseason .sq:hover{border-color:var(--pine)}
@@ -801,7 +802,6 @@ label.btn{display:inline-block}
   <div class="hhead">
     <div class="eyebrow hdirect">산지 <b>직거래</b> · 안전결제</div>
     <h1>농부와 심마니가 <br>직접 판매하는 산야초</h1>
-    <p class="hsub hseason" id="hSeason"></p>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 산야초 이름" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="쇼핑도우미">🧺<span>쇼핑도우미</span></button></div>
     <div class="herbbox"><button type="button" class="herbcard" data-go="herbs"><i aria-hidden="true">🌿</i><div><b>산야초 알아보기</b><br><span>산야초 300여 가지의 생김새와 옛 문헌 기록, 최근 연구를 읽어 보세요</span></div><em aria-hidden="true">›</em></button><button type="button" class="askgo" data-askgo="1">🔍 이름을 모르면 <b>생김새로 찾기</b></button></div>
   </div>
@@ -2155,9 +2155,8 @@ function giftPreset(k){const y=+kstDay().slice(0,4),P={ny:[`${y}년 연말·새�
 /* ---------- 철마다 바뀌는 첫 화면 한 줄 ---------- */
 const SEASONS=[[[3,4,5],"🌱","봄 산나물 철이에요",["곰취","두릅","참나물","취나물"]],[[6,7,8],"☀️","여름 열매·약초 철",["오디","오미자","산딸기","블루베리"]],[[9,10,11],"🍄","가을 버섯·뿌리 철",["송이","능이","더덕","도라지"]],[[12,1,2],"🎁","귀한 분께만 드리는 최고의 자연선물",["산양삼","천마","대추","생강청"]]];
 function seasonNow(){const m=new Date(Date.now()+9*3600e3).getUTCMonth()+1;return SEASONS.find(x=>x[0].includes(m))}
-function renderSeason(){const el=$("#hSeason");if(!el)return;const z=seasonNow();if(el.dataset.k===z[2])return;el.dataset.k=z[2];
-  el.innerHTML=`<span>${z[1]} <b>${z[2]}</b></span> ${z[3].map(n=>`<button type="button" class="sq" data-sq="${n}">${n}</button>`).join("")}`;
-  const q=$("#homeQ");if(q&&!q.value)q.placeholder=`예: ${z[3].slice(0,2).join(", ")}`}
+function seasonRowHTML(){const z=seasonNow();return `<span>${z[1]} <b>${z[2]}</b></span> ${z[3].map(n=>`<button type="button" class="sq" data-sq="${n}">${n}</button>`).join("")}`}
+function renderSeason(){const z=seasonNow(),q=$("#homeQ");if(q&&!q.value)q.placeholder=`예: ${z[3].slice(0,2).join(", ")}`}
 function renderHome(){renderSeason();
   {const cnt=c=>live().filter(p=>p.stock>0&&mcat(p.cat)===c).length,ord=[...MKT_ICONS].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();
     const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;
@@ -2710,7 +2709,7 @@ document.addEventListener("click",e=>{
   const alg=e.target.closest("[data-alertgo]");if(alg){const a=S.alerts.find(x=>x.id===alg.dataset.alertgo);if(!a)return;
     if(a.kind==="auction"){S.acat=ACATS.includes(a.key)?a.key:"전체";go("auction")}else{const isC=CATS.includes(a.key);S.cat=isC?a.key:"전체";S.use="";$("#shopQ").value=isC?"":a.key;go("shop")}return}
   const ag=e.target.closest("[data-askgo]");if(ag){if($("#dlg").open)$("#dlg").close();askGo(ag.dataset.askq||"");return}
-  const sq=e.target.closest("[data-sq]");if(sq){$("#homeQ").value=sq.dataset.sq;$("#homeSearch").requestSubmit();return}
+  const sq=e.target.closest("[data-sq]");if(sq){if($("#dlg").open)$("#dlg").close();$("#homeQ").value=sq.dataset.sq;$("#homeSearch").requestSubmit();return}
   const pcd=e.target.closest("[data-pcard]");if(pcd){openProdCard(pcd.dataset.pcard);return}
   const gf=e.target.closest("[data-gift]");if(gf){openGift(gf.dataset.gift);return}
   const gb=e.target.closest("[data-gift-bulk]");if(gb){openBulk();return}
@@ -3058,6 +3057,7 @@ function recoRender(){const d=$("#dlg"),qs=recoQuestions(RC.a),note=`<p class="m
   if(RC.i<qs.length){const q=qs[RC.i],[title,labels]=RECO_KO[q.k],cur=RC.a[q.k];
     d.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button><div class="reco">
       <div class="prog" aria-hidden="true"><i style="width:${Math.round(RC.i/qs.length*100)}%"></i></div>
+      ${RC.i===0?`<div class="hseason recoseason"><span class="meta" style="width:100%">지금 제철부터 둘러보세요</span>${seasonRowHTML()}</div>`:""}
       <div class="meta">쇼핑도우미 · ${RC.i+1} / ${qs.length}</div><h2>${esc(title)}</h2>
       <div class="opts">${q.o.map(v=>`<button type="button" data-rv="${esc(v)}" aria-pressed="${q.multi?(cur||[]).includes(v):cur===v}">${esc(labels[v])}</button>`).join("")}${q.multi?"":`<button type="button" class="any" data-rv="">상관없음</button>`}</div>
       <div class="actions">${RC.i?`<button class="btn" type="button" id="rcBack">이전</button>`:""}${q.multi?`<button class="btn primary" type="button" id="rcNext">${(cur||[]).length?"다음":"상관없음, 다음"}</button>`:""}</div>${note}</div></div>`;
