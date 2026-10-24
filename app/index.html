@@ -509,6 +509,9 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .rvbars i{height:7px;border-radius:99px;background:var(--sunk);overflow:hidden}.rvbars i b{display:block;height:100%;background:var(--gold)}
 .revtodo{border:1px solid var(--gold);background:var(--gold-soft);border-radius:12px;padding:10px 12px;margin:0 0 12px}
 .rv .actions input{flex:1;min-width:0}
+.subopt{border:1px solid var(--pine);border-radius:14px;padding:8px 12px;margin-top:8px;background:var(--pine-soft)}.subopt summary{cursor:pointer;font-weight:700;color:var(--pine)}
+.subbox{border:1px solid var(--pine);background:color-mix(in srgb,var(--pine) 7%,var(--surface));border-radius:12px;padding:10px 12px;margin:0 0 12px;display:grid;gap:8px}
+.subbox .actions{flex-wrap:wrap}.subbox .actions input{flex:1 1 120px;min-width:0}
 .hask{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:6px;font-size:14px;color:var(--muted);max-width:640px}
 .hask button{border:0;background:none;padding:6px 0;font:inherit;font-weight:700;color:var(--pine);cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:34px}
 .askbox{display:grid;gap:8px;margin-top:10px;max-width:640px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
@@ -1900,7 +1903,7 @@ function ratingOf(pid){const r=S.reviews.filter(x=>x.productId===pid);return r.l
 function card(p){
   const r=ratingOf(p.id);
   return `<button class="card" data-pid="${esc(p.id)}">
-   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${(p.grow||"").startsWith("자연산")?'<span class="chip solid">심마니 채취</span>':isCert(p)?'<span class="chip ok">인증 재배</span>':'<span class="chip ok">농부 재배</span>'}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.qd?.length?'<span class="chip">수량 할인</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
+   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${(p.grow||"").startsWith("자연산")?'<span class="chip solid">심마니 채취</span>':isCert(p)?'<span class="chip ok">인증 재배</span>':'<span class="chip ok">농부 재배</span>'}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.qd?.length?'<span class="chip">수량 할인</span>':""}${p.sub?.on?'<span class="chip ok">정기배송</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
    <div class="cbody">
     <div class="meta">${esc(p.region)} · ${esc(p.form)}</div>
     <h3>${esc(p.name)}</h3>
@@ -2019,6 +2022,40 @@ function revBoxHTML(rs,f){if(!rs.length)return '<h3 style="font-size:17px">구�
    ${list.length?list.map(r=>revItemHTML(r)).join(""):'<div class="meta">사진 후기가 아직 없어요.</div>'}`}
 function revTodoHTML(){if(!S.uid)return "";const l=S.reviews.filter(r=>r.sellerId===S.uid&&!r.reply).sort((a,b)=>b.createdAt-a.createdAt);if(!l.length)return "";
   return `<div class="revtodo"><b>💬 답글을 기다리는 후기 ${l.length}개</b><p class="meta" style="margin:2px 0 6px">불만 후기에도 정중히 답하면 다른 손님의 믿음이 커져요. 후기는 지울 수 없고 답글만 달 수 있어요.</p>${l.slice(0,5).map(r=>`<div class="meta">‘${esc((S.products.find(x=>x.id===r.productId)||S.auctions.find(x=>x.id===r.auctionId)||{}).name||(S.auctions.find(x=>x.id===r.auctionId)||{}).title||"")}’</div>${revItemHTML(r)}`).join("")}</div>`}
+
+/* ---------- 정기배송 ---------- */
+function addMonths(d,n){const [y,m,dd]=String(d).split("-").map(Number);const t=new Date(Date.UTC(y,m-1+n,1));const last=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth()+1,0)).getUTCDate();return `${t.getUTCFullYear()}-${String(t.getUTCMonth()+1).padStart(2,"0")}-${String(Math.min(dd,last)).padStart(2,"0")}`}
+function firstSubDate(day){const t=kstDay(),[y,m]=t.split("-").map(Number);let d=`${y}-${String(m).padStart(2,"0")}-${String(day).padStart(2,"0")}`;if(d<=isoDay(Date.now()+2*864e5))d=addMonths(d,1);return d}
+const subUnit=p=>Math.round(p.price*(100-(p.sub?.pct||0))/100/10)*10;
+function subOptHTML(p){if(!p.sub?.on||p.form==="생물")return "";const fd=firstSubDate(p.sub.day);
+  return `<details class="subopt" id="sOpt"><summary>🔁 정기배송으로 받기${p.sub.pct?` · ${p.sub.pct}% 할인`:""}</summary>
+   <div class="row2"><div class="field"><label for="sbEvery">얼마마다 받을까요?</label><select id="sbEvery"><option value="1">매달</option><option value="2">2개월마다</option></select></div>
+   <div class="field"><label for="sbQty">한 번에 몇 개</label><input id="sbQty" type="number" min="1" max="${Math.max(1,Math.min(20,p.stock))}" value="1" class="num"></div></div>
+   <label class="gchk"><input type="checkbox" id="sbGift"> 💝 효도 정기배송 · 받는 분이 따로 있어요 (부모님 등)</label>
+   <div id="sbGiftBox" hidden><div class="field"><label for="sbCard">매번 넣을 카드 문구 (60자)</label><input id="sbCard" maxlength="60" placeholder="예: 늘 건강하세요. 사랑합니다"></div>
+    <label class="gchk"><input type="checkbox" id="sbPc" checked> 생산자 카드 넣기</label><p class="meta" style="margin:0 0 6px">받는 분 이름·주소는 결제할 때 따로 적습니다.</p></div>
+   <p class="meta" style="margin:4px 0" id="sbSum"></p>
+   <p class="meta" style="margin:0 0 8px">첫 발송 <b>${esc(mdKo(fd))}</b> · 그 뒤 매번 ${p.sub.day}일에 보내요. 결제일 3일 전에 미리 알려 드리고, ‘내 거래’에서 언제든 건너뛰기·주기 바꾸기·해지할 수 있어요.</p>
+   <button class="btn gold needWrite" type="button" id="sbGo">정기배송 시작하기 (테스트)</button></details>`}
+function subBind(p){const g=$("#sbGo");if(!g)return;const c=shipCfg(p.sellerId),ship=c.dry;
+  const upd=()=>{const q=Math.max(1,Math.floor(+$("#sbQty").value||1));$("#sbSum").innerHTML=`1회 <b class="num">${won(subUnit(p)*q+ship)}</b> (상품 ${won(subUnit(p)*q)}${p.sub.pct?` · 정가보다 ${won((p.price-subUnit(p))*q)} 할인`:""} + 배송비 ${won(ship)})`};upd();
+  $("#sbQty").oninput=upd;$("#sbGift").onchange=()=>{$("#sbGiftBox").hidden=!$("#sbGift").checked};
+  g.onclick=async()=>{if(!S.uid){toast("로그인이 필요합니다");return}if(BETA()){await betaStop((findHerb(p.item)||guessHerb(p.name)||{}).name||p.name,"market");return}
+    const q=Math.max(1,Math.floor(+$("#sbQty").value||1)),gift=$("#sbGift").checked?{card:$("#sbCard").value.trim().slice(0,60),prodCard:$("#sbPc").checked}:null;
+    if(gift&&PII.test(gift.card)){toast("카드 문구에 전화번호·계좌는 넣을 수 없어요");return}
+    g.disabled=true;const ok=await guard(()=>S.db.collection("subs").add({productId:p.id,productName:p.name,unit:p.unit,sellerId:p.sellerId,buyerId:S.uid,qty:q,every:+$("#sbEvery").value||1,price:subUnit(p),pct:p.sub.pct||0,ship,...(gift?{gift}:{}),nextDate:firstSubDate(p.sub.day),sent:0,status:"구독중",createdAt:Date.now()}),"정기배송을 시작했어요. ‘내 거래’에서 다음 발송일을 볼 수 있어요");
+    if(ok){$("#dlg").close();go("my")}else g.disabled=false}}
+function subsBuyerHTML(){const l=(S.subs||[]).filter(x=>x.buyerId===S.uid&&x.status==="구독중").sort((a,b)=>a.nextDate<b.nextDate?-1:1);if(!l.length)return "";
+  return `<div class="subbox"><b>🔁 내 정기배송 ${l.length}건</b>${l.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.productName)}${x.gift?' <span class="chip gold">효도</span>':""}</b><span class="chip ok">${(x.every||1)===1?"매달":"2개월마다"}</span></div>
+    <div class="meta num">${x.qty}×${esc(x.unit||"")} · 1회 ${won(x.price*x.qty+(x.ship||0))} · 다음 발송 <b>${esc(mdKo(x.nextDate))}</b>${x.sent?` · ${x.sent}회 받음`:""}</div>
+    ${x.lastTracking?`<div class="meta">지난 송장: ${esc(x.lastCourier||"")} ${esc(x.lastTracking)}</div>`:""}
+    <div class="actions"><button class="btn sm" data-act="subSkip" data-id="${x.id}">이번 회차 건너뛰기</button><button class="btn sm" data-act="subEvery" data-id="${x.id}">${(x.every||1)===1?"2개월마다로":"매달로"} 바꾸기</button><button class="btn sm danger" data-act="subEnd" data-id="${x.id}">해지</button></div></div>`).join("")}</div>`}
+function subsSellerHTML(){if(!S.uid)return "";const all=(S.subs||[]).filter(x=>x.sellerId===S.uid&&x.status==="구독중");if(!all.length)return "";
+  const soon=isoDay(Date.now()+7*864e5),due=all.filter(x=>x.nextDate<=soon).sort((a,b)=>a.nextDate<b.nextDate?-1:1),today=kstDay();
+  return `<div class="subbox"><b>🔁 정기배송 ${all.length}건 · 일주일 안에 보낼 것 ${due.length}건</b>${due.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.productName)} ${x.qty}×${esc(x.unit||"")}</b>${x.nextDate<today?'<span class="chip hot">발송일 지남</span>':x.nextDate===today?'<span class="chip gold">오늘 발송</span>':`<span class="chip">${esc(mdKo(x.nextDate))} 발송</span>`}</div>
+    <div class="meta">${(x.every||1)===1?"매달":"2개월마다"} · ${x.sent||0}회 보냄${x.gift?" · 💝 효도 정기배송 (받는 분 따로)":""}</div>
+    ${x.gift?`<div class="notice">${x.gift.card?`카드 문구: “${esc(x.gift.card)}”`:"카드 문구 없음"}${x.gift.prodCard?`<div class="actions" style="margin-top:6px"><button class="btn sm gold" type="button" data-pcard="${esc(x.id)}">🪪 생산자 카드 만들기·인쇄</button></div>`:""}</div>`:""}
+    <div class="actions"><select id="scr-${x.id}" aria-label="택배사"><option>우체국택배</option><option>CJ대한통운</option><option>한진택배</option><option>롯데택배</option></select><input id="str-${x.id}" placeholder="송장번호" aria-label="송장번호"><button class="btn sm primary" data-act="subShip" data-id="${x.id}">발송 처리</button></div></div>`).join("")||'<div class="meta">이번 주에 보낼 정기배송은 없어요.</div>'}</div>`}
 function sellerRow(uid,ctx){const t=trust(uid),r=sellerRating(uid),own=uid===S.uid;
   return `<div class="srow">${avaHTML(uid,"sm")}<div><b>${esc(shopName(uid))}</b>${certChip(uid)}${regChip(uid)}${invChip(uid)}<div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} (${r.n}) · `:""}완료 거래 ${t.done}건</div>${respHTML(uid)}</div><button class="btn sm" type="button" data-profile="${esc(uid)}">프로필</button>${own?"":`<button class="btn sm primary" type="button" data-chat="${esc(uid)}" data-ctx="${esc(ctx||"")}">문의하기</button>`}</div>`}
 
@@ -2027,13 +2064,13 @@ const wrapFee=v=>Math.max(0,Math.min(50000,Math.round((+v||0)/100)*100));
 const kstDay=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
 const giftCfg=()=>{const s=S.site||{};return {on:!!s.giftOn,title:s.giftTitle||"명절 선물",start:s.giftStart||"",end:s.giftEnd||"",cut:s.giftCut||"",ids:Array.isArray(s.giftIds)?s.giftIds:[],hide:Array.isArray(s.giftHide)?s.giftHide:[]}};
 const giftLive=()=>{const g=giftCfg(),t=kstDay();return g.on&&g.start&&g.end&&g.start<=t&&t<=g.end};
-const inGift=p=>{const g=giftCfg();return g.ids.includes(p.id)||((!!p.gift||!!p.set)&&!g.hide.includes(p.id))};
+const inGift=p=>{const g=giftCfg();return g.ids.includes(p.id)||((!!p.gift||!!p.set||!!p.sub?.on)&&!g.hide.includes(p.id))};
 const giftList=()=>{const g=giftCfg();return live().filter(p=>p.stock>0&&inGift(p)).sort((a,b)=>(g.ids.includes(b.id)-g.ids.includes(a.id))||(!!b.set-!!a.set)||a.price-b.price)};
 const GIFT_SLOGAN="귀한 분께만 드리는 최고의 자연선물";
 const GTIERS=[["all","전체",0,Infinity],["t1","5만 원 이하",0,50000],["t2","5~15만 원",50001,150000],["t3","15~30만 원",150001,300000],["t4","30만 원 이상",300001,Infinity]];
 /* 받는 분별 묶음: 쇼핑도우미 선물 질문과 같은 기준 */
 const keepsP=p=>p.form!=="생물";
-const GTHEMES=[["any","모두",()=>true],["parents","👵 부모님께",p=>p.price>=30000||RECO_GIFT.includes(p.item||"")||!!p.set],["boss","🙇 은사·윗분께",p=>p.price<=150000&&keepsP(p)],["biz","🏢 거래처 대량",p=>p.price<=50000&&p.stock>=10],["light","💌 가볍게 마음만",p=>p.price<=30000]];
+const GTHEMES=[["any","모두",()=>true],["parents","👵 부모님께",p=>p.price>=30000||RECO_GIFT.includes(p.item||"")||!!p.set],["boss","🙇 은사·윗분께",p=>p.price<=150000&&keepsP(p)],["biz","🏢 거래처 대량",p=>p.price<=50000&&p.stock>=10],["light","💌 가볍게 마음만",p=>p.price<=30000],["subs","🔁 효도 정기배송",p=>!!p.sub?.on]];
 const mdKo=d=>{const [,m,dd]=String(d).split("-");return `${+m}월 ${+dd}일`};
 const isoDay=t=>new Date(t+9*3600e3).toISOString().slice(0,10);
 const dayTs=d=>Date.parse(d+"T12:00:00+09:00");
@@ -2080,7 +2117,7 @@ function setRead(pre){const items=($("#"+pre+"Items")?.value||"").split(/\n|,/).
   if([...items,intro].some(v=>PII.test(v)))return {bad:true};return items.length?{set:{items,intro}}:{}}
 function setHTML(p){if(!p.set)return "";return `<div class="setbox"><b>🎁 선물세트 구성</b><ul>${p.set.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${p.set.intro?`<p class="meta" style="margin:4px 0 0">“${esc(p.set.intro)}”</p>`:""}</div>`}
 /* ---------- 생산자 카드 ---------- */
-function openProdCard(oid){const o=S.orders.find(x=>x.id===oid);if(!o)return;const s=S.sellers[o.sellerId]||{},pp=S.products.find(x=>x.id===o.productId)||{},t=trust(o.sellerId);
+function openProdCard(oid){const o=S.orders.find(x=>x.id===oid)||(S.subs||[]).find(x=>x.id===oid);if(!o)return;const s=S.sellers[o.sellerId]||{},pp=S.products.find(x=>x.id===o.productId)||{},t=trust(o.sellerId);
   const badges=[pp.proofOk?"채취 근거 확인":"",/인증/.test(pp.grow||"")?"인증 재배":"",pp.cert?"품질 검사 "+pp.cert:"",t.cert?"농마니 인증 판매자":""].filter(Boolean);
   const dlg=$("#dlg");openA=null;
   dlg.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button>
@@ -2211,7 +2248,7 @@ function renderMy(){
   if(!S.uid){$("#myBids").innerHTML=$("#myOrders").innerHTML=`<div class="empty">로그인하면 내 거래가 보입니다.</div>`;return}
   $("#myBids").innerHTML=myBidsHTML();
   const mine=S.orders.filter(o=>o.buyerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
-  $("#myOrders").innerHTML=mine.length?mine.map(o=>{
+  $("#myOrders").innerHTML=subsBuyerHTML()+(mine.length?mine.map(o=>{
     const reviewed=S.reviews.some(r=>r.orderId===o.id);
     return `<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(ordEff(o))}</div>
     <div class="meta num">${esc(shopName(o.sellerId))} · ${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}${o.fromQuote?" · 견적 주문":""}${o.gift?" · 🎁 선물":""}</div>
@@ -2221,7 +2258,7 @@ function renderMy(){
       ${o.status==="결제완료"?`<button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
       ${ordEff(o)==="발송완료"?`<button class="btn sm primary" data-act="receive" data-id="${o.id}">상품 받았어요</button><input id="dp-${o.id}" placeholder="설명과 다른 점" aria-label="문제 내용"><button class="btn sm danger" data-act="disputeO" data-id="${o.id}">문제 신고</button><span class="meta">${day(o.shippedAt+CONFIRM_MS)}까지 확인이 없으면 자동 수령 확인</span>`:""}
       ${["수령확인","정산완료"].includes(ordEff(o))&&o.productId&&!reviewed?`<button class="btn sm" data-act="review" data-id="${o.id}">후기 쓰기</button>`:""}
-    </div></div>`}).join(""):`<div class="empty">아직 주문이 없습니다. <button class="btn sm" data-go="shop">마켓 둘러보기</button></div>`;
+    </div></div>`}).join(""):`<div class="empty">아직 주문이 없습니다. <button class="btn sm" data-go="shop">마켓 둘러보기</button></div>`);
   const n=S.auctions.filter(a=>{const x=auc(a);return x.winner&&x.winner.bidderId===S.uid&&(!a.deal||dealEff(a)==="발송완료")}).length+mine.filter(o=>ordEff(o)==="발송완료").length;
   $("#dotMy").innerHTML=n?`<span class="dot">${n}</span>`:"";
 }
@@ -2256,7 +2293,7 @@ function renderSeller(){renderSites();
   $("#sellerStats").innerHTML=`<div class="stat"><span class="meta">총 판매 (경매 포함)</span><b class="num">${won(sales)}</b></div><div class="stat"><span class="meta">진행 중 경매</span><b class="num">${myA.filter(a=>auc(a).phase==="진행중").length}건</b></div><div class="stat"><span class="meta">정산 예정 (수수료 제외)</span><b class="num">${won(pend)}</b></div><div class="stat"><span class="meta">정산 완료</span><b class="num">${won(done)}</b></div>`;
   $("#sellerAucs").innerHTML=S.uid?sellerAucHTML():`<div class="empty">로그인하면 내 경매가 보입니다.</div>`;
   const myOs=[...myO].sort((a,b)=>(b.status==="결제완료")-(a.status==="결제완료")||(a.status==="결제완료"?shipBy(a)-shipBy(b):b.createdAt-a.createdAt));
-  $("#sellerOrders").innerHTML=revTodoHTML()+(myO.length?sendPlanHTML(myO)+myOs.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
+  $("#sellerOrders").innerHTML=revTodoHTML()+subsSellerHTML()+(myO.length?sendPlanHTML(myO)+myOs.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b>${statusChip(o.status)}</div>
     <div class="meta num">${o.qty}×${esc(o.unit)} · ${won(o.total)} · ${day(o.createdAt)}</div>
     ${o.delivery==="fwd"?`<div class="notice">해외 손님 · <b>배송대행지</b>로 보내는 주문입니다. 아래 메모의 대행업체 회원번호(사서함 번호)를 받는 분 이름 옆에 꼭 적어 주세요.</div>`:o.lang?`<div class="meta">해외 손님 주문 (한국 내 배송)</div>`:""}
     ${o.memo?`<div class="meta">배송 메모: ${esc(o.memo)}</div>`:""}
@@ -2282,6 +2319,7 @@ function renderSeller(){renderSites();
     ${p.status==="반려"&&p.rejectReason?`<div class="meta" style="color:var(--berry)">반려 사유: ${esc(p.rejectReason)}</div>`:""}${proofMissing(p)?`<div class="notice" style="margin-top:6px">${p.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${p.proofDue?day(p.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${p.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(p.proofNote)}</span>`:""}
       <div class="actions" style="margin-top:6px"><input id="pl-${p.id}" type="file" accept="image/*" aria-label="근거 사진"><input id="pp-${p.id}" placeholder="본인 산 지번" aria-label="본인 산 지번" style="max-width:200px"><button class="btn sm primary" data-act="proofLater" data-id="products:${p.id}">근거 보내기</button></div>`}</div>`:""}
     <div class="actions"><input id="st-${p.id}" type="number" min="0" value="${p.stock}" aria-label="재고" style="max-width:90px" class="num"><button class="btn sm" data-act="stock" data-id="${p.id}">재고 변경</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}${p.cat!=="가공품"?`<button class="btn sm" data-act="dupP" data-id="${p.id}">이걸로 하나 더</button>`:""}<button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div>
+    <details class="faqform"><summary>🔁 정기배송 ${p.sub?.on?`<span class="chip ok">매달 ${p.sub.day}일 · ${p.sub.pct||0}% 할인</span>`:'<span class="meta">약초차·청처럼 오래 두는 상품에 좋아요</span>'}</summary>${p.form==="생물"?'<p class="meta" style="margin:6px 0">생물은 날짜를 맞춰 보내기 어려워 정기배송을 열 수 없어요. 건조·가공품으로 열어 주세요.</p>':`<div class="qdrow"><label class="ochk"><input type="checkbox" id="sbOn-${p.id}" ${p.sub?.on?"checked":""}> 정기배송 받기</label><span>매달</span><input id="sbDay-${p.id}" type="number" min="1" max="28" value="${p.sub?.day||10}" class="num" aria-label="발송일"><span>일 발송 ·</span><input id="sbPct-${p.id}" type="number" min="0" max="30" value="${p.sub?.pct??5}" class="num" aria-label="정기배송 할인"><span>% 할인</span></div><div class="actions"><button class="btn sm primary" data-act="subP" data-id="${p.id}">저장</button></div>`}</details>
     <details class="faqform"><summary>📦 수량 할인 ${p.qd?.length?`<span class="chip ok">${esc(qdText(p))}</span>`:'<span class="meta">많이 사면 깎아 주기</span>'}</summary><div class="qdrow">${[0,1].map(i=>`<input id="mq${i+1}n-${p.id}" type="number" min="2" placeholder="${i?30:10}" value="${p.qd?.[i]?.n||""}" class="num" aria-label="개 이상"><span>개 이상</span><input id="mq${i+1}p-${p.id}" type="number" min="1" max="50" placeholder="${i?10:5}" value="${p.qd?.[i]?.pct||""}" class="num" aria-label="% 할인"><span>%</span>`).join("<br>")}</div><div class="actions"><button class="btn sm primary" data-act="qdP" data-id="${p.id}">저장</button></div></details>
     <details class="faqform"><summary>🎁 선물세트 ${p.set?`<span class="chip gold">구성 ${p.set.items.length}가지</span>`:'<span class="meta">구성품을 적으면 선물세트가 돼요</span>'}</summary><div class="field"><label for="msItems-${p.id}">구성품 (한 줄에 하나)</label><textarea id="msItems-${p.id}" rows="3">${esc((p.set?.items||[]).join("\n"))}</textarea></div><div class="field"><label for="msIntro-${p.id}">받는 분께 드리는 소개</label><input id="msIntro-${p.id}" maxlength="120" value="${esc(p.set?.intro||"")}"></div><div class="actions"><button class="btn sm primary" data-act="setP" data-id="${p.id}">저장</button></div></details>
     <details class="faqform"><summary>자주 묻는 질문 ${faqCount(p)?`<span class="chip ok">${faqCount(p)}/4 채움</span>`:'<span class="chip gold">비어 있음 · 채우면 문의가 줄어요</span>'}</summary>${FAQ_Q.map(([k,q,ph])=>`<div class="field"><label for="fq${k}-${p.id}">${q}</label><input id="fq${k}-${p.id}" maxlength="60" placeholder="${ph}" value="${esc((p.faq||{})[k]||"")}"></div>`).join("")}<div class="actions"><button class="btn sm primary" data-act="faqP" data-id="${p.id}">저장</button></div></details>
@@ -2509,10 +2547,10 @@ function openProduct(id){
     ${p.desc?`<p style="margin:0">${esc(p.desc)}</p>`:""}
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
-    <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${shipSpec(p)}</dd>${p.qd?.length?`<dt>수량 할인</dt><dd><b>${esc(qdText(p))}</b></dd>`:""}${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
+    <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${shipSpec(p)}</dd>${p.sub?.on?`<dt>정기배송</dt><dd>🔁 매달 ${p.sub.day}일 발송${p.sub.pct?` · <b>${p.sub.pct}% 할인</b>`:""}</dd>`:""}${p.qd?.length?`<dt>수량 할인</dt><dd><b>${esc(qdText(p))}</b></dd>`:""}${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
     ${setHTML(p)}${faqHTML(p)}
     ${S.owner?`<div class="actions"><button class="btn sm gold" type="button" id="gPick">${inGift(p)?"🎁 선물 코너에서 빼기":"🎁 선물 코너에 넣기"}</button></div>`:""}
-    ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p):own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
+    ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p)+subOptHTML(p):own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
    </div>
    ${(()=>{const key=p.item||guessHerb(p.name)?.name;if(!key)return "";const sib=live().filter(x=>x.id!==p.id&&(x.item||guessHerb(x.name)?.name)===key&&x.stock>0);
       const proc=sib.filter(isProc),raw=sib.filter(x=>!isProc(x));if(!sib.length)return "";
@@ -2523,6 +2561,7 @@ function openProduct(id){
     <div class="bbrow"><button class="btn" type="button" data-chat="${esc(p.sellerId)}" data-ctx="${esc(p.name)} 문의">문의</button><button class="btn primary needWrite" id="buy" type="button"><b class="num" id="tot"></b>&nbsp;${BETA()?"오픈 알림":"구매하기"}</button></div></div>`:""}</div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
   if($("#gPick"))$("#gPick").onclick=()=>giftToggle(p);
+  subBind(p);
   $("#revBox")?.addEventListener("click",ev=>{const f=ev.target.closest("[data-rvf]");if(f){$("#revBox").innerHTML=revBoxHTML(rs,f.dataset.rvf)}});
   if($("#buy")){
     const wf=()=>$("#gOpt")?.open&&$("#gWrap")?.checked?(p.giftWrap||0):0;
@@ -2634,6 +2673,14 @@ const ACT={
       await S.db.collection("orders").add({productId:null,requestId:r.id,fromQuote:true,productName:`${r.item} (${r.form})`,unit:`${r.qty}${r.unit}`,qty:1,unitPrice:q.price,ship:0,total:q.price,buyerId:S.uid,sellerId:q.sellerId,memo:r.memo||"",status:"결제완료",createdAt:Date.now()})},"테스트 결제를 마쳤습니다. 채취인이 작업을 시작합니다");if(ok)go("my")},
   async closeReq(id){await guard(()=>S.db.doc("requests/"+id).update({status:"마감"}),"요청을 닫았습니다")},
   async stock(id){const v=Math.max(0,+$("#st-"+id).value||0);await guard(()=>S.db.doc("products/"+id).update({stock:v}),"재고를 바꿨습니다")},
+  async subP(id){const on=!!$("#sbOn-"+id)?.checked,day=Math.min(28,Math.max(1,Math.floor(+$("#sbDay-"+id).value||10))),pct=Math.min(30,Math.max(0,Math.floor(+$("#sbPct-"+id).value||0)));
+    await guard(()=>S.db.doc("products/"+id).update({sub:{on,day,pct}}),on?`정기배송을 열었습니다. 매달 ${day}일에 보내 주세요`:"정기배송을 닫았습니다. 이미 구독 중인 손님 것은 계속 보내 주세요")},
+  async subShip(id){const x=S.subs.find(y=>y.id===id);const t=($("#str-"+id)?.value||"").trim();if(!t){toast("송장번호를 넣어 주세요");return}
+    await guard(()=>S.db.doc("subs/"+id).update({lastSent:kstDay(),lastCourier:$("#scr-"+id).value,lastTracking:t.slice(0,40),nextDate:addMonths(x.nextDate,x.every||1),sent:(x.sent||0)+1}),"발송 처리했습니다. 다음 발송일로 넘어갔어요")},
+  async subSkip(id){const x=S.subs.find(y=>y.id===id);await guard(()=>S.db.doc("subs/"+id).update({nextDate:addMonths(x.nextDate,x.every||1),skipAt:Date.now()}),`이번 회차를 건너뛰었어요. 다음 발송은 ${mdKo(addMonths(x.nextDate,x.every||1))}이에요`)},
+  async subEvery(id){const x=S.subs.find(y=>y.id===id),e=(x.every||1)===1?2:1;await guard(()=>S.db.doc("subs/"+id).update({every:e}),e===1?"매달 받도록 바꿨어요":"2개월마다 받도록 바꿨어요")},
+  subEnd(id){const b=document.querySelector(`[data-act="subEnd"][data-id="${id}"]`);if(!b.dataset.armed){b.dataset.armed=1;b.textContent="한 번 더 누르면 해지";setTimeout(()=>{b.textContent="해지";delete b.dataset.armed},3000);return}
+    guard(()=>S.db.doc("subs/"+id).update({status:"해지",endAt:Date.now()}),"정기배송을 해지했어요. 더는 결제·발송되지 않아요")},
   async qdP(id){await guard(()=>S.db.doc("products/"+id).update({qd:qdRead("mq","-"+id)}),"수량 할인을 저장했습니다")},
   async setP(id){const r=setRead("ms");const items=($("#msItems-"+id)?.value||"").split(/\n|,/).map(x=>x.trim()).filter(Boolean).slice(0,8).map(x=>x.slice(0,40)),intro=($("#msIntro-"+id)?.value||"").trim().slice(0,120);
     if([...items,intro].some(v=>PII.test(v))){toast("전화번호·계좌·링크는 넣을 수 없어요");return}
@@ -4289,7 +4336,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   else $("#who").insertAdjacentHTML("beforeend",' <button type="button" class="btn sm" onclick="nmAuth.signOut()" aria-label="로그아웃">로그아웃</button>');
   if(S.uid&&!S.canWrite){ban.hidden=false;ban.textContent="이 계정은 지금 거래를 할 수 없습니다. 운영자에게 문의해 주세요."}
   const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
-  ["products","orders","requests","quotes","reviews","auctions","bids"].forEach(c=>sub(c,c));
+  ["products","orders","requests","quotes","reviews","auctions","bids","subs"].forEach(c=>sub(c,c));
   db.collection("videos").limit(500).onSnapshot(s=>{S.videos=s.docs.map(d=>({id:d.id,...d.data()}));renderClassic();if($("#dlg").open&&S.openCl)openDict(S.openCl);requestAnimationFrame(paintAll)},()=>{});
   db.collection("herbthumbs").limit(1000).onSnapshot(s=>{S.thumbs=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{});
   db.collection("herbmeta").limit(1000).onSnapshot(s=>{S.hmeta=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic()},()=>{});

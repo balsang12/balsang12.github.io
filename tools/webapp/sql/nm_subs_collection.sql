@@ -1,0 +1,3 @@
+-- applied as migration nm_subs_collection (2026-10-24): 'subs' is private (buyer/seller only), actor buyerId;
+-- nm_sub_guard: seller may only record shipments (nextDate,lastSent,lastCourier,lastTracking,sent),
+-- buyer may only change status,every,qty,nextDate,skipAt,endAt,gift. See Supabase migration history.
