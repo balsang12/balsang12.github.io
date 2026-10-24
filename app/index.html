@@ -805,7 +805,7 @@ label.btn{display:inline-block}
     <div class="eyebrow hdirect">산지 <b>직거래</b> · 안전결제</div>
     <h1>농부와 심마니가 <br>직접 판매하는 산야초</h1>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="찾는 산야초 이름" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form><button type="button" class="recomini" data-reco="1" aria-label="쇼핑도우미">🧺<span>쇼핑도우미</span></button></div>
-    <p class="herblink"><button type="button" data-go="herbs">🌿 산야초 백과</button></p>
+    <p class="herblink"><button type="button" data-go="herbs">🌿 산야초 사전</button></p>
   </div>
   <div id="todoHome"></div>
   <div id="alertHome"></div>
@@ -2932,7 +2932,7 @@ function healthCard(hq){
     <p>농마니에서 파는 약초와 산나물은 식품이라서, 어떤 증상에 좋은지 알려 드리거나 몸 상태에 맞춰 추천해 드릴 수 없습니다. 증상이 있으시면 의사나 한의사와 먼저 상담해 주세요.</p>
     ${hq.herbs.length?`<p class="meta">검색어에 들어 있는 품목 이름(${hq.herbs.map(esc).join(", ")})으로 찾은 상품만 아래에 보여 드립니다.</p>`:`<p class="meta">찾는 약초·나물 이름을 알고 계시면 이름으로 검색해 주세요. 예: 곰취, 더덕, 오미자</p>`}
     <button type="button" class="recobtn" data-reco="1" style="margin:4px 0 8px"><i aria-hidden="true">🧺</i><div><b>쓰임새로 골라 드릴게요</b><br><span>누구에게, 어떻게 드실지, 예산만 알려 주세요</span></div></button>
-    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>산야초 백과</b><br><span>품목마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 산야초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
+    <button type="button" class="herbcard" data-go="herbs" style="margin:0 0 8px"><i aria-hidden="true">🌿</i><div><b>산야초 사전</b><br><span>품목마다 옛 문헌에 어떻게 기록됐는지, 최근 연구는 어떤지 산야초 사전에서 읽어 볼 수 있어요</span></div><em aria-hidden="true">›</em></button>
     <div><div class="meta" style="margin-bottom:6px">드시는 방법이나 받으실 분으로 골라 보시겠어요?</div><div class="usel">${USES.map(u=>`<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span></button>`).join("")}</div></div></div>`}
 const loggedQ=new Set();
 function logHealth(q){const hq=healthQ(q);if(!hq.hit||!S.db)return;const k=hq.kws.sort().join("|");if(loggedQ.has(k))return;loggedQ.add(k);
