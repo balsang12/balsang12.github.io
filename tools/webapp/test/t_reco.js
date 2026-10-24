@@ -5,8 +5,8 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 p.on('pageerror',e=>errs.push(String(e)));
 await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));
 await p.addInitScript('window.__SESSION={user:{id:"me"}};\n'+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1200);
-ok(await p.locator('.recomini').isVisible(),'home recommender button next to search');
-await p.locator('.recomini').click();await p.waitForTimeout(150);
+ok(await p.locator('.herblink [data-reco]').isVisible(),'home 쇼핑도우미 link next to 산야초 사전');
+await p.locator('.herblink [data-reco]').click();await p.waitForTimeout(150);
 ok((await p.locator('.reco h2').innerText()).includes('누가 드실'),'first question: for whom');
 {const tx=await p.locator('.reco').innerText();ok(tx.includes('내가 먹을 것')&&tx.includes('가족·다른 분')&&tx.includes('선물할 것'),'three branches')}
 await p.screenshot({path:'reco_first.png'});
@@ -25,7 +25,7 @@ const n=await p.locator('.rc').count();ok(n>=1,'has recommendations: '+n);
 if(n){await p.locator('.rc').first().click();await p.waitForTimeout(200);ok(await p.locator('#dlg .dinfo h2').count()>0,'opens product')}
 await p.evaluate(()=>go('shop'));await p.waitForTimeout(150);ok(await p.locator('#useBar [data-reco]').isVisible(),'market button');
 // gift path
-await p.keyboard.press('Escape');await p.waitForTimeout(100);await p.evaluate(()=>go('home'));await p.locator('.recomini').click();await p.waitForTimeout(150);
+await p.keyboard.press('Escape');await p.waitForTimeout(100);await p.evaluate(()=>go('home'));await p.locator('.herblink [data-reco]').click();await p.waitForTimeout(150);
 await p.click('text=선물할 것');ok((await p.locator('.reco h2').innerText()).includes('받는 분'),'gift: recipient');
 await p.click('text=부모님·어르신');ok((await p.locator('.reco h2').innerText()).includes('어떤 때'),'gift: occasion');
 await p.click('text=명절·연말 인사');await p.locator('.reco .any').click();

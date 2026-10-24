@@ -4,7 +4,7 @@ let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 (async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,serviceWorkers:'block',locale:'ko-KR'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
 await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript(mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);
 ok(await p.locator('.hask').count()===0,'separate 생김새 line removed from home');
-ok(await p.locator('.herblink button').innerText()==='🌿 산야초 사전','one-line 산야초 사전 link');
+ok(await p.locator('.herblink [data-go="herbs"]').innerText()==='🌿 산야초 사전','one-line 산야초 사전 link');
 await p.screenshot({path:path.join(__dirname,'ask_home.png'),clip:{x:0,y:0,width:390,height:600}});
 await p.click('.herblink button');await p.waitForTimeout(500);
 ok(await p.evaluate(()=>S.view)==='herbs'&&await p.locator('#askBox').isVisible(),'opens dictionary with 생김새 search on top');
