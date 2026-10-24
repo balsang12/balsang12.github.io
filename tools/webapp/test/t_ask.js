@@ -1,0 +1,16 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,serviceWorkers:'block',locale:'ko-KR'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript(mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);
+ok(await p.locator('.hask').count()===0,'separate 생김새 line removed from home');
+ok(await p.locator('.herbbox .askgo').isVisible(),'생김새 button inside 알아보기 card');
+await p.screenshot({path:path.join(__dirname,'ask_home.png'),clip:{x:0,y:0,width:390,height:600}});
+await p.click('.herbbox .askgo');await p.waitForTimeout(500);
+ok(await p.evaluate(()=>S.view)==='herbs'&&await p.locator('#askBox').isVisible(),'opens dictionary with 생김새 search on top');
+ok(await p.evaluate(()=>document.activeElement.id)==='askQ','focus on box');
+await p.screenshot({path:path.join(__dirname,'ask_dict.png')});
+await p.evaluate(()=>{go('shop');$("#shopQ").value="엉터리이름";renderShop()});await p.waitForTimeout(200);
+ok(await p.locator('#shopGrid [data-askgo]').isVisible(),'no-result search offers 생김새 찾기');
+await p.click('#shopGrid [data-askgo]');await p.waitForTimeout(300);ok(await p.evaluate(()=>S.view)==='herbs','no-result → dictionary');
+ok(errs.length===0,'no errors '+errs.join('|'));await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();
