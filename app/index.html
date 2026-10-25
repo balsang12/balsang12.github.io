@@ -692,6 +692,8 @@ td button.lk{border:0;background:none;padding:0;font:inherit;font-weight:700;col
   .hcheck li::before{content:"✔ ";color:var(--pine);font-weight:700}
   .hmob{display:none!important}
   #homeAuc.hrow,#homeShop.hrow{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
+  .hmain #homeShop.hrow,.hmain #homeNew.hrow{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hmain #homeShop.hrow>:nth-child(n+7){display:none}
 }
 /* ---------- 빨리 올리기: 지난 상품 불러오기 · 여러 양 · 엑셀 ---------- */
 .wz .or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}.wz .or::before,.wz .or::after{content:"";flex:1;border-top:1px solid var(--line)}
@@ -2190,7 +2192,7 @@ function renderHome(){renderSeason();
   const la=liveAucs().sort((a,b)=>proofFirst(a,b)||auc(a).end-auc(b).end).slice(0,4);
   $("#homeAuc").innerHTML=la.length?la.map(aucRow).join(""):emptyBox(`이번 경매에 올라온 물건이 아직 없습니다. 경매는 ${cyc()} 토요일 저녁 8시에 한꺼번에 마감합니다. 첫 출품 3번은 출품료가 무료입니다.`,'<button class="btn gold" data-go="seller">경매 출품 신청</button>');
   {const e=nextSat(Date.now()),sl=$("#sideLeft");if(sl){sl.dataset.end=e;sl.textContent=left(e-Date.now());$("#sideAuc").textContent=liveAucs().length;$("#sideShop").textContent=live().filter(p=>p.stock>0).length}}
-  const ps=live().filter(p=>p.stock>0).sort((a,b)=>(soldOf(b.id)+ratingOf(b.id).n)-(soldOf(a.id)+ratingOf(a.id).n)||b.createdAt-a.createdAt).slice(0,8);
+  const ps=live().filter(p=>p.stock>0).sort((a,b)=>(soldOf(b.id)+ratingOf(b.id).n)-(soldOf(a.id)+ratingOf(a.id).n)||b.createdAt-a.createdAt).slice(0,9);
   {const all=live().filter(p=>p.stock>0),wild=all.filter(p=>p.grow===GROWS[0]).length;
     if($("#sideShop2"))$("#sideShop2").textContent=all.length;
     if($("#sideShopMix"))$("#sideShopMix").textContent=all.length?`심마니 채취 ${wild} · 농부 재배 ${all.length-wild}`:"첫 상품을 기다리고 있습니다";
