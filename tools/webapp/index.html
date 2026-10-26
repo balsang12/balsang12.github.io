@@ -505,7 +505,9 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .herbbox .herbcard i{font-size:19px}.herbbox .herbcard b{font-size:15.5px}.herbbox .herbcard br,.herbbox .herbcard span{display:none}.herbbox .herbcard em{font-size:18px}
 .herbbox .askgo{display:flex;align-items:center;gap:5px;flex:none;width:auto;white-space:nowrap;border:0;border-left:1px dashed color-mix(in srgb,var(--pine) 30%,transparent);background:transparent;padding:10px 16px;text-align:left;font:inherit;font-size:14px;color:var(--pine);cursor:pointer}
 .herbbox .askgo:hover{background:color-mix(in srgb,var(--pine) 6%,transparent)}
-section[data-view="herbs"] .askbox{margin:0 0 16px;scroll-margin-top:96px}
+section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
+.askd{margin:2px 0 8px;scroll-margin-top:96px}.askd>summary{display:inline-block;cursor:pointer;list-style:none;color:var(--pine);font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:4px 0}.askd>summary::-webkit-details-marker{display:none}
+.askrow{display:flex;gap:8px}.askrow input{flex:1;min-width:0;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg,#fff);color:var(--ink)}
 .hauclist{max-width:640px;margin-top:14px}.hauclist .hg-head{margin-bottom:8px}.hauclist .hg-head .nextSat{font-size:12px;color:var(--muted)}
 .alist,#homeAuc.alist{display:grid;gap:6px;grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important}.arow{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 10px 6px 6px;font:inherit;color:var(--ink);cursor:pointer}
 .athumb{width:52px;height:52px;border-radius:9px;overflow:hidden;background:var(--sunk);display:block}.athumb canvas,.athumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -932,18 +934,18 @@ label.btn{display:inline-block}
     <div><div class="eyebrow">한국 산나물·약초 · 고서 기록 · 최근 연구</div><h2>산야초 사전</h2><div class="meta" id="dictSum"></div></div>
     <a class="btn sm" id="ytChannel" href="#" target="_blank" rel="noopener" hidden>유튜브 채널 보기 ↗</a>
   </div>
-  <form class="askbox" id="askBox">
-    <label for="askQ"><b>🔍 이름을 모르면 생김새로 찾기</b><br><span class="meta">기억나는 모양, 색, 먹던 방법, 캐는 철을 적어 주세요</span></label>
-    <textarea id="askQ" rows="2" maxlength="200" placeholder="예: 잎이 넓고 쌉싸름한 봄 산나물 / 뿌리를 고추장에 무쳐 먹던 하얀 것"></textarea>
-    <button class="btn primary" type="submit" id="askGo">물어보기</button>
-    <div id="askOut" aria-live="polite"></div>
-  </form>
   <div class="banner">옛 의서의 기록과 최근 연구를 소개하는 곳입니다. 효능을 보장하거나 치료를 권하는 글이 아닙니다. 연구 대부분은 세포·동물 실험이라 사람에게 같은 효과가 있다는 뜻이 아니며, 몸이 불편하면 한의사·의사와 상의하세요.</div>
   <div class="dtool">
     <input id="clQ" placeholder="이름·다른 이름·한자로 찾기 (예: 딱주, 桔梗)" aria-label="산야초 사전 검색">
     <select id="dictF" aria-label="구분"><option value="">구분 전체</option><option value="ok">식용 원료</option><option value="caution">식용 · 주의</option><option value="check">식품원료 확인 필요</option><option value="hanyak">한약재 전용</option><option value="ban">독초</option></select>
     <select id="dictH" aria-label="자료"><option value="">자료 전체</option><option value="classic">고서 기록 있음</option><option value="papers">최근 연구 있음</option><option value="video">영상 있음</option><option value="season">이번 달 제철</option><option value="look">구별법 있음</option></select>
   </div>
+  <details class="askd" id="askWrap"><summary>🔍 이름을 모르면 생김새로 찾기</summary>
+  <form class="askbox" id="askBox">
+    <label for="askQ" class="meta">기억나는 모양, 색, 먹던 방법, 캐는 철을 적어 주세요</label>
+    <div class="askrow"><input id="askQ" maxlength="200" placeholder="예: 잎이 넓고 쌉싸름한 봄 산나물"><button class="btn sm" type="submit" id="askGo">찾기</button></div>
+    <div id="askOut" aria-live="polite"></div>
+  </form></details>
   <div class="dtags" id="dictTags"></div>
   <div class="actions" style="justify-content:space-between"><span class="meta num" id="dictCount"></span><div class="vtog" role="group" aria-label="보기 방식"><button type="button" id="vList" aria-pressed="true">목록으로 전체</button><button type="button" id="vCard" aria-pressed="false">사진 카드</button></div></div>
   <div class="dlist" id="dList"></div>
@@ -4306,7 +4308,7 @@ $("#clearDemo").onclick=async()=>{const as=S.auctions.filter(a=>a.demo),ps=S.pro
 
 
 /* ---------- 이름 모를 때: 생김새로 물어보기 ---------- */
-function askGo(q){go("herbs");const t=$("#askQ");if(q)t.value=q;requestAnimationFrame(()=>{$("#askBox").scrollIntoView({block:"start",behavior:"smooth"});t.focus({preventScroll:true})})}
+function askGo(q){go("herbs");$("#askWrap").open=true;const t=$("#askQ");if(q)t.value=q;requestAnimationFrame(()=>{$("#askBox").scrollIntoView({block:"start",behavior:"smooth"});t.focus({preventScroll:true})})}
 $("#askBox").onsubmit=async e=>{e.preventDefault();const q=$("#askQ").value.trim(),out=$("#askOut");
   if(q.length<4){toast("기억나는 생김새나 먹던 방법을 조금 더 적어 주세요");return}
   logHealth(q);

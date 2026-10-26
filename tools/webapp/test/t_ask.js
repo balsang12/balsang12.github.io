@@ -7,7 +7,7 @@ ok(await p.locator('.hask').count()===0,'separate 생김새 line removed from ho
 ok(await p.locator('.herblink [data-go="herbs"]').innerText()==='🌿 산야초 사전','one-line 산야초 사전 link');
 await p.screenshot({path:path.join(__dirname,'ask_home.png'),clip:{x:0,y:0,width:390,height:600}});
 await p.click('.herblink [data-go="herbs"]');await p.waitForTimeout(500);
-ok(await p.evaluate(()=>S.view)==='herbs'&&await p.locator('#askBox').isVisible(),'opens dictionary with 생김새 search on top');
+ok(await p.evaluate(()=>S.view)==='herbs'&&await p.locator('#askWrap summary').isVisible()&&!(await p.locator('#askBox').isVisible())&&(await p.locator('#askWrap').boundingBox()).y>(await p.locator('#clQ').boundingBox()).y,'opens dictionary; 생김새 찾기 is a folded link under name search');
 await p.screenshot({path:path.join(__dirname,'ask_dict.png')});
 await p.evaluate(()=>{go('shop');$("#shopQ").value="엉터리이름";renderShop()});await p.waitForTimeout(200);
 ok(await p.locator('#shopGrid [data-askgo]').isVisible(),'no-result search offers 생김새 찾기');
