@@ -70,7 +70,7 @@ patch("const hh=await mgrHash(raw),shop=Object.keys(S.sellers).find(u=>S.sellers
       "manager link")
 
 FOOT = """<footer style="max-width:1100px;margin:32px auto 0;padding:18px 16px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.7">
-농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="#" onclick="go(\'herbs\');scrollTo(0,0);return false" style="color:var(--pine)">산야초 사전</a> · <a href="#" onclick="go('help');scrollTo(0,0);return false" style="color:var(--pine)">고객센터</a> · <a href="#" onclick="go(\'seller\');scrollTo(0,0);return false" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">中文</a> · <a href="global.html?lang=ja" style="color:var(--pine)" lang="ja">日本語</a><br>
+농마니(농부와 심마니) · ‘농마니’ 상표출원 제40-2026-0219569호 · <a href="#" onclick="go(\'herbs\');scrollTo(0,0);return false" style="color:var(--pine)">산야초 사전</a> · <a href="#" onclick="go('help');scrollTo(0,0);return false" style="color:var(--pine)">고객센터</a> · <a href="https://nongmani.com/seller/" style="color:var(--pine)">판매자 모집</a> · <a href="global.html?lang=en" style="color:var(--pine)" lang="en">English</a> · <a href="global.html?lang=zh-Hans" style="color:var(--pine)" lang="zh-Hans">中文</a> · <a href="global.html?lang=ja" style="color:var(--pine)" lang="ja">日本語</a><br>
 시범 운영 중입니다. 사업자 정보는 등록 후 표시됩니다.
 </footer>
 <div id="nmIntl" hidden style="position:fixed;left:12px;right:12px;bottom:84px;z-index:50;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;gap:10px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:15px" translate="no">
