@@ -755,6 +755,7 @@ label.btn{display:inline-block}
 .alertw{margin:0}
 .usebar{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;align-items:center;padding-bottom:2px}.usebar::-webkit-scrollbar{display:none}
 .usebar .lbl{font-size:12px;color:var(--muted);flex:none}
+.helplink{background:none;border:0;padding:0;font:inherit;color:var(--pine);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .usebar button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
 .usebar button[aria-pressed="true"]{background:var(--pine);border-color:var(--pine);color:var(--pine-ink);font-weight:700}
 @media (min-width:1000px){.hmain .uses{max-width:none}.usel{grid-template-columns:repeat(4,minmax(0,1fr))}.hmain .alerth{max-width:none}}
@@ -2227,7 +2228,7 @@ function renderShop(){
     rating:(a,b)=>ratingOf(b.id).avg-ratingOf(a.id).avg||ratingOf(b.id).n-ratingOf(a.id).n,reviews:(a,b)=>ratingOf(b.id).n-ratingOf(a.id).n||byNew(a,b)}[s]||byNew;
   list.sort((a,b)=>(a.stock<=0)-(b.stock<=0)||cmp(a,b));
   sortBar($("#shopSort"),SHOP_SORTS,s,"s");
-  $("#shopCount").textContent=list.length?`상품 ${list.length}개${s==="unit"?" · 단위가 다른 상품은 1kg 기준으로 바꿔 비교":""}${s==="pop"?" · 판매량과 후기로 정렬":""}`:"";
+  $("#shopCount").innerHTML=(list.length?`상품 ${list.length}개${s==="unit"?" · 단위가 다른 상품은 1kg 기준으로 바꿔 비교":""}${s==="pop"?" · 판매량과 후기로 정렬":""} · `:"")+`<button type="button" class="helplink" data-reco="1">🧺 뭘 살지 모르겠다면 쇼핑도우미</button>`;
   $("#cats").innerHTML=CATS.map(c=>`<button class="cat" aria-pressed="${c===S.cat}" data-cat="${c}">${c}</button>`).join("");
   const ak=q||(S.cat!=="전체"?S.cat:"");
   $("#shopGrid").innerHTML=list.length?list.map(card).join(""):hq.hit?"":emptyBox(q?`"${esc(q)}"에 맞는 상품이 아직 없습니다. 들어오면 알려 드리거나, 채취 의뢰를 올리면 농부·심마니가 견적을 보냅니다.`:uf&&S.cat==="전체"?`‘${esc(uf.t)}’에 맞는 상품을 준비하고 있습니다. 다른 방법도 둘러보세요.`:"이 분류에 판매 중인 상품이 아직 없습니다. 들어오면 알려 드릴까요?",alertBtn(ak,"shop")+(q?'<button class="btn" type="button" data-askgo="1">이름이 맞는지 모르겠으면 생김새로 찾기</button>':"")+'<button class="btn" data-go="request">채취 의뢰하기</button>');
@@ -3126,7 +3127,7 @@ const USES=[
   {k:"first",t:"약초가 처음이라면",d:"식탁에서 익숙한 품목을 부담 없는 양으로",f:p=>USE_FIRST.includes(p.item)&&(UNIT_G[p.unit]||1000)<=1000}];
 const useList=k=>{const u=USES.find(x=>x.k===k);return u?live().filter(p=>p.stock>0&&u.f(p)):[]};
 function renderUses(){const el=$("#homeUses");if(!el)return;el.innerHTML=USES.map(u=>{const n=useList(u.k).length;return `<button class="use" type="button" data-use="${u.k}"><b>${u.t}</b><span>${u.d}</span><em class="num${n?"":" soon"}">${n?`상품 ${n}개 보기 →`:"상품 준비 중"}</em></button>`}).join("")}
-function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<button type="button" data-reco="1" style="font-weight:700;border-color:var(--gold);background:var(--gold-soft)">🧺 쇼핑도우미</button><span class="lbl">어떻게 드세요?</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
+function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<span class="lbl">용도별</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
 const soonIco=(h,soon)=>soon?h.replace('class="ico"','class="ico soon"').replace(/<\/button>$/,"<small>준비 중</small></button>"):h;
 const myAlert=(key,kind)=>S.alerts.find(a=>a.uid===S.uid&&a.key===key&&a.kind===kind);
 const alertBtn=(key,kind)=>!key?"":myAlert(key,kind)?`<button class="btn" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 알림 신청됨 · 끄기</button>`:`<button class="btn primary" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 들어오면 알려 주세요</button>`;
