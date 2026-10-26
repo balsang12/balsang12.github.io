@@ -25,7 +25,8 @@ HEAD = """<meta name="description" content="농마니 · 농부와 심마니 직
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2B5B41">
 <link rel="icon" href="icon.svg">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-title" content="농마니">
 <meta property="og:title" content="농마니 · 농부와 심마니가 직접 판매하는 산야초">
 <meta property="og:description" content="산에서 캔 약초, 밭에서 키운 산나물을 직접 사고파는 장터">
@@ -122,7 +123,7 @@ patch("</body></html>", FOOT, "footer")
 
 out.mkdir(parents=True, exist_ok=True)
 (out / "index.html").write_text(s, encoding="utf-8")
-for f in ["nm-claude.js", "global.html", "herb-i18n.js", "herb-i18n-ja.js", "manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png"]:
+for f in ["nm-claude.js", "global.html", "herb-i18n.js", "herb-i18n-ja.js", "manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png", "icon-180.png", "icon-32.png"]:
     p = here / "app" / f
     if p.exists() and p.resolve() != (out / f).resolve():
         shutil.copy(p, out / f)

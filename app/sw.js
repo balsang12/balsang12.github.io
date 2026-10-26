@@ -1,5 +1,5 @@
 /* 농마니 앱: 홈 화면 설치용. 화면 파일만 저장하고, 주문·입찰 자료는 항상 서버에서 새로 받습니다. */
-const V = "nm-app-1";
+const V = "nm-app-2";
 const SHELL = ["./", "index.html", "nm-claude.js", "vendor/supabase.js", "manifest.webmanifest", "icon.svg", "icon-192.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
