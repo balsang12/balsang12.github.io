@@ -4106,14 +4106,14 @@ function openDict(name){
   const prep=!ban&&(idn.prep||idn.store||idn.eat||idn.grade)?`<div class="sec"><h3>고르는 법·손질·보관</h3><dl class="facts">${idn.grade?`<dt>고르는 법</dt><dd>${esc(idn.grade)}</dd>`:""}${idn.prep?`<dt>손질</dt><dd>${esc(idn.prep)}</dd>`:""}${idn.store?`<dt>보관</dt><dd>${esc(idn.store)}</dd>`:""}${idn.eat?`<dt>먹는 법</dt><dd>${esc(idn.eat)}</dd>`:""}</dl></div>`:"";
   const meta=S.hmeta[hid(name)]||{},rv=Array.isArray(meta.review)?meta.review:[],chg=Array.isArray(meta.changes)?meta.changes:[];
   const isSeller=!!S.sellers[S.uid];
-  const fieldHTML=`<div class="sec field-notes"><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">농부·심마니가 직접 남긴 자료</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
+  const fieldHTML=`<div class="sec field-notes" id="fnSec" hidden><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">농부·심마니가 직접 남긴 자료</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
     ${S.uid?`<details${isSeller?"":" hidden"}><summary class="meta" style="cursor:pointer">내 현장 기록 남기기</summary><form class="panel" id="fnForm" style="padding:12px;margin-top:8px">
       <div class="field"><label for="fnKind">무엇을 남길까요</label><select id="fnKind"><option value="name">우리 지역에서 부르는 이름</option><option value="harvest">우리 지역에서 실제로 캐는 달</option></select></div>
       <div class="field" id="fnNameWrap"><label for="fnName">부르는 이름</label><input id="fnName" maxlength="20" placeholder="예: 딱주"></div>
       <div class="field"><label for="fnRegion">지역</label><input id="fnRegion" maxlength="30" placeholder="예: 경북 봉화" value="${esc(S.sellers[S.uid]?.region||"")}"></div>
       <div class="field" id="fnMonWrap" hidden><span class="meta" style="font-weight:700;color:var(--ink);font-size:13px">캐는 달 (여러 개 고르기)</span><div class="mpick">${Array.from({length:12},(_,k)=>`<label><input type="checkbox" value="${k+1}">${k+1}월</label>`).join("")}</div></div>
       <div class="field"><label for="fnMemo">한마디 (선택)</label><input id="fnMemo" maxlength="80" placeholder="예: 해발 800m 이상은 5월 중순부터"></div>
-      <button class="btn primary needWrite" type="submit">현장 기록 남기기</button></form></details>${isSeller?"":'<div class="meta">현장 기록은 상점을 연 판매자만 남길 수 있습니다.</div>'}`:""}</div>`;
+      <button class="btn primary needWrite" type="submit">현장 기록 남기기</button></form></details>`:""}</div>`;
   const trustHTML=`<div class="sec"><div class="trustline">${rv.length?rv.map(r=>`<div class="rv"><span class="chip ok">${esc(r.area)} 확인</span><b>${esc(r.name)}</b><span class="meta">${esc(r.title||"")} · ${esc(r.date||"")}</span></div>`).join(""):(()=>{const org=[...new Set([...(Array.isArray(idn.sources)?idn.sources:[]),...(Array.isArray(i?.lookSources)?i.lookSources:[]),...(Array.isArray(i?.traditional?.sources)?i.traditional.sources:[])].map(s=>String(s?.title||"").split(/ [-·|] /)[0].trim()).filter(Boolean))].slice(0,4);
       const np=i?.modern?.papers?.length||0,parts=[...(c&&!c.none?["동의보감"]:[]),...org,...(np?[`학술 논문 ${np}편`]:[])];
       return (parts.length?`<div class="meta">자료 출처: ${esc(parts.join(", "))}</div>`:'<div class="meta">자료를 정리하는 중입니다. 출처가 붙기 전까지는 참고만 해 주세요.</div>')})()}
@@ -4157,17 +4157,19 @@ let fnUnsub=null;
 function watchField(name){
   try{fnUnsub&&fnUnsub()}catch(_){}fnUnsub=null;
   const box=()=>$("#fnBox");
-  if(!S.db){if(box())box().innerHTML='<div class="meta">아직 현장 기록이 없습니다.</div>';return}
+  const sec=v=>{const e=$("#fnSec");if(e)e.hidden=!v},mine=()=>!!(S.uid&&S.sellers[S.uid]);
+  if(!S.db){sec(false);return}
   fnUnsub=S.db.collection("fieldnotes").where("herb","==",name).limit(200).onSnapshot(s=>{const b=box();if(!b||S.openCl!==name)return;
     const l=s.docs.map(d=>({id:d.id,...d.data()}));
     const names={};l.filter(x=>x.kind==="name"&&x.value).forEach(x=>{(names[x.value]=names[x.value]||new Set()).add(x.region)});
     const hv=l.filter(x=>x.kind==="harvest"&&Array.isArray(x.months)).sort((a,b)=>a.region.localeCompare(b.region));
+    sec(Object.keys(names).length||hv.length||mine()||(S.owner&&l.length));
     b.innerHTML=(Object.keys(names).length?`<div><div class="eyebrow" style="margin-bottom:6px">지역에서 부르는 이름</div><div class="fn-names">${Object.entries(names).map(([n,rs])=>`<span>${esc(n)}<small>${esc([...rs].join(", "))}</small></span>`).join("")}</div></div>`:"")+
       (hv.length?`<div><div class="eyebrow" style="margin:8px 0 6px">지역별 실제 채취 달</div><div style="overflow-x:auto"><table class="fn-tbl num"><tr><th>지역 · 기록한 곳</th>${Array.from({length:12},(_,k)=>`<th>${k+1}</th>`).join("")}</tr>${hv.map(x=>`<tr><td>${esc(x.region)} · ${esc(x.shop||"")}${x.memo?`<div class="meta" style="font-size:11px">${esc(x.memo)}</div>`:""}</td>${Array.from({length:12},(_,k)=>`<td class="${x.months.includes(k+1)?"on":""}"></td>`).join("")}</tr>`).join("")}</table></div></div>`:"")||
-      '<div class="meta">아직 현장 기록이 없습니다. 이 약초를 캐는 농부·심마니라면 지역 이름이나 실제로 캐는 달을 남겨 주세요.</div>';
+      '<div class="meta">아직 현장 기록이 없습니다. 이 약초를 캐시거나 기르신다면 지역 이름이나 실제로 캐는 달을 남겨 주세요. (손님에게는 기록이 생기면 보입니다)</div>';
     if(S.owner){const del=l.map(x=>`<button class="btn sm danger" type="button" data-fndel="${esc(x.id)}">${esc(x.kind==="name"?x.value:x.region+" 채취")} 지우기</button>`).join("");if(del)b.insertAdjacentHTML("beforeend",`<details><summary class="meta" style="cursor:pointer">현장 기록 정리 (운영자)</summary><div class="actions" style="margin-top:6px">${del}</div></details>`);
       b.querySelectorAll("[data-fndel]").forEach(x=>x.onclick=()=>guard(()=>S.db.doc("fieldnotes/"+x.dataset.fndel).delete(),"현장 기록을 지웠습니다"))}
-  },()=>{const b=box();if(b)b.innerHTML='<div class="meta">현장 기록을 불러오지 못했습니다.</div>'});
+  },()=>sec(false));
 }
 let phUnsub=null;
 function watchPhotos(name){

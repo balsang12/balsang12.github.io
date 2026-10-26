@@ -1,0 +1,10 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:390,height:844},locale:'ko-KR',serviceWorkers:'block'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));await p.addInitScript(`window.__SESSION={user:{id:"s1"}};\n`+mock);await p.goto(process.argv[2]+'/app/?go=herbs');await p.waitForTimeout(1300);
+const go2=async()=>{await p.evaluate(f=>{const d=document.getElementById('dlg');if(d.open)d.close();openDict('더덕')});await p.waitForTimeout(400)};
+await go2();ok(await p.locator('#fnSec').isVisible(),'seller sees 현장 기록 with add form');
+await p.evaluate(()=>{delete S.sellers[S.uid]});await go2();ok(!(await p.locator('#fnSec').isVisible()),'customer: empty section hidden');
+ok(!(await p.getByText('현장 기록은 상점을 연 판매자만').count()),'no seller-only note');
+ok(!errs.length,'no errors '+errs.join(';'));await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();
