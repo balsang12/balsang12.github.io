@@ -23,7 +23,7 @@ ok(/이런 상품|딱 맞는/.test(res),'results screen: '+res.split('\n').slice
 ok(!/당뇨|면역|혈압|효능/.test(res),'no health wording');
 const n=await p.locator('.rc').count();ok(n>=1,'has recommendations: '+n);
 if(n){await p.locator('.rc').first().click();await p.waitForTimeout(200);ok(await p.locator('#dlg .dinfo h2').count()>0,'opens product')}
-await p.evaluate(()=>go('shop'));await p.waitForTimeout(150);ok(await p.locator('#useBar [data-reco]').isVisible(),'market button');
+await p.evaluate(()=>go('shop'));await p.waitForTimeout(150);ok(await p.locator('#shopCount [data-reco]').isVisible(),'market helper link');
 // gift path
 await p.keyboard.press('Escape');await p.waitForTimeout(100);await p.evaluate(()=>go('home'));await p.locator('.herblink [data-reco]').click();await p.waitForTimeout(150);
 await p.click('text=선물할 것');ok((await p.locator('.reco h2').innerText()).includes('받는 분'),'gift: recipient');

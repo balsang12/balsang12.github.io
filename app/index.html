@@ -964,7 +964,7 @@ label.btn{display:inline-block}
     <div class="askrow"><input id="askQ" maxlength="200" placeholder="예: 잎이 넓고 쌉싸름한 봄 산나물"><button class="btn sm" type="submit" id="askGo">찾기</button></div>
     <div id="askOut" aria-live="polite"></div>
   </form></details>
-  <div class="dtags" id="dictTags"></div>
+  <div class="dtags" id="dictTags" hidden></div>
   <div class="actions" style="justify-content:space-between"><span class="meta num" id="dictCount"></span><div class="vtog" role="group" aria-label="보기 방식"><button type="button" id="vList" aria-pressed="true">목록으로 전체</button><button type="button" id="vCard" aria-pressed="false">사진 카드</button></div></div>
   <div class="dlist" id="dList"></div>
   <div class="clgrid" id="clGrid" hidden></div>
@@ -4033,7 +4033,7 @@ const TAG_DEF=[["e","먹는 법",{n:"나물·반찬",t:"차로 우려",j:"청·�
 S.dtag={};
 const tagHit=x=>Object.entries(S.dtag).every(([k,v])=>!v||((TAGS[x.name]||{})[k]||"").includes(v));
 function tagWords(n){const t=TAGS[n];if(!t)return [];return TAG_DEF.flatMap(([k,l,o])=>[...(t[k]||"")].map(c=>o[c]).filter(Boolean))}
-function renderDictTags(){const el=$("#dictTags");if(!el)return;const any=Object.values(S.dtag).some(Boolean);
+function renderDictTags(){const el=$("#dictTags");if(!el||el.hidden)return;const any=Object.values(S.dtag).some(Boolean);
   el.innerHTML=TAG_DEF.map(([k,l,o])=>`<div class="trow"><span class="tl">${l}</span>${Object.entries(o).map(([c,t])=>`<button type="button" data-dtag="${k}:${c}" aria-pressed="${S.dtag[k]===c}">${t}</button>`).join("")}</div>`).join("")+(any?`<div class="trow"><button type="button" class="treset" data-dtag="reset">고른 것 모두 지우기</button></div>`:"")}
 $("#dictTags").onclick=e=>{const b=e.target.closest("[data-dtag]");if(!b)return;const v=b.dataset.dtag;
   if(v==="reset")S.dtag={};else{const [k,c]=v.split(":");S.dtag[k]=S.dtag[k]===c?"":c}
