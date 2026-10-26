@@ -29,7 +29,7 @@ const t0=await p.locator('#tot').innerText();
 await p.fill('#gCard','새해 복 많이 받으세요');await p.fill('#gDate',later);
 const t1=await p.locator('#tot').innerText();ok(t0===t1&&t1.length>0,'total includes wrap: '+t1);
 await p.screenshot({path:path.join(__dirname,'gift_opt.png')});
-await p.click('#buy');await p.waitForTimeout(700);
+await p.check('#oAgree').catch(()=>{});await p.click('#buy');await p.waitForTimeout(700);
 const od=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').pop());
 ok(od&&od[3].gift&&od[3].gift.card==='새해 복 많이 받으세요'&&od[3].gift.wrap===true&&od[3].gift.wrapFee===3000&&od[3].gift.hidePrice===true,'order saved with gift '+JSON.stringify(od&&od[3].gift));
 ok(od&&od[3].total===od[3].unitPrice*od[3].qty+od[3].ship+3000,'total incl wrap fee');

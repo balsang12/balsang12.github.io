@@ -16,7 +16,7 @@ for(let i=0;i<9;i++)await p.click('#plus');
 ok((await p.locator('#qdLbl').innerText()).includes('10% 할인'),'10 pcs → 10%');
 const tot=await p.locator('#tot').innerText();ok(tot.startsWith('221,000'),'total with 10% off + ship: '+tot);
 await p.screenshot({path:path.join(__dirname,'bulk_qd.png')});
-await p.click('#buy');await p.waitForTimeout(800);
+await p.check('#oAgree').catch(()=>{});await p.click('#buy');await p.waitForTimeout(800);
 const od=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').pop());
 ok(od&&od[3].qdPct===10&&od[3].qdOff===24000&&od[3].total===216000+5000,'order saved with discount '+JSON.stringify(od&&{t:od[3].total,o:od[3].qdOff}));
 // 대량 요청서

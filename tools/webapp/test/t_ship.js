@@ -18,14 +18,14 @@ ok((await p.locator('#oFree').innerText()).includes('32,000원 더 담으면 무
 await p.click('#plus');await p.click('#plus');ok((await p.locator('#shipLbl').innerText())==='무료배송','free at 54,000원');
 await p.click('#minus');await p.click('#minus');await p.check('#oIsland');ok((await p.locator('#shipLbl').innerText()).includes('10,000원'),'island adds 4,000');
 await p.screenshot({path:path.join(__dirname,'ship_buy.png')});
-await p.click('#buy');await p.waitForTimeout(800);
+await p.check('#oAgree').catch(()=>{});await p.click('#buy');await p.waitForTimeout(800);
 const o1=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').pop());
 ok(o1&&o1[3].ship===10000&&o1[3].island===true&&o1[3].fresh===true&&o1[3].shipDue>Date.now(),'order 1 saved with ship/island/fresh/due');
 await p.evaluate(()=>openProduct(window.__P2));await p.waitForTimeout(300);
 ok(await p.locator('#oBundle').isVisible()&&(await p.locator('#oBundle').innerText()).includes('자연산 곰취'),'bundle notice');
 ok((await p.locator('#shipLbl').innerText()).includes('묶음 배송'),'bundle ship 0: '+await p.locator('#shipLbl').innerText());
 await p.screenshot({path:path.join(__dirname,'ship_bundle.png')});
-await p.click('#buy');await p.waitForTimeout(800);
+await p.check('#oAgree').catch(()=>{});await p.click('#buy');await p.waitForTimeout(800);
 const o2=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').pop());
 ok(o2&&o2[3].ship===0&&o2[3].bundleWith===o1[2],'order 2 bundled with order 1');
 await p.evaluate(()=>{go('my');renderMy()});await p.waitForTimeout(200);

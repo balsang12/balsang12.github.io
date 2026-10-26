@@ -13,7 +13,16 @@
   });
   window.nmSupabase = sb;
 
+  var recovering = /type=recovery/.test(location.hash + location.search);
   var sessionReady = sb.auth.getSession().then(function (r) { return r.data.session || null; }).catch(function () { return null; });
+  var RET_KEY = "nm_return";
+  sessionReady.then(function (s) {
+    var ret = null; try { ret = JSON.parse(localStorage.getItem(RET_KEY) || "null"); } catch (e) {}
+    if (!s || !ret || recovering) return;
+    try { localStorage.removeItem(RET_KEY); } catch (e) {}
+    var here = location.origin + location.pathname;
+    if (Date.now() - ret.t < 3600000 && ret.url.indexOf(location.origin + "/") === 0 && ret.url.split(/[?#]/)[0] !== here) location.replace(ret.url);
+  });
   var who = null; // {id, admin, name, avatar}
   var whoReady = sessionReady.then(function (s) {
     if (!s) return null;
@@ -21,6 +30,8 @@
   });
   // reload once when someone signs in or out in another tab, so the app restarts with the right account
   sb.auth.onAuthStateChange(function (ev) {
+    if (ev === "PASSWORD_RECOVERY") { recovering = true; setTimeout(function () { openReset(); }, 50); return; }
+    if (recovering) return;
     if (ev === "SIGNED_OUT" || ev === "SIGNED_IN") {
       sessionReady.then(function (s) {
         var had = !!s;
@@ -218,46 +229,162 @@
 
   /* ---------- sign in ---------- */
   var css = ".nmauth{position:fixed;inset:0;z-index:9999;background:rgba(10,20,14,.55);display:grid;place-items:center;padding:16px}" +
-    ".nmauth[hidden]{display:none}.nmauth .box{background:var(--surface,#fff);color:var(--ink,#15201A);border-radius:18px;max-width:380px;width:100%;padding:22px 20px;display:flex;flex-direction:column;gap:12px;font:16px/1.6 var(--body,system-ui,sans-serif);box-shadow:0 10px 40px rgba(0,0,0,.25)}" +
+    ".nmauth[hidden]{display:none}.nmauth .box{background:var(--surface,#fff);color:var(--ink,#15201A);border-radius:18px;max-width:380px;width:100%;padding:22px 20px;display:flex;flex-direction:column;gap:12px;font:16px/1.6 var(--body,system-ui,sans-serif);box-shadow:0 10px 40px rgba(0,0,0,.25);max-height:calc(100dvh - 32px);overflow-y:auto}" +
     ".nmauth h2{margin:0;font:700 22px/1.3 var(--display,serif);color:var(--pine,#2B5B41)}.nmauth p{margin:0;color:var(--muted,#566659);font-size:15px}" +
     ".nmauth button,.nmauth input{font:inherit;border-radius:12px;padding:13px 14px;min-height:48px}" +
     ".nmauth .nm-kakao{background:#FEE500;color:#191600;border:0;font-weight:700}.nmauth .nm-mail{background:var(--pine,#2B5B41);color:var(--pine-ink,#fff);border:0;font-weight:700}" +
     ".nmauth input{border:1px solid var(--line,#D3DCCD);background:var(--bg,#F4F6F1);color:inherit}.nmauth .nm-close{background:none;border:0;color:var(--muted,#566659);min-height:40px}" +
+    ".nmauth .nm-up{background:none;border:1px solid var(--pine,#2B5B41);color:var(--pine,#2B5B41);font-weight:700}.nmauth details summary{cursor:pointer;font-size:14px;color:var(--muted,#566659)}.nmauth [hidden]{display:none!important}" +
     ".nmauth .nm-or{text-align:center;font-size:13px;color:var(--muted,#566659)}.nmauth .nm-msg:empty{display:none}.nmauth .nm-msg{font-size:14px;color:var(--pine,#2B5B41)}.nmauth .nm-msg.nm-err{color:var(--berry,#A3324A)}";
-  var el = null;
+  var T = {
+    ko: { h: "농마니 로그인", p: "로그인하면 주문·입찰·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.", kakao: "카카오로 시작하기", or: "또는 이메일로 받은 링크로 로그인", lbl: "이메일 주소", ph: "예: hong@naver.com", send: "로그인 링크 받기", close: "닫기",
+      goKakao: "카카오로 이동합니다…", noKakao: "카카오 로그인을 준비 중입니다. 이메일로 로그인해 주세요.", badMail: "이메일 주소를 다시 확인해 주세요.", sending: "보내는 중…",
+      rate: "잠시 뒤 다시 시도해 주세요. 메일을 너무 자주 요청했습니다.", fail: "메일을 보내지 못했습니다. 주소를 확인해 주세요.", sent: function (m) { return m + " 으로 로그인 링크를 보냈습니다. 메일함에서 링크를 누르면 로그인됩니다. (스팸함도 확인해 주세요)"; } },
+    en: { h: "Sign in to Nongmani", p: "Sign in to bid. New here? An account is created automatically.", kakao: "Continue with Kakao", or: "or get a sign-in link by email", lbl: "Email address", ph: "you@example.com", send: "Email me a sign-in link", close: "Close",
+      goKakao: "Opening Kakao…", noKakao: "Kakao sign-in is not ready yet. Please use email.", badMail: "Please check the email address.", sending: "Sending…",
+      rate: "Too many requests. Please try again in a minute.", fail: "We could not send the email. Please check the address.", sent: function (m) { return "We sent a sign-in link to " + m + ". Open it to sign in (check spam too)."; } },
+    "zh-Hant": { h: "登入農마니", p: "登入後即可出價。首次使用會自動建立帳號。", kakao: "使用 Kakao 登入", or: "或以電子郵件接收登入連結", lbl: "電子郵件", ph: "you@example.com", send: "寄送登入連結", close: "關閉",
+      goKakao: "正在前往 Kakao…", noKakao: "Kakao 登入尚未開放，請使用電子郵件。", badMail: "請確認電子郵件地址。", sending: "寄送中…",
+      rate: "請求過於頻繁，請稍後再試。", fail: "郵件寄送失敗，請確認地址。", sent: function (m) { return "登入連結已寄至 " + m + "，請點擊郵件中的連結登入（也請查看垃圾郵件）。"; } },
+    ja: { h: "ノンマニにログイン", p: "ログインすると入札・注文ができます。初めての方は自動で登録されます。", kakao: "Kakaoでログイン", or: "またはメールで届くリンクでログイン", lbl: "メールアドレス", ph: "you@example.com", send: "ログインリンクを送る", close: "閉じる",
+      goKakao: "Kakaoへ移動しています…", noKakao: "Kakaoログインは準備中です。メールでログインしてください。", badMail: "メールアドレスをご確認ください。", sending: "送信中…",
+      rate: "リクエストが多すぎます。しばらくしてからお試しください。", fail: "メールを送信できませんでした。アドレスをご確認ください。", sent: function (m) { return m + " にログインリンクを送りました。メール内のリンクを開くとログインできます（迷惑メールフォルダもご確認ください）。"; } },
+    "zh-Hans": { h: "登录农마니", p: "登录后即可出价。首次使用会自动创建账号。", kakao: "使用 Kakao 登录", or: "或通过电子邮件接收登录链接", lbl: "电子邮箱", ph: "you@example.com", send: "发送登录链接", close: "关闭",
+      goKakao: "正在前往 Kakao…", noKakao: "Kakao 登录尚未开放，请使用电子邮箱。", badMail: "请确认电子邮箱地址。", sending: "发送中…",
+      rate: "请求过于频繁，请稍后再试。", fail: "邮件发送失败，请确认地址。", sent: function (m) { return "登录链接已发送至 " + m + "，请点击邮件中的链接登录（也请查看垃圾邮件）。"; } }
+  };
+
+  var T2 = {
+    ko: { p: "로그인하면 주문·입찰·판매를 할 수 있습니다.", pwH: "이메일과 비밀번호로", pwLbl: "비밀번호", pwPh: "8자 이상", pin: "로그인", up: "처음이에요 · 가입하기", forgot: "비밀번호를 잊으셨나요?", linkH: "비밀번호 없이 이메일 링크로 로그인",
+      short: "비밀번호는 8자 이상으로 정해 주세요.", bad: "이메일이나 비밀번호가 맞지 않아요.", unconf: "가입 확인 메일의 링크를 먼저 한 번 눌러 주세요.", exists: "이미 가입된 이메일이에요. 위의 로그인을 눌러 주세요.",
+      joined: "가입 신청을 받았습니다. 메일함의 확인 링크를 한 번 누르면 로그인됩니다. (스팸함도 확인해 주세요)", resetSent: function (m) { return m + " 으로 비밀번호를 새로 정하는 링크를 보냈습니다."; }, needMail: "이메일을 먼저 적어 주세요.",
+      newH: "새 비밀번호 정하기", newSave: "새 비밀번호 저장", newOk: "비밀번호를 바꿨습니다. 이제 이 비밀번호로 로그인하세요.", wait: "확인 중…", show: "보기" },
+    en: { p: "Sign in to order and bid.", pwH: "With email and password", pwLbl: "Password", pwPh: "8+ characters", pin: "Sign in", up: "New here? Create account", forgot: "Forgot your password?", linkH: "Or sign in with an email link (no password)",
+      short: "Please use at least 8 characters.", bad: "Email or password is incorrect.", unconf: "Please open the confirmation link in your email first.", exists: "This email already has an account. Please sign in.",
+      joined: "Almost done. Open the confirmation link in your email to sign in (check spam too).", resetSent: function (m) { return "We sent a password reset link to " + m + "."; }, needMail: "Please enter your email first.",
+      newH: "Set a new password", newSave: "Save new password", newOk: "Password changed. You can sign in with it now.", wait: "Checking…", show: "Show" },
+    ja: { p: "ログインすると入札・注文ができます。", pwH: "メールアドレスとパスワードで", pwLbl: "パスワード", pwPh: "8文字以上", pin: "ログイン", up: "はじめての方・新規登録", forgot: "パスワードをお忘れですか？", linkH: "パスワードなしでメールのリンクからログイン",
+      short: "パスワードは8文字以上にしてください。", bad: "メールアドレスまたはパスワードが違います。", unconf: "先に登録確認メールのリンクを開いてください。", exists: "このメールアドレスは登録済みです。ログインしてください。",
+      joined: "登録を受け付けました。メールの確認リンクを開くとログインできます（迷惑メールもご確認ください）。", resetSent: function (m) { return m + " にパスワード再設定のリンクを送りました。"; }, needMail: "先にメールアドレスを入力してください。",
+      newH: "新しいパスワードを設定", newSave: "新しいパスワードを保存", newOk: "パスワードを変更しました。", wait: "確認中…", show: "表示" },
+    "zh-Hans": { p: "登录后即可下单和出价。", pwH: "使用邮箱和密码", pwLbl: "密码", pwPh: "至少8位", pin: "登录", up: "首次使用 · 注册", forgot: "忘记密码？", linkH: "或不用密码，通过邮件链接登录",
+      short: "密码至少需要8位。", bad: "邮箱或密码不正确。", unconf: "请先点击注册确认邮件中的链接。", exists: "该邮箱已注册，请直接登录。",
+      joined: "已收到注册，请点击邮件中的确认链接完成登录（也请查看垃圾邮件）。", resetSent: function (m) { return "已向 " + m + " 发送重设密码的链接。"; }, needMail: "请先填写邮箱。",
+      newH: "设置新密码", newSave: "保存新密码", newOk: "密码已修改。", wait: "确认中…", show: "显示" }
+  };
+  T2["zh-Hant"] = T2["zh-Hans"];
+  Object.keys(T2).forEach(function (k) { if (T[k]) Object.keys(T2[k]).forEach(function (x) { T[k][x] = T2[k][x]; }); });
+  function L() { return T[window.NM_LANG] || T.ko; }
+  function remember() { try { localStorage.setItem(RET_KEY, JSON.stringify({ url: location.href.split("#")[0], t: Date.now() })); } catch (e) {} }
+  var el = null, elLang = null;
   function build() {
+    if (el && elLang !== (window.NM_LANG || "ko")) { el.remove(); el = null; }
     if (el) return el;
-    var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+    if (!document.getElementById("nmAuthCss")) { var st = document.createElement("style"); st.id = "nmAuthCss"; st.textContent = css; document.head.appendChild(st); }
+    var t = L(); elLang = window.NM_LANG || "ko";
     el = document.createElement("div"); el.className = "nmauth"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-labelledby", "nmAuthH");
-    el.innerHTML = '<div class="box"><h2 id="nmAuthH">농마니 로그인</h2><p>로그인하면 주문·입찰·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.</p>' +
-      '<button type="button" class="nm-kakao" id="nmKakao">카카오로 시작하기</button>' +
-      '<div class="nm-or">또는 이메일로 받은 링크로 로그인</div>' +
-      '<form id="nmMailForm" style="display:flex;flex-direction:column;gap:8px"><label for="nmMail" style="font-size:14px;color:var(--muted,#566659)">이메일 주소</label><input id="nmMail" type="email" autocomplete="email" inputmode="email" placeholder="예: hong@naver.com" required><button class="nm-mail" type="submit">로그인 링크 받기</button></form>' +
-      '<div class="nm-msg" id="nmMsg" role="status"></div><button type="button" class="nm-close" id="nmClose">닫기</button></div>';
+    var lab = 'style="font-size:14px;color:var(--muted,#566659)"';
+    var ko = !window.NM_LANG || window.NM_LANG === "ko", T = "https://nongmani.com/terms/", P = "https://nongmani.com/privacy/", ck = 'style="display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.5;cursor:pointer;margin:0;padding:0;min-height:0"';
+    var consent = ko ?
+      '<div id="nmConsent" style="border:1px solid var(--line,#D3DCCD);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;margin-bottom:12px">' +
+      '<label ' + ck + '><input type="checkbox" id="nmCAll" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><b>모두 동의합니다</b></label>' +
+      '<label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>[필수] 만 14세 이상입니다</span></label>' +
+      '<label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>[필수] <a href="' + T + '" target="_blank" rel="noopener" style="color:var(--pine,#2B5B41)">이용약관</a>에 동의합니다</span></label>' +
+      '<label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>[필수] <a href="' + P + '" target="_blank" rel="noopener" style="color:var(--pine,#2B5B41)">개인정보 수집·이용</a>에 동의합니다 (이메일·카카오 회원번호, 로그인·본인 확인 목적, 탈퇴 시까지 보관)</span></label></div>' :
+      '<div id="nmConsent" style="margin-bottom:12px"><label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>I am 14 or older and agree to the <a href="' + T + '" target="_blank" rel="noopener">Terms</a> and <a href="' + P + '" target="_blank" rel="noopener">Privacy Policy</a> (required)</span></label></div>';
+    el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' + consent +
+      '<div id="nmMain" style="display:flex;flex-direction:column;gap:12px">' +
+      '<button type="button" class="nm-kakao" id="nmKakao"></button>' +
+      '<div class="nm-or" id="nmPwH"></div>' +
+      '<form id="nmPwForm" style="display:flex;flex-direction:column;gap:8px">' +
+        '<label for="nmPwMail" id="nmPwMailL" ' + lab + '></label><input id="nmPwMail" type="email" autocomplete="email" inputmode="email" required>' +
+        '<label for="nmPw" id="nmPwL" ' + lab + '></label><div style="display:flex;gap:6px"><input id="nmPw" type="password" autocomplete="current-password" minlength="8" required style="flex:1;min-width:0"><button type="button" id="nmPwShow" class="nm-close" style="min-height:48px"></button></div>' +
+        '<button class="nm-mail" type="submit" id="nmPwIn"></button>' +
+        '<button type="button" class="nm-up" id="nmPwUp"></button>' +
+        '<button type="button" class="nm-close" id="nmForgot" style="text-decoration:underline"></button>' +
+      '</form>' +
+      '<details class="nm-link"><summary id="nmLinkH"></summary>' +
+      '<form id="nmMailForm" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><label for="nmMail" id="nmMailL" ' + lab + '></label><input id="nmMail" type="email" autocomplete="email" inputmode="email" required><button class="nm-mail" type="submit" id="nmSend"></button></form>' +
+      '</details></div>' +
+      '<form id="nmNewForm" hidden style="display:flex;flex-direction:column;gap:8px"><label for="nmNewPw" id="nmNewL" ' + lab + '></label><input id="nmNewPw" type="password" autocomplete="new-password" minlength="8" required><button class="nm-mail" type="submit" id="nmNewSave"></button></form>' +
+      '<div class="nm-msg" id="nmMsg" role="status"></div><button type="button" class="nm-close" id="nmClose"></button></div>';
+    [["#nmAuthH", t.h], ["#nmAuthP", t.p], ["#nmKakao", t.kakao], ["#nmPwH", t.pwH], ["#nmPwMailL", t.lbl], ["#nmPwL", t.pwLbl], ["#nmPwShow", t.show], ["#nmPwIn", t.pin], ["#nmPwUp", t.up], ["#nmForgot", t.forgot],
+     ["#nmLinkH", t.linkH], ["#nmMailL", t.lbl], ["#nmSend", t.send], ["#nmNewL", t.newH], ["#nmNewSave", t.newSave], ["#nmClose", t.close]].forEach(function (x) { el.querySelector(x[0]).textContent = x[1]; });
+    el.querySelector("#nmMail").placeholder = t.ph; el.querySelector("#nmPwMail").placeholder = t.ph; el.querySelector("#nmPw").placeholder = t.pwPh; el.querySelector("#nmNewPw").placeholder = t.pwPh;
     document.body.appendChild(el);
+    var cs = [].slice.call(el.querySelectorAll(".nmC")), call = el.querySelector("#nmCAll");
+    var had = false; try { had = !!localStorage.getItem("nm_consent"); } catch (_) {}
+    if (had) { cs.forEach(function (c) { c.checked = true; }); if (call) call.checked = true; }
+    if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); };
+    cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); }; });
+    var needC = function () {
+      if (cs.every(function (c) { return c.checked; })) { try { localStorage.setItem("nm_consent", new Date().toISOString()); } catch (_) {} return true; }
+      say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true); el.querySelector("#nmConsent").scrollIntoView({ block: "nearest" }); return false;
+    };
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
     el.querySelector("#nmKakao").onclick = function () {
-      say("카카오로 이동합니다…");
+      if (!needC()) return;
+      say(t.goKakao); remember();
       sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: APP_URL } }).then(function (r) {
-        if (r.error) say("카카오 로그인을 준비 중입니다. 이메일로 로그인해 주세요.", true);
+        if (r.error) say(t.noKakao, true);
       });
     };
     el.querySelector("#nmMailForm").onsubmit = function (e) {
       e.preventDefault();
+      if (!needC()) return;
       var m = el.querySelector("#nmMail").value.trim();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { say("이메일 주소를 다시 확인해 주세요.", true); return; }
-      say("보내는 중…");
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { say(t.badMail, true); return; }
+      say(t.sending); remember();
       sb.auth.signInWithOtp({ email: m, options: { emailRedirectTo: APP_URL } }).then(function (r) {
-        if (r.error) say(/rate/i.test(r.error.message) ? "잠시 뒤 다시 시도해 주세요. 메일을 너무 자주 요청했습니다." : "메일을 보내지 못했습니다. 주소를 확인해 주세요.", true);
-        else say(m + " 으로 로그인 링크를 보냈습니다. 메일함에서 링크를 누르면 로그인됩니다. (스팸함도 확인해 주세요)");
+        if (r.error) say(/rate/i.test(r.error.message) ? t.rate : t.fail, true);
+        else say(t.sent(m));
       });
     };
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !el.hidden) close(); });
+    var pwMail = function () { return el.querySelector("#nmPwMail").value.trim(); }, pw = function () { return el.querySelector("#nmPw").value; };
+    var okMail = function (m) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m); };
+    el.querySelector("#nmPwShow").onclick = function () { var i = el.querySelector("#nmPw"); i.type = i.type === "password" ? "text" : "password"; };
+    el.querySelector("#nmPwForm").onsubmit = function (e) {
+      e.preventDefault(); var m = pwMail();
+      if (!okMail(m)) { say(t.badMail, true); return; }
+      say(t.wait); remember();
+      sb.auth.signInWithPassword({ email: m, password: pw() }).then(function (r) {
+        if (!r.error) { say(""); close(); return; }
+        var em = String(r.error.message || "");
+        say(/confirm/i.test(em) ? t.unconf : /rate/i.test(em) ? t.rate : t.bad, true);
+      });
+    };
+    el.querySelector("#nmPwUp").onclick = function () {
+      if (!needC()) return;
+      var m = pwMail(), p = pw();
+      if (!okMail(m)) { say(t.badMail, true); return; }
+      if (p.length < 8) { say(t.short, true); return; }
+      say(t.wait); remember();
+      sb.auth.signUp({ email: m, password: p, options: { emailRedirectTo: APP_URL } }).then(function (r) {
+        var em = String((r.error && r.error.message) || "");
+        if (r.error) { say(/registered|exists/i.test(em) ? t.exists : /rate/i.test(em) ? t.rate : /password/i.test(em) ? t.short : t.fail, true); return; }
+        if (r.data && r.data.session) { close(); return; }
+        if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0) { say(t.exists, true); return; }
+        say(t.joined);
+      });
+    };
+    el.querySelector("#nmForgot").onclick = function () {
+      var m = pwMail(); if (!okMail(m)) { say(t.needMail, true); el.querySelector("#nmPwMail").focus(); return; }
+      say(t.sending);
+      sb.auth.resetPasswordForEmail(m, { redirectTo: APP_URL }).then(function (r) { if (r.error) say(/rate/i.test(r.error.message) ? t.rate : t.fail, true); else say(t.resetSent(m)); });
+    };
+    el.querySelector("#nmNewForm").onsubmit = function (e) {
+      e.preventDefault(); var p = el.querySelector("#nmNewPw").value;
+      if (p.length < 8) { say(t.short, true); return; }
+      say(t.wait);
+      sb.auth.updateUser({ password: p }).then(function (r) { if (r.error) say(t.fail, true); else { say(t.newOk); setTimeout(function () { location.replace(APP_URL); }, 1200); } });
+    };
+    if (!build.keyed) { build.keyed = true; document.addEventListener("keydown", function (e) { if (e.key === "Escape" && el && !el.hidden) close(); }); }
     return el;
   }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
-  function open(reason) { build(); el.hidden = false; say(reason || ""); setTimeout(function () { el.querySelector("#nmKakao").focus(); }, 30); }
+  function open(reason) { build(); document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || ""); setTimeout(function () { el.querySelector("#nmPwMail").focus(); }, 30); }
+  function openReset() { build(); el.querySelector("#nmMain").hidden = true; el.querySelector("#nmNewForm").hidden = false; el.querySelector("#nmNewForm").style.display = "flex"; el.hidden = false; say(""); }
   function close() { if (el) el.hidden = true; }
 
   window.nmAuth = Object.freeze({

@@ -229,7 +229,7 @@
 
   /* ---------- sign in ---------- */
   var css = ".nmauth{position:fixed;inset:0;z-index:9999;background:rgba(10,20,14,.55);display:grid;place-items:center;padding:16px}" +
-    ".nmauth[hidden]{display:none}.nmauth .box{background:var(--surface,#fff);color:var(--ink,#15201A);border-radius:18px;max-width:380px;width:100%;padding:22px 20px;display:flex;flex-direction:column;gap:12px;font:16px/1.6 var(--body,system-ui,sans-serif);box-shadow:0 10px 40px rgba(0,0,0,.25)}" +
+    ".nmauth[hidden]{display:none}.nmauth .box{background:var(--surface,#fff);color:var(--ink,#15201A);border-radius:18px;max-width:380px;width:100%;padding:22px 20px;display:flex;flex-direction:column;gap:12px;font:16px/1.6 var(--body,system-ui,sans-serif);box-shadow:0 10px 40px rgba(0,0,0,.25);max-height:calc(100dvh - 32px);overflow-y:auto}" +
     ".nmauth h2{margin:0;font:700 22px/1.3 var(--display,serif);color:var(--pine,#2B5B41)}.nmauth p{margin:0;color:var(--muted,#566659);font-size:15px}" +
     ".nmauth button,.nmauth input{font:inherit;border-radius:12px;padding:13px 14px;min-height:48px}" +
     ".nmauth .nm-kakao{background:#FEE500;color:#191600;border:0;font-weight:700}.nmauth .nm-mail{background:var(--pine,#2B5B41);color:var(--pine-ink,#fff);border:0;font-weight:700}" +
@@ -284,7 +284,15 @@
     var t = L(); elLang = window.NM_LANG || "ko";
     el = document.createElement("div"); el.className = "nmauth"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-labelledby", "nmAuthH");
     var lab = 'style="font-size:14px;color:var(--muted,#566659)"';
-    el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' +
+    var ko = !window.NM_LANG || window.NM_LANG === "ko", T = "https://nongmani.com/terms/", P = "https://nongmani.com/privacy/", ck = 'style="display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.5;cursor:pointer;margin:0;padding:0;min-height:0"';
+    var consent = ko ?
+      '<div id="nmConsent" style="border:1px solid var(--line,#D3DCCD);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;margin-bottom:12px">' +
+      '<label ' + ck + '><input type="checkbox" id="nmCAll" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><b>모두 동의합니다</b></label>' +
+      '<label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>[필수] 만 14세 이상입니다</span></label>' +
+      '<label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>[필수] <a href="' + T + '" target="_blank" rel="noopener" style="color:var(--pine,#2B5B41)">이용약관</a>에 동의합니다</span></label>' +
+      '<label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>[필수] <a href="' + P + '" target="_blank" rel="noopener" style="color:var(--pine,#2B5B41)">개인정보 수집·이용</a>에 동의합니다 (이메일·카카오 회원번호, 로그인·본인 확인 목적, 탈퇴 시까지 보관)</span></label></div>' :
+      '<div id="nmConsent" style="margin-bottom:12px"><label ' + ck + '><input type="checkbox" class="nmC" style="width:18px;height:18px;min-height:0;margin:2px 0 0;flex:none;padding:0"><span>I am 14 or older and agree to the <a href="' + T + '" target="_blank" rel="noopener">Terms</a> and <a href="' + P + '" target="_blank" rel="noopener">Privacy Policy</a> (required)</span></label></div>';
+    el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' + consent +
       '<div id="nmMain" style="display:flex;flex-direction:column;gap:12px">' +
       '<button type="button" class="nm-kakao" id="nmKakao"></button>' +
       '<div class="nm-or" id="nmPwH"></div>' +
@@ -304,9 +312,19 @@
      ["#nmLinkH", t.linkH], ["#nmMailL", t.lbl], ["#nmSend", t.send], ["#nmNewL", t.newH], ["#nmNewSave", t.newSave], ["#nmClose", t.close]].forEach(function (x) { el.querySelector(x[0]).textContent = x[1]; });
     el.querySelector("#nmMail").placeholder = t.ph; el.querySelector("#nmPwMail").placeholder = t.ph; el.querySelector("#nmPw").placeholder = t.pwPh; el.querySelector("#nmNewPw").placeholder = t.pwPh;
     document.body.appendChild(el);
+    var cs = [].slice.call(el.querySelectorAll(".nmC")), call = el.querySelector("#nmCAll");
+    var had = false; try { had = !!localStorage.getItem("nm_consent"); } catch (_) {}
+    if (had) { cs.forEach(function (c) { c.checked = true; }); if (call) call.checked = true; }
+    if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); };
+    cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); }; });
+    var needC = function () {
+      if (cs.every(function (c) { return c.checked; })) { try { localStorage.setItem("nm_consent", new Date().toISOString()); } catch (_) {} return true; }
+      say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true); el.querySelector("#nmConsent").scrollIntoView({ block: "nearest" }); return false;
+    };
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
     el.querySelector("#nmKakao").onclick = function () {
+      if (!needC()) return;
       say(t.goKakao); remember();
       sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: APP_URL } }).then(function (r) {
         if (r.error) say(t.noKakao, true);
@@ -314,6 +332,7 @@
     };
     el.querySelector("#nmMailForm").onsubmit = function (e) {
       e.preventDefault();
+      if (!needC()) return;
       var m = el.querySelector("#nmMail").value.trim();
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { say(t.badMail, true); return; }
       say(t.sending); remember();
@@ -336,6 +355,7 @@
       });
     };
     el.querySelector("#nmPwUp").onclick = function () {
+      if (!needC()) return;
       var m = pwMail(), p = pw();
       if (!okMail(m)) { say(t.badMail, true); return; }
       if (p.length < 8) { say(t.short, true); return; }

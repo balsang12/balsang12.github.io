@@ -37,6 +37,9 @@ async function open(b, pre, shot) {
   ok(await p.locator('#nmPwMail').isVisible() && await p.locator('#nmPw').isVisible(), 'email and password fields');
   await p.fill('#nmPwMail', 'hong@naver.com'); await p.fill('#nmPw', 'wrong-pass'); await p.click('#nmPwIn'); await p.waitForTimeout(200);
   ok((await p.locator('#nmMsg').innerText()).includes('맞지 않아요'), 'wrong password message');
+  await p.fill('#nmPw', 'new-pass-1234'); await p.click('#nmPwUp'); await p.waitForTimeout(100);
+  ok((await p.locator('#nmMsg').innerText()).includes('필수 항목') && !(await p.evaluate(() => window.__calls.some(c => c[0] === 'signup'))), 'sign-up blocked until required consent');
+  await p.check('#nmCAll'); ok(await p.locator('.nmC:checked').count() === 3, 'agree-all ticks the 3 required boxes');
   await p.fill('#nmPw', 'short'); await p.click('#nmPwUp'); await p.waitForTimeout(100);
   ok((await p.locator('#nmMsg').innerText()).includes('8자'), 'short password rejected on sign-up');
   await p.fill('#nmPw', 'new-pass-1234'); await p.click('#nmPwUp'); await p.waitForTimeout(200);

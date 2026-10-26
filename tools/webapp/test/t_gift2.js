@@ -28,7 +28,7 @@ await p.locator('.giftdlg .card[data-pid="set1"]').click();await p.waitForTimeou
 ok(await p.locator('#dlg [data-gift="all|parents"]').count()===1,'back keeps group');
 await p.fill('#gCard','새해 복 많이 받으세요');await p.fill('#gDate',await p.evaluate(()=>new Date(Date.now()+9*3600e3+10*864e5).toISOString().slice(0,10)));
 await p.locator('#gOpt').scrollIntoViewIfNeeded();await p.screenshot({path:path.join(__dirname,'gift2_opt.png')});
-await p.click('#buy');await p.waitForTimeout(800);
+await p.check('#oAgree').catch(()=>{});await p.click('#buy');await p.waitForTimeout(800);
 const od=await p.evaluate(()=>window.__calls.filter(c=>c[0]==='upsert'&&c[1]==='orders').pop());
 ok(od&&od[3].gift&&od[3].gift.prodCard===true&&od[3].gift.date,'order has producer card + date');
 ok(errs.length===0,'no errors buyer '+errs.join('|'));await ctx.close();
