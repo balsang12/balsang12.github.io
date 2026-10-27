@@ -7,7 +7,7 @@ self.addEventListener("fetch", e => {
   const u = new URL(e.request.url);
   if (e.request.method !== "GET" || u.origin !== location.origin) return; // Supabase 등 외부 요청은 그대로
   // 화면 파일(html·js)은 매번 서버에 새 버전이 있는지 확인 (옛 화면이 남지 않게)
-  const fresh = e.request.mode === "navigate" || /\.(html|js)$/.test(u.pathname) ? new Request(e.request, { cache: "no-cache" }) : e.request;
-  e.respondWith(fetch(fresh).then(r => { const c = r.clone(); caches.open(V).then(x => x.put(e.request, c)); return r; })
+  const go = (e.request.mode === "navigate" || /\.(html|js)$/.test(u.pathname)) ? fetch(u.href, { cache: "no-cache", credentials: "same-origin" }) : fetch(e.request);
+  e.respondWith(go.then(r => { const c = r.clone(); caches.open(V).then(x => x.put(e.request, c)); return r; })
     .catch(() => caches.match(e.request, { ignoreSearch: true }).then(r => r || caches.match("index.html"))));
 });
