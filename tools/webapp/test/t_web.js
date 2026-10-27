@@ -12,6 +12,7 @@ async function open(b, pre, shot) {
   p.on('pageerror', e => errs.push(String(e))); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
   await p.route('**/vendor/supabase.js', r => r.fulfill({ contentType: 'application/javascript', body: fake }));
   await p.route('**/functions/v1/news', r => r.fulfill({ contentType: 'application/json', body: '{"items":[]}' }));
+  await p.route('https://cdn.jsdelivr.net/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
   await p.route('https://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
   await p.route(/upload\.wikimedia|commons\.wikimedia/, r => r.fulfill({ status: 404, body: '' }));
   await p.addInitScript(pre + '\n' + mock);
