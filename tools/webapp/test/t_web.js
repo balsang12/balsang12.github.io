@@ -180,7 +180,7 @@ async function open(b, pre, shot) {
     const base = Date.now() - 1e7, mk = (i, st) => ({ id: 'rp' + i, buyerId: 'b9', sellerId: S.uid, total: 10000, status: st || '정산완료', createdAt: base + i });
     S.orders = S.orders.concat([mk(1), mk(2, '취소'), mk(3), mk(4)]);
     r.rates = ['rp1', 'rp3', 'rp4'].map(id => ordRate(S.orders.find(o => o.id === id))).join(',');
-    r.net = shopNet(100000, 0.07).f === 7000;
+    r.net = shopNet(100000).f === 10000 && shopNet(100000).pg === 3400; r.win = aucNet(1000000).wf === 100000 && aucNet(1000000).vat === 10000;
     openThread('s1'); await wait(100);
     r.guard = !!document.querySelector('.cguard');
     const ta = document.querySelector('#cText'), n0 = window.__calls.filter(c => c[0] === 'upsert' && c[1] === 'messages').length;
@@ -198,7 +198,7 @@ async function open(b, pre, shot) {
     return r;
   });
   console.log(JSON.stringify(lk));
-  ok(lk.rates === '0.1,0.1,0.07' && lk.net, 'repeat-customer fee 7% from the 3rd valid order');
+  ok(lk.rates === '0.1,0.1,0.1' && lk.net && lk.win, 'flat 10% fee for every order and auction (no repeat discount)');
   ok(lk.guard && lk.blockedAndWarned && lk.secondSends, 'chat blocks contacts, warns on off-platform words');
   ok(lk.flag && lk.suspended, 'leak report leads to suspension; listings hidden');
   // 4) 해외 제목
