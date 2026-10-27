@@ -4,6 +4,7 @@
 (function () {
   "use strict";
   var SB_URL = "https://vxgydzjyzhjxvqaeludh.supabase.co";
+  window.NM_NEWS_URL = SB_URL + "/functions/v1/news";
   var SB_KEY = "sb_publishable_4MyQuV4WbsSnyIdE_s8XIQ_cfRlY6tz";
   var APP_URL = location.origin + location.pathname.replace(/[^/]*$/, "");
 

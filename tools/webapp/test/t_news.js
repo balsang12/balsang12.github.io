@@ -1,0 +1,20 @@
+const { chromium } = require('playwright');const fs=require('fs'),path=require('path');
+const fake=fs.readFileSync(path.join(__dirname,'fake_supabase.js'),'utf8'),mock=fs.readFileSync(path.join(__dirname,'../../app/mock_new.js'),'utf8');
+let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+const now=Date.now(),items=[{t:'올해 송이 작황 풍년, 산지 가격 내려',u:'https://www.yna.co.kr/a1',p:'연합뉴스',d:now-3600e3},{t:'산림청, 임산물 불법 채취 단속 강화',u:'https://www.nongmin.com/a2',p:'농민신문',d:now-86400e3},{t:'지리산 산양삼 첫 공동 출하',u:'https://www.gnnews.co.kr/a3',p:'경남일보',d:now-2*86400e3},{t:'봄 산나물 독초 구별 주의',u:'https://news.kbs.co.kr/a4',p:'KBS',d:now-3*86400e3},{t:'<img src=x onerror=alert(1)>',u:'javascript:alert(1)',p:'x',d:now}];
+(async()=>{const b=await chromium.launch();
+async function open(session,vw){const c=await b.newContext({viewport:{width:vw,height:844},locale:'ko-KR',serviceWorkers:'block'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+ await p.route('**/vendor/supabase.js',r=>r.fulfill({contentType:'application/javascript',body:fake}));
+ await p.route('**/functions/v1/news',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({items})}));
+ await p.addInitScript((session?`window.__SESSION={user:{id:"${session}"}};\n`:'')+mock);await p.goto(process.argv[2]+'/app/');await p.waitForTimeout(1300);return {p,c,errs}}
+let {p,c,errs}=await open(null,390);
+ok(await p.locator('#homeNews').isVisible(),'news shows under search');
+ok(await p.locator('#homeNews li').count()===3,'3 headlines by default');
+const y1=(await p.locator('#homeQ').boundingBox()).y,y2=(await p.locator('#homeNews').boundingBox()).y;ok(y2>y1,'below search box');
+ok(await p.locator('#homeNews a').first().getAttribute('target')==='_blank','opens original article in new tab');
+await p.click('#newsMore');ok(await p.locator('#homeNews li').count()===4,'more shows rest; bad link dropped');
+ok(!(await p.locator('#homeNews .nhide').count()),'guests see no hide button');
+await p.screenshot({path:path.join(__dirname,'news_m.png'),clip:{x:0,y:0,width:390,height:700}});
+ok(!errs.length,'no errors '+errs.join(';'));await c.close();
+({p,c,errs}=await open(null,1280));await p.screenshot({path:path.join(__dirname,'news_d.png'),clip:{x:0,y:0,width:1280,height:640}});await c.close();
+await b.close();console.log(fails?fails+' FAILED':'ALL PASS');process.exit(fails?1:0)})();

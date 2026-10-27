@@ -516,6 +516,8 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 .subbox{border:1px solid var(--pine);background:color-mix(in srgb,var(--pine) 7%,var(--surface));border-radius:12px;padding:10px 12px;margin:0 0 12px;display:grid;gap:8px}
 .subbox .actions{flex-wrap:wrap}.subbox .actions input{flex:1 1 120px;min-width:0}
 .herblink{margin:2px 0 0;display:flex;flex-wrap:wrap;gap:4px 22px}
+.hnews{margin:14px 0 0;max-width:640px;border-top:1px solid var(--line);padding-top:10px}.hnews h2{font-size:14px;margin:0 0 4px;color:var(--muted);font-weight:700;letter-spacing:.01em}.hnews ul{list-style:none;margin:0;padding:0}.hnews li{display:flex;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14.5px;line-height:1.45}.hnews li:last-child{border-bottom:0}.hnews a{color:var(--ink);text-decoration:none;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hnews a:hover,.hnews a:focus-visible{text-decoration:underline}.hnews .src{flex:none;color:var(--muted);font-size:12.5px}.hnews .more{background:none;border:0;padding:4px 0;color:var(--pine);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline}.hnews .nhide{flex:none;background:none;border:1px solid var(--line);border-radius:6px;font-size:11px;padding:0 6px;color:var(--berry);cursor:pointer}
+@media (max-width:560px){.hnews li{flex-wrap:wrap;gap:0 8px}.hnews a{white-space:normal;flex-basis:100%}}
 .hhead .srow2 .search{padding:7px 7px 7px 16px}.hhead .srow2 .search input{font-size:17.5px;padding:10px 0}.hhead .srow2 .search .btn{font-size:16.5px;padding-inline:22px}.herblink button{border:0;background:none;padding:6px 2px;font:inherit;font-size:15.5px;font-weight:700;color:var(--pine);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .herbbox{max-width:640px;border:1px solid color-mix(in srgb,var(--pine) 35%,transparent);border-radius:14px;background:color-mix(in srgb,var(--pine) 8%,var(--surface));overflow:hidden}
 .herbbox{display:flex;align-items:stretch}.herbbox .herbcard{flex:1;min-width:0;border:0;border-radius:0;background:transparent;max-width:none;padding:9px 12px;gap:8px}
@@ -821,6 +823,7 @@ label.btn{display:inline-block}
     <h1>농부와 심마니가 <br>직접 판매하는 산야초</h1>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="예: 잔대, 천문동, 황기, 산삼" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form></div>
     <p class="herblink"><button type="button" data-reco="1">🧺 쇼핑도우미</button><button type="button" data-go="herbs">🌿 산야초 사전</button></p>
+    <section class="hnews" id="homeNews" hidden aria-labelledby="hnewsH"></section>
   </div>
   <div id="todoHome"></div>
   <div id="alertHome"></div>
@@ -4356,6 +4359,18 @@ $("#thumbFill").onclick=async()=>{if(!S.db)return;const b=$("#thumbFill");b.disa
   catch(e){$("#thumbNote").textContent="사진을 불러오지 못했습니다"}finally{b.disabled=false}};
 $("details.more>summary")?.addEventListener("click",()=>{$("details.more").dataset.touched=1});$("details.more")?.addEventListener("toggle",()=>{$("#clHome").dataset.k="";fillClHome()});
 $("#shopQ").addEventListener("change",e=>logHealth(e.target.value));
+
+/* ---------- 산야초 소식 (웹판 전용: window.NM_NEWS_URL 이 있을 때만) ---------- */
+let NEWS={items:[],open:false,t:0};
+function newsDate(d){const x=new Date(d+9*3600e3);return `${x.getUTCMonth()+1}.${x.getUTCDate()}`}
+function renderNews(){const el=$("#homeNews");if(!el)return;const hide=new Set((S.site&&S.site.newsHide)||[]);const l=NEWS.items.filter(x=>!hide.has(x.u));
+  if(!l.length){el.hidden=true;return}el.hidden=false;const n=NEWS.open?Math.min(10,l.length):3;
+  el.innerHTML=`<h2 id="hnewsH">📰 산야초 소식</h2><ul>${l.slice(0,n).map(x=>`<li><a href="${esc(x.u)}" target="_blank" rel="noopener nofollow">${esc(x.t)}</a><span class="src">${esc(x.p||"")}${x.d?" · "+newsDate(x.d):""}</span>${S.owner?`<button type="button" class="nhide" data-nhide="${esc(x.u)}" title="이 기사 숨기기 (운영자)">숨기기</button>`:""}</li>`).join("")}</ul>${l.length>3?`<button type="button" class="more" id="newsMore">${NEWS.open?"접기":"더 보기 ›"}</button>`:""}`;
+  const m=$("#newsMore");if(m)m.onclick=()=>{NEWS.open=!NEWS.open;renderNews()};
+  el.querySelectorAll("[data-nhide]").forEach(b=>b.onclick=async()=>{const u=b.dataset.nhide,v={newsHide:[...((S.site&&S.site.newsHide)||[]),u].slice(-300)};if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),"이 기사를 숨겼습니다")){S.site={...(S.site||{}),...v};renderNews()}})}
+async function loadNews(){if(!window.NM_NEWS_URL||Date.now()-NEWS.t<10*60e3)return;NEWS.t=Date.now();
+  try{const r=await fetch(window.NM_NEWS_URL);const j=await r.json();NEWS.items=Array.isArray(j.items)?j.items.filter(x=>x&&x.t&&/^https?:\/\//.test(x.u)):[]}catch(_){NEWS.items=[]}renderNews()}
+loadNews();
 $("#homeSearch").onsubmit=e=>{e.preventDefault();logHealth($("#homeQ").value);S.cat="전체";S.use="";$("#shopQ").value=$("#homeQ").value.trim();go("shop")};
 renderWiz();
 /* ---------- 연결 ---------- */
@@ -4366,7 +4381,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   const user=await use("user"),db=await use("db");
   S.db=db;S.sample=await use("sample");
   if(user){
-    const me=await user.me();S.uid=me.id;S.owner=await user.isOwner();
+    const me=await user.me();S.uid=me.id;S.owner=await user.isOwner();renderNews();
     const cw=await user.can("data.write");if(cw===false)S.canWrite=false;
     if(S.uid){$("#who").innerHTML=`${me.avatarUrl?`<img alt="" src="${esc(me.avatarUrl)}">`:""}<span></span>`;$("#who span").textContent=(me.name||"나")+(S.owner?" · 운영자":"")}
     $("#adminTab").hidden=!S.owner;$("#adminMenu").hidden=!S.owner;S.userApi=user;
@@ -4388,7 +4403,7 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   if(S.owner){db.collection("proofs").limit(500).onSnapshot(s=>{S.proofs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
     db.collection("landreqs").limit(500).onSnapshot(s=>{S.landreqs=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{})}
   db.collection("herbinfo").limit(1000).onSnapshot(s=>{S.info=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{});
-  db.collection("settings").limit(10).onSnapshot(s=>{const d=s.docs.find(x=>x.id==="site");S.site=d?d.data():{};renderClassic();render()},()=>{});
+  db.collection("settings").limit(10).onSnapshot(s=>{const d=s.docs.find(x=>x.id==="site");S.site=d?d.data():{};renderClassic();render();renderNews()},()=>{});
   if(S.uid)subMsgs();
   db.collection("shopmgr").limit(1000).onSnapshot(s=>{S.mgrLinks=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));if(S.acting&&!myLinks().some(l=>l.shop===S.uid))actExit();render()},()=>{});
   db.collection("alerts").limit(1000).onSnapshot(s=>{S.alerts=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
