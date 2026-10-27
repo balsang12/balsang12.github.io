@@ -4405,7 +4405,8 @@ renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="�
   const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
   ["products","orders","requests","quotes","reviews","auctions","bids","subs"].forEach(c=>sub(c,c));
   db.collection("videos").limit(500).onSnapshot(s=>{S.videos=s.docs.map(d=>({id:d.id,...d.data()}));renderClassic();if($("#dlg").open&&S.openCl)openDict(S.openCl);requestAnimationFrame(paintAll)},()=>{});
-  db.collection("herbthumbs").limit(1000).onSnapshot(s=>{S.thumbs=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{});
+  /* 목록 사진(약 2.5MB)은 첫 화면이 뜬 뒤에 받기 */
+  setTimeout(()=>db.collection("herbthumbs").limit(1000).onSnapshot(s=>{S.thumbs=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{}),S.view==="herbs"?0:1500);
   db.collection("herbmeta").limit(1000).onSnapshot(s=>{S.hmeta=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic()},()=>{});
   if(S.owner)db.collection("herbphotos").where("status","==","pending").limit(200).onSnapshot(s=>{S.pendPhotos=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
   if(S.owner)db.collection("reports").limit(500).onSnapshot(s=>{S.reports=s.docs.map(d=>({id:d.id,...d.data()}));renderAdmin()},()=>{});
