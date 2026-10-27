@@ -422,7 +422,7 @@ details.more[open]{padding-bottom:14px;display:block}details.more[open]>*:not(su
 @media (max-width:700px){
   .hhead .recobtn{display:none}#homeAucKinds{display:none}
   .hhead .hsub{display:none}.hhead>.eyebrow{font-size:13px}.hhead h1{font-size:24px}.hhead{gap:10px}
-  .betabar{font-size:12.5px;padding:6px 0}
+  .betabar{font-size:12px;padding:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.betabar .bbx{display:none}
   #connBanner{padding:8px 12px;font-size:13px;margin-block:8px}
   #homeIcons{grid-template-columns:repeat(var(--cols,3),1fr)}
 }
@@ -793,7 +793,7 @@ label.btn{display:inline-block}
 </header>
 
 <div id="actBar" class="actbar" hidden><div class="wrap"><span id="actTxt"></span><button type="button" id="actExit">내 계정으로 돌아가기</button></div></div>
-<div id="betaBar" class="betabar" hidden><div class="wrap"><b>베타 오픈</b> 지금은 구경과 알림 신청만 됩니다. 주문·결제는 곧 시작해요.</div></div>
+<div id="betaBar" class="betabar" hidden><div class="wrap"><b>베타</b> 주문·결제는 곧 시작해요<span class="bbx"> · 지금은 구경과 오픈 알림 신청만 됩니다</span></div></div>
 <main class="wrap">
 <div class="banner" id="connBanner" hidden></div>
 
