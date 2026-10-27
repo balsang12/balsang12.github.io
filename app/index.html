@@ -4394,6 +4394,8 @@ $("#homeSearch").onsubmit=e=>{e.preventDefault();logHealth($("#homeQ").value);S.
 renderWiz();
 /* ---------- 연결 ---------- */
 renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="다음 마감: "+satLabel(nextSat(Date.now())));$("#aDur").onchange=()=>{$("#aDurNote").textContent=$("#aDur").value==="sat"?`검수 후 ${satLabel(nextSat(Date.now()))} 마감 경매에 올라갑니다`:"시험용입니다. 승인 즉시 10분 경매가 열립니다"};$("#aDur").onchange();render();go(startView());
+/* 산야초사전 페이지의 "장터에서 찾기" 링크(?q=곰취)로 들어오면 바로 그 상품 검색 */
+try{const q0=(new URLSearchParams(location.search).get("q")||"").trim().slice(0,40);if(q0){S.cat="전체";S.use="";$("#shopQ").value=q0;$("#homeQ").value=q0;go("shop")}}catch(e){}
 (async()=>{
   const ban=$("#connBanner");
   const use=n=>Promise.resolve(window.claude?.use?.(n)??null).catch(()=>null);
