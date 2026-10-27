@@ -156,7 +156,7 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .dlg{display:grid;grid-template-columns:1fr 1fr;min-width:0;position:relative}
 .dlg .thumb{aspect-ratio:auto;min-height:280px}
 .dinfo{padding:22px;display:grid;gap:12px;align-content:start;min-width:0}
-.close{position:absolute;top:10px;right:10px;border:0;background:var(--surface);border-radius:999px;width:36px;height:36px;cursor:pointer;font-size:18px;z-index:2}
+.close{position:sticky;top:10px;float:right;justify-self:end;align-self:start;display:block;margin:10px 10px -46px auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.12)}
 .board{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .board div{background:var(--bg);border-radius:10px;padding:10px 12px}
 .board b{display:block;font-size:22px}
@@ -4362,6 +4362,13 @@ const NEWS_URL=()=>window.NM_NEWS_URL||(/(^|\.)nongmani\.com$/.test(location.hos
 async function loadNews(){const U=NEWS_URL();if(!U||Date.now()-NEWS.t<10*60e3)return;NEWS.t=Date.now();
   try{let r=await fetch(U,{cache:"no-store"});if(!r.ok)r=await fetch(U,{cache:"no-store"});const j=await r.json();NEWS.items=Array.isArray(j.items)?j.items.filter(x=>x&&x.t&&/^https?:\/\//.test(x.u)):[];NEWS.err=j.status||""}catch(e){NEWS.items=[];NEWS.err=String(e&&e.message||e).slice(0,60)}renderNews()}
 loadNews();
+
+/* 대화상자: 스크롤해도 × 버튼이 위에 붙어 있고, 휴대폰 '뒤로 가기'로도 닫힘 */
+(()=>{const D=$("#dlg");if(!D)return;const sm=D.showModal.bind(D);
+  D.showModal=()=>{if(D.open)return;sm();try{if(!(history.state&&history.state.nmDlg))history.pushState({...(history.state||{}),nmDlg:1},"")}catch(_){}};
+  addEventListener("popstate",()=>{if(D.open){D.__pop=1;D.close()}});
+  D.addEventListener("close",()=>{if(!D.__pop&&history.state&&history.state.nmDlg){try{history.back()}catch(_){}}D.__pop=0});
+  D.addEventListener("click",e=>{if(e.target===D)D.close()});})();
 $("#homeSearch").onsubmit=e=>{e.preventDefault();logHealth($("#homeQ").value);S.cat="전체";S.use="";$("#shopQ").value=$("#homeQ").value.trim();go("shop")};
 renderWiz();
 /* ---------- 연결 ---------- */
