@@ -1467,7 +1467,7 @@ const HERB_SRC=`
 눈개승마|삼나물|산나물|ok|
 전호||산나물|ok|
 모시대||산나물|ok|
-누리대||산나물|ok|
+누리대||산나물|check|식약처 식품원료 목록에 '왜우산풀(누리대)'이 사용 불가로 올라 있음
 고추나무순||산나물|ok|
 산초잎|초피잎|산나물|ok|
 엉겅퀴||산나물|ok|먹는 부위(식약처): 순, 잎, 전초
@@ -4128,7 +4128,7 @@ function openDict(name){
   const lkFields=[["leaf","잎"],["stem","줄기"],["flower","꽃"],["root","뿌리"],["fruit","열매"],["smell","냄새"]];
   const look=idn.look&&lkFields.some(([k])=>idn.look[k])?`<div class="sec"><h3>생김새</h3><div class="looks">${lkFields.filter(([k])=>idn.look[k]).map(([k,l])=>`<div><b>${l}</b><span>${esc(idn.look[k])}</span></div>`).join("")}</div>${srcList(idn.sources)}</div>`:"";
   const lkHTML=lk.length?`<div class="sec"><h3>${ban?"이 독초로 잘못 알기 쉬운 식물":"비슷한 식물과 구별하는 법"}</h3>${lk.map(l=>{const bad=/독/.test(l.danger||"");return `<div class="lk-card ${bad?"bad":""}"><div class="itop"><b style="font-size:16px">${esc(l.name)}</b><span class="chip ${bad?"hot":l.danger==="주의"?"gold":"ok"}">${esc(l.danger||"비슷함")}</span></div>${l.how?`<div>${esc(l.how)}</div>`:""}${Array.isArray(l.points)&&l.points.length?`<ul>${l.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:""}</div>`}).join("")}${srcList(i?.lookSources)}<div class="notice">애매하면 먹지 마세요. 산나물 독초 사고는 대부분 '비슷해 보여서' 생깁니다.</div></div>`:"";
-  const prep=!ban&&(idn.prep||idn.store||idn.eat||idn.grade)?`<div class="sec"><h3>고르는 법·손질·보관</h3><dl class="facts">${idn.grade?`<dt>고르는 법</dt><dd>${esc(idn.grade)}</dd>`:""}${idn.prep?`<dt>손질</dt><dd>${esc(idn.prep)}</dd>`:""}${idn.store?`<dt>보관</dt><dd>${esc(idn.store)}</dd>`:""}${idn.eat?`<dt>먹는 법</dt><dd>${esc(idn.eat)}</dd>`:""}</dl></div>`:"";
+  const prep=!ban&&(idn.prep||idn.store||idn.eat||idn.grade)?`<div class="sec"><h3>고르는 법·손질·보관</h3><dl class="facts">${idn.grade?`<dt>고르는 법</dt><dd>${esc(idn.grade)}</dd>`:""}${idn.prep?`<dt>손질</dt><dd>${esc(idn.prep)}</dd>`:""}${idn.store?`<dt>보관</dt><dd>${esc(idn.store)}</dd>`:""}${idn.eat?(x.st==="hanyak"?`<dt>전통적 쓰임</dt><dd>${esc(idn.eat)}<div class="meta" style="margin-top:4px">한약재로 분류되어 식품으로는 판매하지 않습니다. 드시려면 한의사와 상의하세요.</div></dd>`:`<dt>먹는 법</dt><dd>${esc(idn.eat)}</dd>`):""}</dl></div>`:"";
   const meta=S.hmeta[hid(name)]||{},rv=Array.isArray(meta.review)?meta.review:[],chg=Array.isArray(meta.changes)?meta.changes:[];
   const isSeller=!!S.sellers[S.uid];
   const fieldHTML=`<div class="sec field-notes" id="fnSec" hidden><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">농부·심마니가 직접 남긴 자료</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
