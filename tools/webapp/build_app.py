@@ -32,7 +32,9 @@ HEAD = """<meta name="description" content="농마니 · 농부와 심마니 직
 <meta property="og:description" content="산에서 캔 약초, 밭에서 키운 산나물을 직접 사고파는 장터">
 <meta property="og:image" content="https://nongmani.com/seller/og.png">
 """
-patch("</head><body>", HEAD + "</head><body>\n<script src=\"vendor/supabase.js\"></script>\n<script src=\"nm-claude.js\"></script>", "head+scripts")
+import hashlib, time
+_V = hashlib.md5((here / "app" / "nm-claude.js").read_bytes()).hexdigest()[:8]
+patch("</head><body>", HEAD + "</head><body>\n<script src=\"vendor/supabase.js\"></script>\n<script src=\"nm-claude.js?v=" + _V + "\"></script>", "head+scripts")
 
 patch('<div class="logo"><b>', '<div class="logo" translate="no"><b>', "logo no-translate")
 
