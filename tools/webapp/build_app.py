@@ -23,7 +23,7 @@ HEAD = """<meta name="description" content="농마니 · 농부와 심마니 직
 <link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
 <link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#2B5B41">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -120,6 +120,7 @@ document.getElementById("nmIntlX").onclick=function(){e.hidden=true;e.style.disp
 })();</script>
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body></html>"""
+patch('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">', '<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">', "pretendard font")
 patch("</body></html>", FOOT, "footer")
 
 out.mkdir(parents=True, exist_ok=True)

@@ -4,7 +4,7 @@
 <link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
 <link rel="alternate" hreflang="zh-Hans" href="https://nongmani.com/app/global.html?lang=zh-Hans">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#2B5B41">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -16,17 +16,18 @@
 <script src="vendor/supabase.js"></script>
 <script src="nm-claude.js"></script>
 <title>농마니</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 /* Layout: 상단 고정 내비 + 탭 화면(홈·경매·마켓·채취 의뢰·내 거래·판매자·운영자·이용 안내). 경매는 카드 그리드 + 상세 대화상자, 판매자·운영자는 2단 패널 */
 :root{
-  --bg:#F4F6F1; --surface:#FFFFFF; --sunk:#E8EDE3; --line:#D3DCCD;
+  --bg:#FFFFFF; --surface:#FFFFFF; --sunk:#F2F5F1; --line:#DDE5DA;
   --ink:#15201A; --muted:#566659;
-  --pine:#2B5B41; --pine-ink:#FFFFFF; --pine-soft:#DAE9DE;
+  --pine:#16824A; --pine-ink:#FFFFFF; --pine-soft:#E2F3E8;
   --gold:#8A5B0B; --gold-ink:#FFFFFF; --gold-soft:#F4E7CC; --gold-deep:#6E4705;
   --berry:#A3324A; --berry-soft:#F6E0E5;
-  --display:"Gowun Batang","Nanum Myeongjo",serif;
-  --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --display:"Pretendard Variable",Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --body:"Pretendard Variable",Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --hl:#16824A;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111712; --surface:#19221B; --sunk:#222D24; --line:#334036;
@@ -42,7 +43,7 @@
   --berry:#E57F95; --berry-soft:#3A2128; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6;word-break:keep-all;overflow-wrap:break-word}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.3}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.3;letter-spacing:-.025em}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--pine);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
@@ -211,7 +212,7 @@ td.r,th.r{text-align:right}
 
 /* ---------- 앱 화면 (숨고식 하단 메뉴·검색·질문형 의뢰·프로필·대화) ---------- */
 .hhead{display:grid;gap:12px}
-.hhead h1{font-size:clamp(26px,5.6vw,38px)}
+.hhead h1{font-size:clamp(26px,5.6vw,38px);font-weight:800;letter-spacing:-.045em;line-height:1.28;color:var(--ink)}.hhead h1 em{font-style:normal;color:var(--hl)}
 .search{display:flex;gap:8px;background:var(--surface);border:1.5px solid var(--pine);border-radius:14px;padding:6px 6px 6px 14px;max-width:640px}
 .search input{flex:1;min-width:0;border:0;background:none;font-size:16px;padding:8px 0}
 .search input:focus{outline:none}
@@ -820,7 +821,7 @@ label.btn{display:inline-block}
   <div class="htop"><div class="hmain">
   <div class="hhead">
     <div class="eyebrow hdirect">산지 <b>직거래</b> · 안전결제</div>
-    <h1>농부와 심마니가 <br>직접 판매하는 산야초</h1>
+    <h1>농부와 심마니가 <br>직접 판매하는 <em>산야초</em></h1>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="예: 잔대, 천문동, 황기, 산삼" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form></div>
     <p class="herblink"><button type="button" data-reco="1">🧺 쇼핑도우미</button><button type="button" data-go="herbs">🌿 산야초 사전</button></p>
     <section class="hnews" id="homeNews" hidden aria-labelledby="hnewsH"></section>
