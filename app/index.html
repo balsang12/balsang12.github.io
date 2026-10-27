@@ -4363,11 +4363,16 @@ $("#shopQ").addEventListener("change",e=>logHealth(e.target.value));
 /* ---------- 산야초 소식 (웹판 전용: window.NM_NEWS_URL 이 있을 때만) ---------- */
 let NEWS={items:[],open:false,t:0};
 function newsDate(d){const x=new Date(d+9*3600e3);return `${x.getUTCMonth()+1}.${x.getUTCDate()}`}
-function renderNews(){const el=$("#homeNews");if(!el)return;const hide=new Set((S.site&&S.site.newsHide)||[]);const l=NEWS.items.filter(x=>!hide.has(x.u));
-  if(!l.length){el.hidden=true;return}el.hidden=false;const n=NEWS.open?Math.min(10,l.length):3;
-  el.innerHTML=`<h2 id="hnewsH">📰 산야초 소식</h2><ul>${l.slice(0,n).map(x=>`<li><a href="${esc(x.u)}" target="_blank" rel="noopener nofollow">${esc(x.t)}</a><span class="src">${esc(x.p||"")}${x.d?" · "+newsDate(x.d):""}</span>${S.owner?`<button type="button" class="nhide" data-nhide="${esc(x.u)}" title="이 기사 숨기기 (운영자)">숨기기</button>`:""}</li>`).join("")}</ul>${l.length>3?`<button type="button" class="more" id="newsMore">${NEWS.open?"접기":"더 보기 ›"}</button>`:""}`;
+function renderNews(){const el=$("#homeNews");if(!el)return;const site=S.site||{},hide=new Set(site.newsHide||[]),pins=(site.newsPin||[]).filter(x=>x&&x.t&&/^https?:\/\//.test(x.u)),pu=new Set(pins.map(x=>x.u));
+  const l=[...pins.map(x=>({...x,pin:1})),...NEWS.items.filter(x=>!hide.has(x.u)&&!pu.has(x.u))];
+  if(!l.length&&!S.owner){el.hidden=true;return}el.hidden=false;const n=NEWS.open?Math.min(10+pins.length,l.length):3;
+  el.innerHTML=`<h2 id="hnewsH">📰 산야초 소식</h2>${l.length?`<ul>${l.slice(0,n).map(x=>`<li>${x.pin?'<span class="src" title="운영자 추천">📌</span>':""}<a href="${esc(x.u)}" target="_blank" rel="noopener nofollow">${esc(x.t)}</a><span class="src">${esc(x.p||"")}${x.d?" · "+newsDate(x.d):""}</span>${S.owner?`<button type="button" class="nhide" data-nhide="${esc(x.u)}" data-pin="${x.pin?1:""}" title="${x.pin?"추천에서 빼기":"이 기사 숨기기"} (운영자)">${x.pin?"빼기":"숨기기"}</button>`:""}</li>`).join("")}</ul>`:'<p class="meta" style="margin:4px 0">아직 보여 줄 기사가 없습니다.</p>'}${l.length>3?`<button type="button" class="more" id="newsMore">${NEWS.open?"접기":"더 보기 ›"}</button>`:""}
+  ${S.owner?`<details class="meta" style="margin-top:6px;font-size:13px"><summary style="cursor:pointer">📌 기사 직접 추가 (운영자)</summary><form id="newsPinF" style="display:grid;gap:6px;margin-top:6px"><input id="npU" type="url" required placeholder="기사 주소 (https://...)" aria-label="기사 주소"><input id="npT" required maxlength="120" placeholder="기사 제목" aria-label="기사 제목"><input id="npP" maxlength="30" placeholder="언론사 (예: 농민신문)" aria-label="언론사"><button class="btn sm" type="submit">맨 위에 추가</button></form></details>`:""}`;
   const m=$("#newsMore");if(m)m.onclick=()=>{NEWS.open=!NEWS.open;renderNews()};
-  el.querySelectorAll("[data-nhide]").forEach(b=>b.onclick=async()=>{const u=b.dataset.nhide,v={newsHide:[...((S.site&&S.site.newsHide)||[]),u].slice(-300)};if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),"이 기사를 숨겼습니다")){S.site={...(S.site||{}),...v};renderNews()}})}
+  const save=async(v,msg)=>{if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),msg)){S.site={...(S.site||{}),...v};renderNews()}};
+  el.querySelectorAll("[data-nhide]").forEach(b=>b.onclick=()=>{const u=b.dataset.nhide;if(b.dataset.pin)save({newsPin:(S.site.newsPin||[]).filter(x=>x.u!==u)},"추천에서 뺐습니다");else save({newsHide:[...((S.site&&S.site.newsHide)||[]),u].slice(-300)},"이 기사를 숨겼습니다")});
+  const f=$("#newsPinF");if(f)f.onsubmit=e=>{e.preventDefault();const u=$("#npU").value.trim(),t=$("#npT").value.trim().slice(0,120),pr=$("#npP").value.trim().slice(0,30);if(!/^https?:\/\/\S+$/.test(u)||!t){toast("기사 주소와 제목을 넣어 주세요");return}
+    save({newsPin:[{t,u,p:pr,d:Date.now()},...((S.site&&S.site.newsPin)||[]).filter(x=>x.u!==u)].slice(0,5)},"맨 위에 추가했습니다")}}
 async function loadNews(){if(!window.NM_NEWS_URL||Date.now()-NEWS.t<10*60e3)return;NEWS.t=Date.now();
   try{const r=await fetch(window.NM_NEWS_URL);const j=await r.json();NEWS.items=Array.isArray(j.items)?j.items.filter(x=>x&&x.t&&/^https?:\/\//.test(x.u)):[]}catch(_){NEWS.items=[]}renderNews()}
 loadNews();
