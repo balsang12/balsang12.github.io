@@ -21,7 +21,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-si
 .hero{position:relative;min-height:min(92vh,720px);display:flex;align-items:center;overflow:hidden;background:#DCE8E4 url(/hero.svg) center bottom/cover no-repeat;color:#fff}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,34,22,.62) 0%,rgba(14,34,22,.35) 45%,rgba(14,34,22,0) 75%),linear-gradient(0deg,rgba(14,34,22,.35),rgba(14,34,22,0) 40%)}
 .hero nav{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(16px,4vw,48px)}
-.hero nav b{font-size:20px;letter-spacing:-.03em;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.25)}.hero nav b i{font-style:normal;color:#F3D58B}
+.hero nav b{font-size:22px;font-weight:800;letter-spacing:-.04em;color:#3DD27F;text-shadow:0 1px 8px rgba(0,0,0,.3)}.hero nav b i{font-style:normal;background:linear-gradient(180deg,#FFE08A 0%,#F2BE3A 55%,#D49A1C 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 1px 4px rgba(0,0,0,.3))}
 .hero nav a{color:#fff;text-decoration:none;font-weight:600;font-size:14px;margin-left:18px;opacity:.92}
 .hero .in{position:relative;z-index:1;padding:96px clamp(16px,6vw,96px) 64px;max-width:820px}
 .eyebrow{font-size:12.5px;letter-spacing:.32em;font-weight:700;color:#F3D58B;margin:0 0 18px}
@@ -33,7 +33,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-si
 @media (max-width:560px){
 .hero{min-height:0;align-items:stretch;background-position:58% bottom;background-size:auto 100%}
 .hero::after{background:linear-gradient(180deg,rgba(247,244,233,.9) 0%,rgba(247,244,233,.72) 48%,rgba(247,244,233,0) 64%),linear-gradient(0deg,rgba(14,34,22,.55) 0%,rgba(14,34,22,0) 22%)}
-.hero nav a.hide{display:none}.hero nav b{color:#173A25;text-shadow:none}.hero nav b i{color:#B07A12}.hero nav a{color:#173A25}
+.hero nav a.hide{display:none}.hero nav b{color:#17A356;text-shadow:none}.hero nav b i{background:linear-gradient(180deg,#F0BE34 0%,#D9A01E 50%,#B07A0C 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:none}.hero nav a{color:#173A25}
 .hero .in{padding:84px 0 28px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;width:100%}
 .eyebrow{letter-spacing:.2em;font-size:11px;color:#9A6A10;margin-bottom:12px}
 .hero h1{color:#173A25;text-shadow:none;font-size:34px;margin-bottom:14px}.hero h1 em{color:#16824A}.hero br.mb{display:inline}
