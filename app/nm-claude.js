@@ -316,11 +316,18 @@
     var cs = [].slice.call(el.querySelectorAll(".nmC")), call = el.querySelector("#nmCAll");
     var had = false; try { had = !!localStorage.getItem("nm_consent"); } catch (_) {}
     if (had) { cs.forEach(function (c) { c.checked = true; }); if (call) call.checked = true; }
-    if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); };
-    cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); }; });
+    var okC = function () { if (!cs.every(function (x) { return x.checked; })) return; var h = el.querySelector("#nmCHint"), bx = el.querySelector("#nmConsent"); if (h) h.remove(); bx.style.borderColor = ""; bx.style.background = ""; say(""); };
+    if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); okC(); };
+    cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); okC(); }; });
     var needC = function () {
       if (cs.every(function (c) { return c.checked; })) { try { localStorage.setItem("nm_consent", new Date().toISOString()); } catch (_) {} return true; }
-      say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true); el.querySelector("#nmConsent").scrollIntoView({ block: "nearest" }); return false;
+      say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true);
+      var bx = el.querySelector("#nmConsent"); bx.scrollIntoView({ block: "nearest" });
+      /* 동의 칸을 깜박여 어디를 눌러야 하는지 보여 줌 */
+      var n = 0, tm = setInterval(function () { bx.style.borderColor = n % 2 ? "" : "#C0392B"; bx.style.background = n % 2 ? "" : "#FDECEA"; if (++n > 5) { clearInterval(tm); bx.style.borderColor = "#C0392B"; bx.style.background = ""; } }, 220);
+      var hint = el.querySelector("#nmCHint"); if (!hint) { hint = document.createElement("div"); hint.id = "nmCHint"; hint.setAttribute("role", "alert"); hint.style.cssText = "color:#C0392B;font-size:14px;font-weight:700"; bx.appendChild(hint); }
+      hint.textContent = ko ? "↑ 위 칸에 체크해 주세요 ('모두 동의합니다'를 누르면 한 번에 됩니다)" : "Please tick the box above.";
+      return false;
     };
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
@@ -384,7 +391,11 @@
     return el;
   }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
-  function open(reason) { build(); document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || ""); setTimeout(function () { el.querySelector("#nmPwMail").focus(); }, 30); }
+  function open(reason, o) { build(); o = o || {}; var t = L(), ko = !window.NM_LANG || window.NM_LANG === "ko";
+    el.querySelector("#nmAuthH").textContent = o.seller && ko ? "판매자 로그인" : t.h;
+    el.querySelector("#nmAuthP").textContent = o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
+    document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || "");
+    setTimeout(function () { (o.kakao ? el.querySelector("#nmCAll") || el.querySelector("#nmKakao") : el.querySelector("#nmPwMail")).focus(); }, 30); }
   function openReset() { build(); el.querySelector("#nmMain").hidden = true; el.querySelector("#nmNewForm").hidden = false; el.querySelector("#nmNewForm").style.display = "flex"; el.hidden = false; say(""); }
   function close() { if (el) el.hidden = true; }
 
