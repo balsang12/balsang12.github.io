@@ -2906,8 +2906,10 @@ $("#sellForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast(
 // 설정과 충전 기록은 sellers 아래 운영자만 쓸 수 있는 자리(sellers/_credits)에 둡니다. 금액은 모두 원 단위입니다.
 const CRED_DOC="_credits",CRED_GRANTS="sellers/_credits/grants";
 const CRED_PACKS=[{won:10000,price:10000},{won:33000,price:30000,bonus:"3,000원 더"},{won:60000,price:50000,bonus:"10,000원 더"}];
-const credCost=()=>Math.max(0,Math.round(+S.credCfg?.costWon||0));
-const credWelcome=()=>Math.max(0,Math.round(+S.credCfg?.welcomeWon||0));
+/* 견적 충전금(선불 충전)은 결제대행사 심사 전까지 꺼 둡니다. 다시 쓰려면 true로 */
+const CREDIT_ON=false;
+const credCost=()=>CREDIT_ON?Math.max(0,Math.round(+S.credCfg?.costWon||0)):0;
+const credWelcome=()=>CREDIT_ON?Math.max(0,Math.round(+S.credCfg?.welcomeWon||0)):0;
 function credBal(uid){
   const g=S.credGrants.filter(x=>x.sellerId===uid&&+x.won),spAll=S.quotes.filter(q=>q.sellerId===uid&&+q.feeWon>0),sp=spAll.filter(q=>q.status!=="선택됨");
   const w=S.sellers[uid]?credWelcome():0,inn=g.reduce((a,x)=>a+(+x.won||0),0),out=sp.reduce((a,q)=>a+(+q.feeWon||0),0);
@@ -2917,6 +2919,7 @@ function credBal(uid){
 let credPick=0;const credUI={form:false,hist:false};
 const signWon=n=>(n>=0?"+":"−")+won(Math.abs(n));
 function renderCredits(){
+  if(!CREDIT_ON){const bx=$("#credBox");if(bx){bx.innerHTML="";bx.hidden=true}const ap=$("#credCfg")?.closest(".panel");if(ap)ap.hidden=true;return}
   const box=$("#credBox");
   if(box){
     if(!S.uid||!S.sellers[S.uid]){box.innerHTML=""}
