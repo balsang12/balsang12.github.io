@@ -296,6 +296,8 @@
     el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' + consent +
       '<div id="nmMain" style="display:flex;flex-direction:column;gap:12px">' +
       '<button type="button" class="nm-kakao" id="nmKakao"></button>' +
+      '<button type="button" class="nm-close" id="nmMore" aria-expanded="false" style="text-decoration:underline;font-size:15px"></button>' +
+      '<div id="nmEmailBox" hidden style="display:flex;flex-direction:column;gap:12px">' +
       '<div class="nm-or" id="nmPwH"></div>' +
       '<form id="nmPwForm" style="display:flex;flex-direction:column;gap:8px">' +
         '<label for="nmPwMail" id="nmPwMailL" ' + lab + '></label><input id="nmPwMail" type="email" autocomplete="email" inputmode="email" required>' +
@@ -306,12 +308,14 @@
       '</form>' +
       '<details class="nm-link"><summary id="nmLinkH"></summary>' +
       '<form id="nmMailForm" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><label for="nmMail" id="nmMailL" ' + lab + '></label><input id="nmMail" type="email" autocomplete="email" inputmode="email" required><button class="nm-mail" type="submit" id="nmSend"></button></form>' +
-      '</details></div>' +
+      '</details></div></div>' +
       '<form id="nmNewForm" hidden style="display:flex;flex-direction:column;gap:8px"><label for="nmNewPw" id="nmNewL" ' + lab + '></label><input id="nmNewPw" type="password" autocomplete="new-password" minlength="8" required><button class="nm-mail" type="submit" id="nmNewSave"></button></form>' +
       '<div class="nm-msg" id="nmMsg" role="status"></div><button type="button" class="nm-close" id="nmClose"></button></div>';
     [["#nmAuthH", t.h], ["#nmAuthP", t.p], ["#nmKakao", t.kakao], ["#nmPwH", t.pwH], ["#nmPwMailL", t.lbl], ["#nmPwL", t.pwLbl], ["#nmPwShow", t.show], ["#nmPwIn", t.pin], ["#nmPwUp", t.up], ["#nmForgot", t.forgot],
      ["#nmLinkH", t.linkH], ["#nmMailL", t.lbl], ["#nmSend", t.send], ["#nmNewL", t.newH], ["#nmNewSave", t.newSave], ["#nmClose", t.close]].forEach(function (x) { el.querySelector(x[0]).textContent = x[1]; });
     el.querySelector("#nmMail").placeholder = t.ph; el.querySelector("#nmPwMail").placeholder = t.ph; el.querySelector("#nmPw").placeholder = t.pwPh; el.querySelector("#nmNewPw").placeholder = t.pwPh;
+    el.querySelector("#nmMore").textContent = ko ? "카카오가 없으면 이메일로 ›" : t.pwH + " ›";
+    el.querySelector("#nmMore").onclick = function () { showMail(true); var i = el.querySelector("#nmPwMail"); setTimeout(function () { i.scrollIntoView({ block: "nearest" }); }, 30); };
     document.body.appendChild(el);
     var cs = [].slice.call(el.querySelectorAll(".nmC")), call = el.querySelector("#nmCAll");
     var had = false; try { had = !!localStorage.getItem("nm_consent"); } catch (_) {}
@@ -390,15 +394,17 @@
     if (!build.keyed) { build.keyed = true; document.addEventListener("keydown", function (e) { if (e.key === "Escape" && el && !el.hidden) close(); }); }
     return el;
   }
+  /* 이메일 칸은 접어 두고 카카오를 먼저 보여 줌. 한국어가 아니면(해외 손님은 카카오가 없는 경우가 많음) 처음부터 펼침 */
+  function showMail(on) { var b = el.querySelector("#nmEmailBox"), m = el.querySelector("#nmMore"); b.hidden = !on; m.hidden = on; m.setAttribute("aria-expanded", on ? "true" : "false"); }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
   function open(reason, o) { build(); o = o || {}; var t = L(), ko = !window.NM_LANG || window.NM_LANG === "ko";
     el.querySelector("#nmAuthH").textContent = o.seller && ko ? "판매자 로그인" : t.h;
     el.querySelector("#nmAuthP").textContent = o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
-    document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || "");
+    document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); showMail(!ko || !!o.email); el.hidden = false; say(reason || "");
     /* 창은 항상 맨 위(동의 칸)부터 보이게. 휴대폰에서는 이메일 칸에 자동 커서를 두지 않음(키보드가 올라와 화면이 밀림) */
     var bx = el.querySelector(".box"); if (bx) bx.scrollTop = 0; el.scrollTop = 0;
     var fine = window.matchMedia && matchMedia("(pointer:fine)").matches;
-    setTimeout(function () { if (bx) bx.scrollTop = 0; el.scrollTop = 0; if (fine && !o.kakao) el.querySelector("#nmPwMail").focus({ preventScroll: true }); else { var h = el.querySelector("#nmAuthH"); h.setAttribute("tabindex", "-1"); h.style.outline = "none"; h.focus({ preventScroll: true }); } }, 30); }
+    setTimeout(function () { if (bx) bx.scrollTop = 0; el.scrollTop = 0; if (fine && !o.kakao && !el.querySelector("#nmEmailBox").hidden) el.querySelector("#nmPwMail").focus({ preventScroll: true }); else { var h = el.querySelector("#nmAuthH"); h.setAttribute("tabindex", "-1"); h.style.outline = "none"; h.focus({ preventScroll: true }); } }, 30); }
   function openReset() { build(); el.querySelector("#nmMain").hidden = true; el.querySelector("#nmNewForm").hidden = false; el.querySelector("#nmNewForm").style.display = "flex"; el.hidden = false; say(""); }
   function close() { if (el) el.hidden = true; }
 
