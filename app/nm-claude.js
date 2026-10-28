@@ -236,7 +236,7 @@
     ".nmauth .nm-kakao{background:#FEE500;color:#191600;border:0;font-weight:700}.nmauth .nm-mail{background:var(--pine,#2B5B41);color:var(--pine-ink,#fff);border:0;font-weight:700}" +
     ".nmauth input{border:1px solid var(--line,#D3DCCD);background:var(--bg,#F4F6F1);color:inherit}.nmauth .nm-close{background:none;border:0;color:var(--muted,#566659);min-height:40px}" +
     ".nmauth .nm-up{background:none;border:1px solid var(--pine,#2B5B41);color:var(--pine,#2B5B41);font-weight:700}.nmauth details summary{cursor:pointer;font-size:14px;color:var(--muted,#566659)}.nmauth [hidden]{display:none!important}" +
-    ".nmauth .nm-or{text-align:center;font-size:13px;color:var(--muted,#566659)}.nmauth .nm-msg:empty{display:none}.nmauth .nm-msg{font-size:14px;color:var(--pine,#2B5B41)}.nmauth .nm-msg.nm-err{color:var(--berry,#A3324A)}";
+    ".nmauth .nm-or{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted,#566659)}.nmauth .nm-or::before,.nmauth .nm-or::after{content:'';flex:1;height:1px;background:var(--line,#D3DCCD)}.nmauth .nm-msg:empty{display:none}.nmauth .nm-msg{font-size:14px;color:var(--pine,#2B5B41)}.nmauth .nm-msg.nm-err{color:var(--berry,#A3324A)}";
   var T = {
     ko: { h: "농마니 로그인", p: "로그인하면 주문·제안·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.", kakao: "카카오로 시작하기", or: "또는 이메일로 받은 링크로 로그인", lbl: "이메일 주소", ph: "예: hong@naver.com", send: "로그인 링크 받기", close: "닫기",
       goKakao: "카카오로 이동합니다…", noKakao: "카카오 로그인을 준비 중입니다. 이메일로 로그인해 주세요.", badMail: "이메일 주소를 다시 확인해 주세요.", sending: "보내는 중…",
@@ -256,7 +256,7 @@
   };
 
   var T2 = {
-    ko: { p: "로그인하면 주문·제안·판매를 할 수 있습니다.", pwH: "이메일과 비밀번호로", pwLbl: "비밀번호", pwPh: "8자 이상", pin: "이메일로 로그인", up: "이메일로 새로 가입하기", forgot: "비밀번호를 잊으셨나요?", linkH: "비밀번호 없이 이메일 링크로 로그인",
+    ko: { p: "로그인하면 주문·제안·판매를 할 수 있습니다.", pwH: "또는 이메일로", pwLbl: "비밀번호", pwPh: "8자 이상", pin: "이메일로 로그인", up: "이메일로 새로 가입하기", forgot: "비밀번호를 잊으셨나요?", linkH: "비밀번호 없이 이메일 링크로 로그인",
       short: "비밀번호는 8자 이상으로 정해 주세요.", bad: "이메일이나 비밀번호가 맞지 않아요.", unconf: "가입 확인 메일의 링크를 먼저 한 번 눌러 주세요.", exists: "이미 가입된 이메일이에요. 위의 로그인을 눌러 주세요.",
       joined: "가입 신청을 받았습니다. 메일함의 확인 링크를 한 번 누르면 로그인됩니다. (스팸함도 확인해 주세요)", resetSent: function (m) { return m + " 으로 비밀번호를 새로 정하는 링크를 보냈습니다."; }, needMail: "이메일을 먼저 적어 주세요.",
       newH: "새 비밀번호 정하기", newSave: "새 비밀번호 저장", newOk: "비밀번호를 바꿨습니다. 이제 이 비밀번호로 로그인하세요.", wait: "확인 중…", show: "보기" },
