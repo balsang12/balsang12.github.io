@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Korean Wild Ginseng Auction · Nongmani</title>
-<meta name="description" content="Bid on wild mountain ginseng and rare forest herbs dug by Korean simmani. Harvest papers checked by the operator.">
+<title>Korean Wild Ginseng · Make an Offer · Nongmani</title>
+<meta name="description" content="Make offers on wild mountain ginseng and rare forest herbs dug by Korean simmani. Harvest papers checked by the operator.">
 <link rel="canonical" href="https://nongmani.com/app/global.html">
 <link rel="alternate" hreflang="ko" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
@@ -13,7 +13,7 @@
 <link rel="icon" href="icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2B5B41">
-<meta property="og:title" content="Korean Wild Ginseng Auction · Nongmani">
+<meta property="og:title" content="Korean Wild Ginseng · Make an Offer · Nongmani">
 <meta property="og:description" content="Wild mountain ginseng from Korean simmani, with harvest papers checked.">
 <meta property="og:image" content="https://nongmani.com/seller/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -181,8 +181,8 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 /* ---------- words ---------- */
 const TX={
  en:{
-  contact:"Contact us",cTitle:"Ask Nongmani",cLead:"Questions about an order, an auction or shipping? Write to us and we will reply here under “My orders”.",cPh:"Your question (please don’t include phone or bank numbers)",cSend:"Send",cOk:"Thanks! We’ll reply under “My orders”.",cShort:"Please write a little more.",myQ:"My questions",waiting:"Waiting for reply",answer:"Answer",cTr:"You can write in English, Chinese or Japanese.",
-  tabAuc:"Auctions",tabMkt:"Market",tabOrd:"My orders",
+  contact:"Contact us",cTitle:"Ask Nongmani",cLead:"Questions about an order, an offer sale or shipping? Write to us and we will reply here under “My orders”.",cPh:"Your question (please don’t include phone or bank numbers)",cSend:"Send",cOk:"Thanks! We’ll reply under “My orders”.",cShort:"Please write a little more.",myQ:"My questions",waiting:"Waiting for reply",answer:"Answer",cTr:"You can write in English, Chinese or Japanese.",
+  tabAuc:"Make an offer",tabMkt:"Market",tabOrd:"My orders",
   mktNote:"Fresh and dried wild herbs from Korean farmers and simmani. Delivered anywhere in Korea. Overseas shipping is not available yet.",
   cats:{"전체":"All","뿌리 약초":"Roots","산나물":"Mountain greens","말린 약초·차":"Dried herbs & tea","열매":"Fruits & berries","버섯":"Mushrooms","가공품":"Processed foods"},
   per:u=>`per ${u}`,ship:"Delivery in Korea",stock:"In stock",soldOut:"Sold out",qty:"Quantity",total:"Total",buy:"Order",notifyMkt:"Notify me when ordering opens",
@@ -199,28 +199,28 @@ const TX={
   fwdPh:"Forwarder name and your member / suite number",fwdNeed:"Please enter the forwarder name and your member number.",
   fwdOk:"I understand my country’s import rules apply and the item may not clear customs.",fwdAgree:"Please tick the box to confirm.",
   abroadT:"Sending abroad",abroad:["You can use a Korean forwarding (package-consolidation) service: we deliver to its address in Korea and it sends the parcel to you.","Processed foods travel best. Dried raw herbs may need a plant health certificate. Fresh items and anything with soil cannot be sent.","United States: food shipped commercially needs an FDA Prior Notice. Most forwarders handle this; ask yours first."],
-  tag:"Korean wild herbs · auction & market",h1:"Wild mountain ginseng, straight from the Korean simmani who dug it",
+  tag:"Korean wild herbs · offers & market",h1:"Wild mountain ginseng, straight from the Korean simmani who dug it",
   lead:"Simmani are Korea's traditional wild-ginseng hunters. Each root is listed by the person who found it, with photos, weight and where it grew. Roots marked “Harvest papers checked” come with a permit or landowner consent that our team has reviewed.",
-  steps:[["Bid","Sign in with your email and place a bid in Korean won."],["Win","When the auction closes, we contact the winner within 24 hours."],["Pay & collect in Korea","Pay, then collect in Seoul or have it delivered to your hotel in Korea. Overseas shipping is not available yet."]],
-  beta:"Pre-launch: bidding opens soon. Tap “Notify me” on any auction and we will email you when it opens.",
+  steps:[["Offer","Sign in with your email and make an offer in Korean won."],["Accepted","When the offer period ends, the seller reviews the highest offer. If accepted, we ask you to pay within 24 hours."],["Pay & collect in Korea","Pay, then collect in Seoul or have it delivered to your hotel in Korea. Overseas shipping is not available yet."]],
+  beta:"Pre-launch: offers open soon. Tap “Notify me” on any offer sale and we will email you when it opens.",
   conn:"We could not connect. Please check your internet and reload.",
   all:"All",wild:"Wild ginseng",forest:"Forest-grown ginseng",other:"Other rare herbs",
-  none:"No auctions are open right now. New auctions close every Saturday evening (Korea time).",
-  closed:"Recently closed",live:"Current bid",start:"Starting bid",sold:"Sold for",unsold:"Not sold",ended:"Closed",
-  left:(d,h,m)=>d?`${d}d ${h}h left`:h?`${h}h ${m}m left`:`${m}m left`,bids:n=>n===1?"1 bid":`${n} bids`,
+  none:"No offer sales are open right now. New offer sales close every Saturday evening (Korea time).",
+  closed:"Recently closed",live:"Highest offer",start:"Starting price",sold:"Sold for",unsold:"Not sold",ended:"Closed",
+  left:(d,h,m)=>d?`${d}d ${h}h left`:h?`${h}h ${m}m left`:`${m}m left`,bids:n=>n===1?"1 offer":`${n} offers`,
   signIn:"Sign in",signOut:"Sign out",
   proof:"Harvest papers checked",wildChip:"Wild-dug",farmChip:"Forest-grown",certChip:"Inspection certificate",apprChip:"Appraised",
   item:"Item",grow:"How it grew",weight:"Weight",form:"Condition",region:"Found in",dug:"Dug on",basis:"Harvest basis",seller:"Seller",title:"Seller’s title (Korean)",desc:"Seller’s notes (Korean)",
   fresh:"Fresh",dried:"Dried",wildG:"Wild, dug in the mountains",farmG:"Cultivated",
-  minBid:v=>`Minimum next bid: ${v}`,bidBtn:"Place bid",confirm:v=>`Confirm bid of ${v}`,notify:"Notify me when bidding opens",notified:"We will let you know.",
-  needLogin:"Sign in to bid. We only need your email.",tooLow:v=>`Bids start at ${v}.`,already:"This auction has closed.",bidOk:v=>`Your bid of ${v} is in.`,top:"You are the highest bidder.",
-  fail:"Could not save. Please try again.",history:"Bid history",noBids:"No bids yet. Be the first.",you:"you",bidder:"Bidder",buyNow:v=>`Buy now at ${v}`,
+  minBid:v=>`Minimum next offer: ${v}`,bidBtn:"Make an offer",confirm:v=>`Confirm offer of ${v}`,notify:"Notify me when offers open",notified:"We will let you know.",
+  needLogin:"Sign in to make an offer. We only need your email.",tooLow:v=>`Offers start at ${v}.`,already:"This offer sale has closed.",bidOk:v=>`Your offer of ${v} is in.`,top:"Yours is the highest offer.",
+  fail:"Could not save. Please try again.",history:"Offer history",noBids:"No offers yet. Be the first.",you:"you",bidder:"Buyer",buyNow:v=>`Buy now at ${v}`,
   approx:"approx.",note:"Prices are in Korean won (KRW). Converted amounts are rough guides only.",
   foot:'Nongmani (농부와 심마니) · Korean marketplace for wild herbs · <a href="./">한국어</a> · Trademark application No. 40-2026-0219569',
   ko:"Korean listing",law:"Health claims are not allowed on Nongmani. Listings describe size, shape and where the root was found."},
  ja:{
-  contact:"お問い合わせ",cTitle:"ノンマニへのお問い合わせ",cLead:"注文・オークション・配送についてのご質問をどうぞ。回答は「注文履歴」に表示されます。",cPh:"お問い合わせ内容（電話番号・口座番号は書かないでください）",cSend:"送信",cOk:"ありがとうございます。回答は「注文履歴」に表示されます。",cShort:"もう少し詳しく書いてください。",myQ:"お問い合わせ履歴",waiting:"回答待ち",answer:"回答",cTr:"日本語でご記入いただけます。",
-  tabAuc:"オークション",tabMkt:"マーケット",tabOrd:"注文履歴",
+  contact:"お問い合わせ",cTitle:"ノンマニへのお問い合わせ",cLead:"注文・価格提案販売・配送についてのご質問をどうぞ。回答は「注文履歴」に表示されます。",cPh:"お問い合わせ内容（電話番号・口座番号は書かないでください）",cSend:"送信",cOk:"ありがとうございます。回答は「注文履歴」に表示されます。",cShort:"もう少し詳しく書いてください。",myQ:"お問い合わせ履歴",waiting:"回答待ち",answer:"回答",cTr:"日本語でご記入いただけます。",
+  tabAuc:"価格提案販売",tabMkt:"マーケット",tabOrd:"注文履歴",
   mktNote:"韓国の農家とシンマニ（天然山参の採取人）が届ける生・乾燥の山野草。韓国国内ならどこへでも配送します。海外発送はまだ行っていません。",
   cats:{"전체":"すべて","뿌리 약초":"根もの","산나물":"山菜","말린 약초·차":"乾燥ハーブ・お茶","열매":"木の実・果実","버섯":"きのこ","가공품":"加工食品"},
   per:u=>`${u}あたり`,ship:"韓国国内送料",stock:"在庫あり",soldOut:"売り切れ",qty:"数量",total:"合計",buy:"注文する",notifyMkt:"注文開始時に知らせる",
@@ -229,7 +229,7 @@ const TX={
   growV:{"자연산 (산에서 채취)":"天然採取","재배 (인증 없음)":"栽培","무농약 인증 재배":"無農薬認証栽培","유기농 인증 재배":"有機認証栽培"},
   noMkt:"このカテゴリーには現在商品がありません。",noOrd:"まだ注文はありません。",signToSee:"ログインすると注文履歴を確認できます。",
   st:{"결제완료":"お支払い済み・発送準備中","발송완료":"発送済み","수령확인":"受け取り済み","정산완료":"完了","취소":"キャンセル","환불":"返金済み","분쟁":"確認中"},
-  recv:"受け取りました",recvOk:"ありがとうございます。出品者へ代金が支払われます。",track:"追跡番号",careT:"お召し上がりの前に",
+  recv:"受け取りました",recvOk:"ありがとうございます。販売者へ代金が支払われます。",track:"追跡番号",careT:"お召し上がりの前に",
   proofPend:"採取書類確認中",
   shipA:"✈ 海外へ送りやすい",shipB:"輸入時に植物検査が必要",shipC:"韓国国内配送のみ",
   shipInfo:{A:"密封された加工食品です。転送サービス経由なら通常は通関できます。",B:"乾燥した原料（根・きのこ等）です。日本では植物性の原料は輸入検査の対象で、植物検疫証明書が必要な場合があります。税関で留め置き・廃棄となることがあります。",C:"生鮮品です。輸送中に傷みやすく、生の植物は海外への持ち込みが制限されるため、韓国国内のみの配送です。"},
@@ -237,27 +237,27 @@ const TX={
   fwdPh:"転送サービス名と会員番号（私書箱番号）",fwdNeed:"転送サービス名と会員番号を入力してください。",
   fwdOk:"日本の輸入規則が適用され、通関できない場合があることを理解しました。",fwdAgree:"チェックを入れて確認してください。",
   abroadT:"海外へ送る場合",abroad:["韓国の転送サービス（配送代行）をご利用いただけます。転送会社の韓国内倉庫へお届けし、そこから日本へ発送されます。","加工食品が最も送りやすいです。乾燥した原料は植物検査・植物検疫証明書が必要になる場合があります。生鮮品・土の付いたものは送れません。","日本では、植物（香辛料・生薬原料を含む）は郵便・宅配でも検査の対象です。土の付いた植物は輸入禁止です。"],
-  tag:"韓国の山野草・オークションとマーケット",h1:"韓国のシンマニが自ら掘り出した天然山参",
-  lead:"シンマニは、山に入って天然の山参を探す韓国の伝統的な採取人です。一本一本、見つけた本人が写真・重さ・採れた場所を添えて出品します。「採取書類確認済み」の表示がある品は、採取許可証または山林所有者の同意書を運営チームが確認しています。",
-  steps:[["入札","メールアドレスでログインし、韓国ウォンで入札します。"],["落札","オークション終了後、24時間以内に落札者へご連絡します。"],["韓国で支払い・受け取り","お支払い後、ソウルで受け取るか、韓国内のホテルへお届けします。海外発送はまだ行っていません。"]],
-  beta:"プレオープン中：入札はまもなく開始します。各オークションの「開始時に知らせる」を押すと、開始時にメールでお知らせします。",
+  tag:"韓国の山野草・価格提案販売とマーケット",h1:"韓国のシンマニが自ら掘り出した天然山参",
+  lead:"シンマニは、山に入って天然の山参を探す韓国の伝統的な採取人です。一本一本、見つけた本人が写真・重さ・採れた場所を添えて掲載します。「採取書類確認済み」の表示がある品は、採取許可証または山林所有者の同意書を運営チームが確認しています。",
+  steps:[["価格提案","メールアドレスでログインし、韓国ウォンで価格提案します。"],["承諾","期間終了後、販売者が最高額の提案を確認します。承諾されたら24時間以内のお支払いをご案内します。"],["韓国で支払い・受け取り","お支払い後、ソウルで受け取るか、韓国内のホテルへお届けします。海外発送はまだ行っていません。"]],
+  beta:"プレオープン中：価格提案はまもなく開始します。各価格提案販売の「開始時に知らせる」を押すと、開始時にメールでお知らせします。",
   conn:"接続できませんでした。インターネット接続を確認して再読み込みしてください。",
   all:"すべて",wild:"天然山参",forest:"山養参（林間栽培）",other:"その他の希少な山の幸",
-  none:"現在開催中のオークションはありません。新しいオークションは毎週土曜日の夜（韓国時間）に終了します。",
-  closed:"最近終了したオークション",live:"現在価格",start:"開始価格",sold:"落札価格",unsold:"不成立",ended:"終了",
-  left:(d,h,m)=>d?`残り${d}日${h}時間`:h?`残り${h}時間${m}分`:`残り${m}分`,bids:n=>`入札${n}件`,
+  none:"現在開催中の価格提案販売はありません。新しい価格提案販売は毎週土曜日の夜（韓国時間）に終了します。",
+  closed:"最近終了した価格提案販売",live:"現在価格",start:"開始価格",sold:"成約価格",unsold:"不成立",ended:"終了",
+  left:(d,h,m)=>d?`残り${d}日${h}時間`:h?`残り${h}時間${m}分`:`残り${m}分`,bids:n=>`価格提案${n}件`,
   signIn:"ログイン",signOut:"ログアウト",
   proof:"採取書類確認済み",wildChip:"天然採取",farmChip:"林間栽培",certChip:"品質検査合格",apprChip:"鑑定書付き",
-  item:"品目",grow:"育ち方",weight:"重さ",form:"状態",region:"採取地",dug:"採取日",basis:"採取の根拠",seller:"出品者",title:"出品者のタイトル（韓国語）",desc:"出品者の説明（韓国語）",
+  item:"品目",grow:"育ち方",weight:"重さ",form:"状態",region:"採取地",dug:"採取日",basis:"採取の根拠",seller:"販売者",title:"販売者のタイトル（韓国語）",desc:"販売者の説明（韓国語）",
   fresh:"生",dried:"乾燥",wildG:"天然・山で採取",farmG:"栽培",
-  minBid:v=>`次の最低入札額：${v}`,bidBtn:"入札する",confirm:v=>`${v}で入札を確定`,notify:"入札開始時に知らせる",notified:"開始時にお知らせします。",
-  needLogin:"入札にはログインが必要です。メールアドレスだけで登録できます。",tooLow:v=>`${v}から入札できます。`,already:"このオークションは終了しました。",bidOk:v=>`${v}で入札しました。`,top:"現在あなたが最高入札者です。",
-  fail:"保存できませんでした。もう一度お試しください。",history:"入札履歴",noBids:"まだ入札はありません。",you:"あなた",bidder:"入札者",buyNow:v=>`即決価格 ${v}`,
+  minBid:v=>`次の最低価格提案額：${v}`,bidBtn:"価格を提案する",confirm:v=>`${v}で価格提案を確定`,notify:"価格提案開始時に知らせる",notified:"開始時にお知らせします。",
+  needLogin:"価格提案にはログインが必要です。メールアドレスだけで登録できます。",tooLow:v=>`${v}から価格提案できます。`,already:"この価格提案販売は終了しました。",bidOk:v=>`${v}で価格提案しました。`,top:"現在あなたが最高提案者です。",
+  fail:"保存できませんでした。もう一度お試しください。",history:"提案履歴",noBids:"まだ価格提案はありません。",you:"あなた",bidder:"提案者",buyNow:v=>`即決価格 ${v}`,
   approx:"約",note:"価格は韓国ウォン（KRW）です。換算額はおおよその目安です。",
   foot:'ノンマニ（농부와 심마니）・韓国の山野草マーケット ・ <a href="./">한국어</a> ・ 商標出願 第40-2026-0219569号',
   ko:"韓国語の原文",law:"ノンマニでは効能・効果の表示を禁止しています。商品は大きさ・形・採取地のみを説明しています。"},
  "zh-Hant":{
-  tabAuc:"拍賣",tabMkt:"商店",tabOrd:"我的訂單",
+  tabAuc:"報價銷售",tabMkt:"商店",tabOrd:"我的訂單",
   mktNote:"韓國農民與採參人提供的新鮮及乾燥野生草本。可配送至韓國全境，目前尚無海外配送。",
   cats:{"전체":"全部","뿌리 약초":"根類","산나물":"山野菜","말린 약초·차":"乾燥草本與茶","열매":"果實","버섯":"菇類","가공품":"加工食品"},
   per:u=>`每 ${u}`,ship:"韓國境內運費",stock:"有庫存",soldOut:"已售完",qty:"數量",total:"合計",buy:"下單",notifyMkt:"開放時通知我",
@@ -267,13 +267,13 @@ const TX={
   noMkt:"此分類目前沒有商品。",noOrd:"您還沒有訂單。",signToSee:"登入後可查看訂單。",
   st:{"결제완료":"已付款・賣家準備中","발송완료":"已出貨","수령확인":"已收貨","정산완료":"已完成","취소":"已取消","환불":"已退款","분쟁":"處理中"},
   recv:"我已收到",recvOk:"謝謝！款項將撥給賣家。",track:"物流單號",careT:"食用前",
-  tag:"韓國野生草本・拍賣與商店",h1:"韓國採參人親手採挖的野山參",
+  tag:"韓國野生草本・報價銷售與商店",h1:"韓國採參人親手採挖的野山參",
   lead:"「심마니」是韓國傳統的野山參採挖人。每支參都由發現它的人親自上架，附上照片、重量與生長地。標有「採挖文件已審核」的商品，附有經我們審核的採集許可或山主同意書。",
-  steps:[["出價","以電子郵件登入，用韓元出價。"],["得標","拍賣結束後，我們會在 24 小時內聯繫得標者。"],["在韓國付款取貨","付款後可在首爾取貨，或送到您在韓國的飯店。目前尚無海外配送。"]],
-  beta:"預先開放中：出價功能即將上線。點擊任一拍賣的「開放時通知我」，上線時我們會寄信通知您。",
+  steps:[["出價","以電子郵件登入，用韓元出價。"],["賣家接受","報價期結束後，賣家會查看最高報價；接受後我們會請您在 24 小時內付款。"],["在韓國付款取貨","付款後可在首爾取貨，或送到您在韓國的飯店。目前尚無海外配送。"]],
+  beta:"預先開放中：出價功能即將上線。點擊任一報價銷售的「開放時通知我」，上線時我們會寄信通知您。",
   conn:"無法連線，請檢查網路後重新整理。",
   all:"全部",wild:"野山參",forest:"山養參（林下參）",other:"其他珍稀林產",
-  none:"目前沒有進行中的拍賣。新拍賣每週六晚間（韓國時間）結束。",
+  none:"目前沒有進行中的報價銷售。新報價銷售每週六晚間（韓國時間）結束。",
   closed:"最近結束",live:"目前出價",start:"起標價",sold:"成交價",unsold:"流標",ended:"已結束",
   left:(d,h,m)=>d?`剩 ${d} 天 ${h} 小時`:h?`剩 ${h} 小時 ${m} 分`:`剩 ${m} 分`,bids:n=>`${n} 次出價`,
   signIn:"登入",signOut:"登出",
@@ -281,14 +281,14 @@ const TX={
   item:"品項",grow:"生長方式",weight:"重量",form:"狀態",region:"產地",dug:"採挖日",basis:"採挖依據",seller:"賣家",title:"賣家標題（韓文）",desc:"賣家說明（韓文）",
   fresh:"鮮品",dried:"乾品",wildG:"野生，山中採挖",farmG:"栽培",
   minBid:v=>`下一口最低出價：${v}`,bidBtn:"出價",confirm:v=>`確認出價 ${v}`,notify:"開放時通知我",notified:"上線時會通知您。",
-  needLogin:"登入後即可出價，只需電子郵件。",tooLow:v=>`最低出價為 ${v}。`,already:"此拍賣已結束。",bidOk:v=>`已出價 ${v}。`,top:"您目前是最高出價者。",
+  needLogin:"登入後即可出價，只需電子郵件。",tooLow:v=>`最低出價為 ${v}。`,already:"此報價銷售已結束。",bidOk:v=>`已出價 ${v}。`,top:"您目前是最高出價者。",
   fail:"儲存失敗，請再試一次。",history:"出價紀錄",noBids:"尚無出價，歡迎搶先出價。",you:"您",bidder:"出價者",buyNow:v=>`直購價 ${v}`,
   approx:"約",note:"價格以韓元（KRW）計，換算金額僅供參考。",
   foot:'農마니（농부와 심마니）· 韓國野生草藥交易平台 · <a href="./">한국어</a> · 商標申請 第40-2026-0219569號',
   ko:"韓文原文",law:"本平台不允許標示療效，商品只描述大小、形狀與產地。"},
  "zh-Hans":{
-  contact:"联系我们",cTitle:"联系农마니",cLead:"关于订单、拍卖或配送的问题都可以留言，我们会在“我的订单”中回复。",cPh:"您的问题（请勿填写电话或银行账号）",cSend:"发送",cOk:"谢谢！我们会在“我的订单”中回复。",cShort:"请再多写一点。",myQ:"我的提问",waiting:"等待回复",answer:"回复",cTr:"可以用中文填写。",
-  tabAuc:"拍卖",tabMkt:"商店",tabOrd:"我的订单",
+  contact:"联系我们",cTitle:"联系农마니",cLead:"关于订单、报价销售或配送的问题都可以留言，我们会在“我的订单”中回复。",cPh:"您的问题（请勿填写电话或银行账号）",cSend:"发送",cOk:"谢谢！我们会在“我的订单”中回复。",cShort:"请再多写一点。",myQ:"我的提问",waiting:"等待回复",answer:"回复",cTr:"可以用中文填写。",
+  tabAuc:"报价销售",tabMkt:"商店",tabOrd:"我的订单",
   mktNote:"韩国农民与采参人提供的新鲜及干燥野生草本。可配送至韩国全境，暂不提供海外配送。",
   cats:{"전체":"全部","뿌리 약초":"根类","산나물":"山野菜","말린 약초·차":"干燥草本与茶","열매":"果实","버섯":"菌菇","가공품":"加工食品"},
   per:u=>`每 ${u}`,ship:"韩国境内运费",stock:"有库存",soldOut:"已售完",qty:"数量",total:"合计",buy:"下单",notifyMkt:"开放时通知我",
@@ -305,13 +305,13 @@ const TX={
   fwdPh:"转运公司名称与您的会员号（仓库编号）",fwdNeed:"请填写转运公司名称和会员号。",
   fwdOk:"我了解需遵守本国进口规定，商品可能无法清关。",fwdAgree:"请勾选确认。",
   abroadT:"寄往海外",abroad:["您可以使用韩国转运（集运）公司：我们送到其韩国仓库，再由其寄给您。","加工食品最方便寄送。干燥原料可能需要植物检疫证书。生鲜商品及带土物品不能寄送。","中国大陆：个人邮递物品单次限值为2,000元人民币，超出需按货物报关或退运；植物及其产品入境限制严格。"],
-  tag:"韩国野生草本・拍卖与商店",h1:"韩国采参人亲手采挖的野山参",
+  tag:"韩国野生草本・报价销售与商店",h1:"韩国采参人亲手采挖的野山参",
   lead:"“심마니”是韩国传统的野山参采挖人。每支参都由发现它的人亲自上架，附上照片、重量与生长地。标有“采挖文件已审核”的商品，附有经我们审核的采集许可或山主同意书。",
-  steps:[["出价","用电子邮箱登录，以韩元出价。"],["中标","拍卖结束后，我们会在 24 小时内联系中标者。"],["在韩国付款取货","付款后可在首尔取货，或送到您在韩国的酒店。暂不提供海外配送。"]],
-  beta:"预先开放中：出价功能即将上线。点击任一拍卖的“开放时通知我”，上线时我们会发邮件通知您。",
+  steps:[["出价","用电子邮箱登录，以韩元出价。"],["卖家接受","报价期结束后，卖家会查看最高报价；接受后我们会请您在 24 小时内付款。"],["在韩国付款取货","付款后可在首尔取货，或送到您在韩国的酒店。暂不提供海外配送。"]],
+  beta:"预先开放中：出价功能即将上线。点击任一报价销售的“开放时通知我”，上线时我们会发邮件通知您。",
   conn:"无法连接，请检查网络后刷新。",
   all:"全部",wild:"野山参",forest:"山养参（林下参）",other:"其他珍稀林产",
-  none:"目前没有进行中的拍卖。新拍卖每周六晚间（韩国时间）结束。",
+  none:"目前没有进行中的报价销售。新报价销售每周六晚间（韩国时间）结束。",
   closed:"最近结束",live:"当前出价",start:"起拍价",sold:"成交价",unsold:"流拍",ended:"已结束",
   left:(d,h,m)=>d?`剩 ${d} 天 ${h} 小时`:h?`剩 ${h} 小时 ${m} 分`:`剩 ${m} 分`,bids:n=>`${n} 次出价`,
   signIn:"登录",signOut:"退出",
@@ -319,7 +319,7 @@ const TX={
   item:"品类",grow:"生长方式",weight:"重量",form:"状态",region:"产地",dug:"采挖日",basis:"采挖依据",seller:"卖家",title:"卖家标题（韩文）",desc:"卖家说明（韩文）",
   fresh:"鲜品",dried:"干品",wildG:"野生，山中采挖",farmG:"栽培",
   minBid:v=>`下一口最低出价：${v}`,bidBtn:"出价",confirm:v=>`确认出价 ${v}`,notify:"开放时通知我",notified:"上线时会通知您。",
-  needLogin:"登录后即可出价，只需电子邮箱。",tooLow:v=>`最低出价为 ${v}。`,already:"此拍卖已结束。",bidOk:v=>`已出价 ${v}。`,top:"您目前是最高出价者。",
+  needLogin:"登录后即可出价，只需电子邮箱。",tooLow:v=>`最低出价为 ${v}。`,already:"此报价销售已结束。",bidOk:v=>`已出价 ${v}。`,top:"您目前是最高出价者。",
   fail:"保存失败，请重试。",history:"出价记录",noBids:"暂无出价，欢迎抢先出价。",you:"您",bidder:"出价者",buyNow:v=>`一口价 ${v}`,
   approx:"约",note:"价格以韩元（KRW）计，换算金额仅供参考。",
   foot:'农마니（농부와 심마니）· 韩国野生草药交易平台 · <a href="./">한국어</a> · 商标申请 第40-2026-0219569号',
@@ -332,7 +332,7 @@ const ITEMS={"산삼":["Wild mountain ginseng","野山參","野山参","天然�
  "능이":["Neungi mushroom","香茸（虎掌菌）","香茸（虎掌菌）","コウタケ（ヌンイ）"],"꽃송이버섯":["Cauliflower mushroom","繡球菌","绣球菌","ハナビラタケ"],"석이":["Rock tripe","石耳","石耳","イワタケ"],"상황":["Sanghwang mushroom (Phellinus)","桑黃","桑黄","桑黄（メシマコブ類）"],
  "영지":["Reishi mushroom","靈芝","灵芝","霊芝（マンネンタケ）"],"복령":["Poria","茯苓","茯苓","茯苓（ブクリョウ）"],"겨우살이":["Mistletoe","槲寄生","槲寄生","ヤドリギ"],"기타 귀한 임산물":["Rare forest product","珍稀林產","珍稀林产","希少な山の幸"]};
 const PERMITS={"국유림 임산물 채취 허가":["National-forest harvest permit","國有林採集許可","国有林采集许可","国有林の採取許可"],"사유림 소유자 동의서":["Landowner’s written consent","私有林山主同意書","私有林山主同意书","山林所有者の同意書"],
- "본인 소유 임야·재배":["Seller’s own forest land","賣家自有林地","卖家自有林地","出品者所有の山林"],"국유림 보호협약(마을 양여)":["Village forest-care agreement","國有林保護協約","国有林保护协约","国有林保護協約（集落）"],"산 임차 계약":["Forest lease contract","山林租賃契約","山林租赁合同","山林賃貸借契約"]};
+ "본인 소유 임야·재배":["Seller’s own forest land","賣家自有林地","卖家自有林地","販売者所有の山林"],"국유림 보호협약(마을 양여)":["Village forest-care agreement","國有林保護協約","国有林保护协约","国有林保護協約（集落）"],"산 임차 계약":["Forest lease contract","山林租賃契約","山林租赁合同","山林賃貸借契約"]};
 const PROV=[["서울","Seoul","首爾","首尔","ソウル"],["부산","Busan","釜山","釜山","釜山"],["대구","Daegu","大邱","大邱","大邱"],["인천","Incheon","仁川","仁川","仁川"],["광주","Gwangju","光州","光州","光州"],["대전","Daejeon","大田","大田","大田"],["울산","Ulsan","蔚山","蔚山","蔚山"],["세종","Sejong","世宗","世宗","世宗"],
  ["경기","Gyeonggi","京畿","京畿","京畿道"],["강원","Gangwon","江原","江原","江原道"],["충북","North Chungcheong","忠清北道","忠清北道","忠清北道"],["충남","South Chungcheong","忠清南道","忠清南道","忠清南道"],["전북","North Jeolla","全羅北道","全罗北道","全羅北道"],["전남","South Jeolla","全羅南道","全罗南道","全羅南道"],
  ["경북","North Gyeongsang","慶尚北道","庆尚北道","慶尚北道"],["경남","South Gyeongsang","慶尚南道","庆尚南道","慶尚南道"],["제주","Jeju","濟州","济州","済州"],["충청북","North Chungcheong","忠清北道","忠清北道","忠清北道"],["충청남","South Chungcheong","忠清南道","忠清南道","忠清南道"],["전라북","North Jeolla","全羅北道","全罗北道","全羅北道"],["전라남","South Jeolla","全羅南道","全罗南道","全羅南道"],["경상북","North Gyeongsang","慶尚北道","庆尚北道","慶尚北道"],["경상남","South Gyeongsang","慶尚南道","庆尚南道","慶尚南道"]];
@@ -386,7 +386,7 @@ let toastT=0;function toast(m){const e=$("#toast");e.textContent=m;e.hidden=fals
 /* ---------- static text ---------- */
 function paintStatic(){
   document.documentElement.lang=window.NM_LANG;
-  document.title=window.NM_LANG==="en"?"Korean Wild Ginseng Auction · Nongmani":t("tag")+" · 農마니";
+  document.title=window.NM_LANG==="en"?"Korean Wild Ginseng · Make an Offer · Nongmani":t("tag")+" · 農마니";
   $("#tagline").textContent=t("tag");$("#h1").textContent=t("h1");$("#lead").textContent=t("lead");
   $("#steps").innerHTML=t("steps").map(([b,s])=>`<li><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join("");
   $("#foot").innerHTML=t("foot")+"<br>"+esc(t("note"))+" "+esc(t("law"));
@@ -516,11 +516,11 @@ const RECO_L={
    keep:["When will you eat it?",{fresh:"Soon — fresh, please",store:"Over time — keeps well"}],
    prep:["How much preparation is OK?",{easy:"Ready to cook",ok:"Blanching or soaking is fine"}],
    taste:["What would they enjoy?",{rare:"Something rare (wild ginseng, pine mushroom)",daily:"Something practical (greens, tea)",new:"Something unusual"}],
-   auc:["Are auctions OK?",{no:"I want to buy now",yes:"Happy to bid for a good price"}],
+   auc:["Are offer sales OK?",{no:"I want to buy now",yes:"Happy to make an offer for a good price"}],
    size:["How many people?",{s:"1–2",m:"3–4",l:"5 or more"}],
    must:["Anything you must have? (choose any)",{wild:"Wild only",cert:"Certified organic / pesticide-free",proof:"Harvest papers checked",season:"In season now"}],
    region:["Preferred region?",{"강원":"Gangwon","경상":"Gyeongsang","전라":"Jeolla","충청":"Chungcheong","제주":"Jeju"}]},
-  why:{wrap:"Gift wrap",kids:"Good with children",mtn:"From the mountains",farm:"From the farm",keeps:"Keeps well",gift:"Good gift",bulk:"Large pack",rare:"Rare find",new:"Unusual",size:"Right size",prep:"Blanch before eating",wild:"Wild",cert:"Certified",proof:"Papers checked",season:"In season",auction:"Auction",wider:"Wider match"},
+  why:{wrap:"Gift wrap",kids:"Good with children",mtn:"From the mountains",farm:"From the farm",keeps:"Keeps well",gift:"Good gift",bulk:"Large pack",rare:"Rare find",new:"Unusual",size:"Right size",prep:"Blanch before eating",wild:"Wild",cert:"Certified",proof:"Papers checked",season:"In season",auction:"Offers",wider:"Wider match"},
   med:"If you are pregnant, breastfeeding or taking medicine, talk to a doctor or Korean medicine doctor before eating."},
  ja:{b:"何を買うか迷ったら、おすすめします",sub:"使い方と予算についていくつか答えるだけ",step:(i,n)=>`おすすめ ${i} / ${n}`,any:"こだわらない",next:"次へ",skip:"こだわらない・次へ",back:"戻る",
   res:"こちらはいかがですか",none:"ぴったりの商品がまだありません",wider:"条件を少し広げて探しました",again:"最初から",
@@ -538,11 +538,11 @@ const RECO_L={
    keep:["いつ召し上がりますか？",{fresh:"すぐ食べるので新鮮なもの",store:"長く保存できるもの"}],
    prep:["下ごしらえはどこまでできますか？",{easy:"すぐ調理できるもの",ok:"下茹で・アク抜きは大丈夫"}],
    taste:["贈る方のお好みは？",{rare:"希少なもの（天然山参・マツタケ）",daily:"実用的なもの（山菜・お茶）",new:"珍しいもの"}],
-   auc:["オークションでも大丈夫ですか？",{no:"すぐ買いたい",yes:"オークションでお得に"}],
+   auc:["価格提案販売でも大丈夫ですか？",{no:"すぐ買いたい",yes:"価格提案販売でお得に"}],
    size:["何人分ですか？",{s:"1〜2人",m:"3〜4人",l:"5人以上"}],
    must:["必須の条件は？（複数選択可）",{wild:"天然のみ",cert:"無農薬・有機認証",proof:"採取書類確認済み",season:"今が旬"}],
    region:["産地の希望は？",{"강원":"江原道","경상":"慶尚道","전라":"全羅道","충청":"忠清道","제주":"済州"}]},
-  why:{wrap:"ギフト包装可",kids:"子どもと一緒に",mtn:"山で採れたもの",farm:"畑で育てたもの",keeps:"長期保存",gift:"ギフト向き",bulk:"たっぷり",rare:"希少",new:"珍しい",size:"ちょうどいい量",prep:"下茹でが必要",wild:"天然",cert:"認証栽培",proof:"書類確認済み",season:"旬",auction:"オークション",wider:"条件を広げて表示"},
+  why:{wrap:"ギフト包装可",kids:"子どもと一緒に",mtn:"山で採れたもの",farm:"畑で育てたもの",keeps:"長期保存",gift:"ギフト向き",bulk:"たっぷり",rare:"希少",new:"珍しい",size:"ちょうどいい量",prep:"下茹でが必要",wild:"天然",cert:"認証栽培",proof:"書類確認済み",season:"旬",auction:"価格提案販売",wider:"条件を広げて表示"},
   med:"妊娠中・授乳中の方、薬を服用中の方は、召し上がる前に医師・韓医師にご相談ください。"},
  "zh-Hans":{b:"不知道买什么？我们帮您挑",sub:"回答几个关于用途和预算的问题即可",step:(i,n)=>`推荐助手 ${i} / ${n}`,any:"都可以",next:"下一步",skip:"都可以，下一步",back:"上一步",
   res:"为您推荐",none:"暂时没有合适的商品",wider:"已适当放宽条件",again:"重新选择",
@@ -560,11 +560,11 @@ const RECO_L={
    keep:["什么时候吃？",{fresh:"马上吃，要新鲜的",store:"慢慢吃，要耐储存的"}],
    prep:["能接受多少处理步骤？",{easy:"买来就能做",ok:"焯水或浸泡都可以"}],
    taste:["对方喜欢什么？",{rare:"珍贵的（野山参、松茸）",daily:"实用的（山野菜、茶）",new:"少见的"}],
-   auc:["可以参加拍卖吗？",{no:"想直接购买",yes:"想通过拍卖买到好价格"}],
+   auc:["可以参加报价销售吗？",{no:"想直接购买",yes:"想通过报价销售买到好价格"}],
    size:["几个人吃？",{s:"1〜2人",m:"3〜4人",l:"5人以上"}],
    must:["必须满足的条件？（可多选）",{wild:"只要野生",cert:"无农药或有机认证",proof:"采挖文件已审核",season:"当季"}],
    region:["希望的产地？",{"강원":"江原道","경상":"庆尚道","전라":"全罗道","충청":"忠清道","제주":"济州"}]},
-  why:{wrap:"可礼品包装",kids:"适合和孩子一起吃",mtn:"山里采的",farm:"田里种的",keeps:"耐储存",gift:"适合送礼",bulk:"量大",rare:"珍贵",new:"少见",size:"份量合适",prep:"需焯水",wild:"野生",cert:"认证栽培",proof:"文件已审核",season:"当季",auction:"拍卖中",wider:"放宽条件"},
+  why:{wrap:"可礼品包装",kids:"适合和孩子一起吃",mtn:"山里采的",farm:"田里种的",keeps:"耐储存",gift:"适合送礼",bulk:"量大",rare:"珍贵",new:"少见",size:"份量合适",prep:"需焯水",wild:"野生",cert:"认证栽培",proof:"文件已审核",season:"当季",auction:"报价中",wider:"放宽条件"},
   med:"孕期、哺乳期或正在服药的人士，食用前请咨询医生或韩医师。"}};
 const RL=()=>RECO_L[window.NM_LANG]||RECO_L.en;
 const MED_ITEMS=["산삼","산양삼","장뇌삼","인삼","천마","하수오","백수오","영지","상황","상황버섯","차가버섯","동충하초","복령","겨우살이","당귀","황기","감초","천궁","익모초","삼지구엽초","오가피","엄나무","헛개","꾸지뽕"];
