@@ -395,7 +395,10 @@
     el.querySelector("#nmAuthH").textContent = o.seller && ko ? "판매자 로그인" : t.h;
     el.querySelector("#nmAuthP").textContent = o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
     document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || "");
-    setTimeout(function () { (o.kakao ? el.querySelector("#nmCAll") || el.querySelector("#nmKakao") : el.querySelector("#nmPwMail")).focus(); }, 30); }
+    /* 창은 항상 맨 위(동의 칸)부터 보이게. 휴대폰에서는 이메일 칸에 자동 커서를 두지 않음(키보드가 올라와 화면이 밀림) */
+    var bx = el.querySelector(".box"); if (bx) bx.scrollTop = 0; el.scrollTop = 0;
+    var fine = window.matchMedia && matchMedia("(pointer:fine)").matches;
+    setTimeout(function () { if (bx) bx.scrollTop = 0; el.scrollTop = 0; if (fine && !o.kakao) el.querySelector("#nmPwMail").focus({ preventScroll: true }); else { var h = el.querySelector("#nmAuthH"); h.setAttribute("tabindex", "-1"); h.style.outline = "none"; h.focus({ preventScroll: true }); } }, 30); }
   function openReset() { build(); el.querySelector("#nmMain").hidden = true; el.querySelector("#nmNewForm").hidden = false; el.querySelector("#nmNewForm").style.display = "flex"; el.hidden = false; say(""); }
   function close() { if (el) el.hidden = true; }
 
