@@ -831,7 +831,7 @@ label.btn{display:inline-block}
   <div id="alertHome"></div>
   <div class="giftwrap" id="giftBan" hidden></div>
   <div class="hgroup mkt"><div class="hg-head"><b>마켓 장보기</b><span id="mktSub">정한 값에 바로 구매</span></div><div class="icons" id="homeIcons"></div></div>
-  <div class="hgroup auc hauclist" hidden><div class="hg-head"><b id="homeAucH">이번 제안 판매</b><span class="nextSat"></span></div>
+  <div class="hgroup auc hauclist" hidden><div class="hg-head"><b id="homeAucH">곧 마감되는 제안 판매</b><span class="nextSat"></span></div>
    <div id="homeAuc" class="alist"></div><div id="homeWins"></div>
    <button class="hmore" type="button" data-go="auction">제안 판매 전체 보기 ›</button></div>
   <div class="sechead" style="margin-top:26px"><div><h2>마켓 인기 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
@@ -879,7 +879,7 @@ label.btn{display:inline-block}
 <!-- AUCTION -->
 <section data-view="auction" hidden>
   <div class="sechead">
-    <div><div class="eyebrow">자연산 임산물 정기 제안 판매 · <span class="cyc">매주</span> 토요일 저녁 8시 마감</div><h2>제안 판매</h2><div class="meta nextSat"></div></div>
+    <div><div class="eyebrow">자연산 임산물 제안 판매 · 물건마다 3~7일 동안 제안을 받습니다</div><h2>제안 판매</h2><div class="meta nextSat"></div></div>
     <div class="toolbar" style="flex:1;max-width:480px">
       <input id="aucQ" placeholder="품목·산지 검색" aria-label="제안 판매 검색">
       <select id="aucState" aria-label="상태"><option value="live">진행 중</option><option value="done">마감된 제안 판매</option></select>
@@ -1151,7 +1151,7 @@ label.btn{display:inline-block}
         </div>
         <div class="field" id="videoWrap" hidden><label for="aVideo" id="videoLbl">인증 영상 링크 (30만 원 이상 필수)</label><input id="aVideo" type="url" placeholder="https:// 유튜브·네이버 동영상 등 링크"><span class="meta">당일 날짜를 쓴 메모, 저울 위 물건, 채취 장소가 30초 안에 나오게 찍어 주세요.</span></div>
         <div class="notice" id="aTier"></div>
-        <div class="field"><label for="aDur">마감</label><select id="aDur"><option value="sat" selected>토요일 저녁 8시 정기 제안 판매</option><option value="600000">10분 (시험용)</option></select><span class="meta" id="aDurNote"></span></div>
+        <div class="field"><label for="aDur">마감</label><select id="aDur"><option value="7" selected>7일 동안 제안 받기 (추천)</option><option value="5">5일 동안</option><option value="3">3일 동안</option><option value="600000">10분 (시험용)</option></select><span class="meta" id="aDurNote"></span></div>
         <div class="field"><label for="aPhoto">실물 사진 (1장, 필수)</label><div class="photo-pick"><input id="aPhoto" type="file" accept="image/*"><img id="aPhotoPrev" alt="" hidden></div></div><div class="field" id="aShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 산야초 사전에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="aSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
         <div class="field"><label for="aDesc">설명</label><textarea id="aDesc" rows="3" placeholder="채취 장소의 환경, 잔뿌리·뇌두 상태, 보관 방법"></textarea></div>
         <div class="notice" id="aClaim">효능·질병 표현(예: "암에 좋은")은 쓸 수 없습니다. 크기·모양·채취 과정 위주로 적어 주세요.</div>
@@ -1174,7 +1174,7 @@ label.btn{display:inline-block}
   <div class="sechead"><h2>운영자</h2><span class="meta">이 페이지 소유자에게만 보입니다</span></div>
   <div class="stats" id="adminStats"></div>
   <div class="panel goldp" style="margin-bottom:16px"><h3>제안 판매 운영</h3>
-    <div class="row2"><div class="field"><label for="cfgCycle">제안 판매 주기</label><select id="cfgCycle"><option value="biweekly">격주 (물건이 적을 때)</option><option value="weekly">매주</option></select></div>
+    <div class="row2" hidden><div class="field"><label for="cfgCycle">제안 판매 주기</label><select id="cfgCycle"><option value="biweekly">격주 (물건이 적을 때)</option><option value="weekly">매주</option></select></div>
     <div class="field"><label for="cfgAnchor">기준 제안 판매일 (토요일)</label><input id="cfgAnchor" type="date"></div></div>
     <div class="row2"><div class="field"><label for="cfgVideo">제안 판매 인증 영상 기준 (원)</label><input id="cfgVideo" type="number" min="10000" step="10000" class="num"></div>
       <div class="field"><label for="cfgReview">제안 판매 직접 승인·감정서 기준 (원)</label><input id="cfgReview" type="number" min="10000" step="10000" class="num"></div></div>
@@ -1249,7 +1249,7 @@ label.btn{display:inline-block}
   <div class="faqs">
       <div class="faqg"><h3>주문·배송</h3><details class="faq"><summary>언제 받을 수 있나요?</summary><p>판매자가 직접 택배로 보냅니다. 보통 결제 뒤 1~3일 안에 보내고, 송장번호는 ‘마이 → 내 거래’에서 볼 수 있습니다. 생물은 신선도 때문에 주말 도착을 피해 보내기도 합니다.</p></details><details class="faq"><summary>배송비는 얼마인가요?</summary><p>생물(생 나물·생 뿌리 등)은 5,000원, 말린 것과 가공품은 3,500원입니다. 상품 화면의 결제 금액에 배송비가 포함되어 있습니다.</p></details><details class="faq"><summary>물건을 받았어요. 무엇을 해야 하나요?</summary><p>‘마이 → 내 거래’에서 <b>수령 확인</b>을 눌러 주세요. 그래야 판매자에게 대금이 정산됩니다. 발송 후 8일 동안 아무것도 하지 않으면 자동으로 수령 확인됩니다.</p></details><details class="faq"><summary>주문을 취소할 수 있나요?</summary><p>판매자가 발송하기 전에는 ‘내 거래’에서 바로 취소할 수 있습니다. 발송한 뒤에는 1:1 문의로 알려 주세요.</p></details></div>
       <div class="faqg"><h3>결제·환불</h3><details class="faq"><summary>결제한 돈은 어디로 가나요?</summary><p>농마니 안전결제로 대금을 보관했다가, 구매자가 수령 확인을 하면 판매자에게 정산합니다. 물건이 오지 않으면 판매자에게 돈이 가지 않습니다.</p></details><details class="faq"><summary>물건이 안 오거나 상했어요.</summary><p>‘내 거래’에서 <b>문제 신고</b>를 눌러 사진과 함께 알려 주세요. 운영자가 확인하고, 판매자 책임이면 환불합니다.</p></details><details class="faq"><summary>판매자가 계좌로 따로 입금하라고 해요.</summary><p>절대 보내지 마세요. 농마니 밖에서 거래하면 환불 보호를 받을 수 없습니다. 대화창 위의 <b>직거래 유도 신고</b>를 눌러 주세요.</p></details></div>
-      <div class="faqg"><h3>제안 판매</h3><details class="faq"><summary>제안 판매는 언제 끝나요?</summary><p>토요일 저녁 8시에 한꺼번에 마감합니다. 마감 3분 안에 제안이 들어오면 그 제안으로부터 3분 뒤로 마감이 늦춰집니다.</p></details><details class="faq"><summary>판매가 확정되면 어떻게 하나요?</summary><p>24시간 안에 결제해 주세요. 결제하지 않으면 판매자가 다음 순위 제안자에게 넘길 수 있습니다.</p></details><details class="faq"><summary>진짜 자연산인지 어떻게 믿나요?</summary><p>‘채취 증빙 확인’ 배지는 운영자가 채취 근거를 확인한 물건입니다. 시작가가 높은 제안 판매는 인증 영상과 감정서를 함께 받습니다. 받은 물건이 설명과 다르면 문제 신고로 환불받을 수 있습니다.</p></details></div>
+      <div class="faqg"><h3>제안 판매</h3><details class="faq"><summary>제안 판매는 언제 끝나요?</summary><p>물건마다 다릅니다. 판매자가 3일·5일·7일 중에서 고르고, 운영자 확인을 마친 날부터 그 기간 동안 제안을 받아 마지막 날 저녁 8시에 끝납니다. 끝나는 시각은 물건마다 표시되며 늦춰지지 않습니다.</p></details><details class="faq"><summary>판매가 확정되면 어떻게 하나요?</summary><p>24시간 안에 결제해 주세요. 결제하지 않으면 판매자가 다음 순위 제안자에게 넘길 수 있습니다.</p></details><details class="faq"><summary>진짜 자연산인지 어떻게 믿나요?</summary><p>‘채취 증빙 확인’ 배지는 운영자가 채취 근거를 확인한 물건입니다. 시작가가 높은 제안 판매는 인증 영상과 감정서를 함께 받습니다. 받은 물건이 설명과 다르면 문제 신고로 환불받을 수 있습니다.</p></details></div>
       <div class="faqg"><h3>판매</h3><details class="faq"><summary>누구나 팔 수 있나요?</summary><p>로그인한 뒤 ‘판매자 센터’에서 가게 정보를 저장하면 바로 팔 수 있습니다. 직접 기르거나 캔 농산물·임산물은 개인도 팔 수 있고, 청·즙 같은 가공품은 영업 신고를 한 곳에서 만든 것만 팔 수 있습니다.</p></details><details class="faq"><summary>수수료는 얼마인가요?</summary><p>마켓 판매와 제안 판매 모두 <b>10%</b>이고 부가세(수수료의 10%)가 붙습니다. 카드·계좌 결제 수수료(약 3.4%)는 따로 빠집니다. 할인은 판매자가 상품 값으로 직접 정합니다. 제안 판매는 등록료가 따로 있고 첫 등록 3번은 무료입니다. 채취 의뢰 견적은 무료입니다. 정식 결제가 열리기 전 시범 운영 기간에는 판매 수수료를 받지 않습니다.</p></details><details class="faq"><summary>정산은 언제 되나요?</summary><p>구매자가 수령 확인을 하면 운영자가 정산합니다. 채취 근거가 필요한 상품은 근거를 확인한 뒤, 가공품은 영업 신고 번호를 확인한 뒤 정산됩니다.</p></details></div>
       <div class="faqg"><h3>채취 근거</h3><details class="faq"><summary>어떤 상품에 근거가 필요한가요?</summary><p>자연산 산삼과 비싼 상품(기본 100만 원 이상)입니다. 먼저 올리고 정산 전 14일 안에 근거를 내면 됩니다.</p></details><details class="faq"><summary>무엇을 내면 되나요?</summary><p>허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다. 자주 가는 산은 판매자 센터의 ‘내 채취지’에 한 번 등록해 두면 다음부터 고르기만 하면 됩니다.</p></details><details class="faq"><summary>산주가 누군지 몰라요.</summary><p>등록 화면의 ‘산주 찾기’로 산의 위치를 알려 주세요. 산림조합을 통해 산주를 찾아 연결해 드립니다.</p></details></div>
       <div class="faqg"><h3>계정</h3><details class="faq"><summary>로그인 링크를 눌렀는데 로그인이 안 돼요.</summary><p>링크는 요청한 <b>같은 기기, 같은 브라우저</b>에서 눌러야 합니다. 메일이 안 오면 스팸함을 확인해 주세요.</p></details><details class="faq"><summary>탈퇴하고 싶어요.</summary><p>1:1 문의로 ‘탈퇴’를 남겨 주세요. 진행 중인 거래가 없으면 처리해 드립니다.</p></details></div>
@@ -1273,8 +1273,8 @@ label.btn{display:inline-block}
     <div>
       <h3>제안 판매 규칙</h3>
       <ol>
-        <li>제안 판매는 <span class="cyc">매주</span> 토요일 저녁 8시에 한꺼번에 마감합니다. 심마니가 등록 신청을 하면서 등록료를 내고, 운영자가 사진·채취 근거·합격증을 확인하면 가장 가까운 토요일 마감 제안 판매에 올라갑니다. 토요일 낮 2시가 지나 승인되면 그다음 제안 판매로 넘어갑니다. 반려되면 등록료는 환불됩니다.</li>
-        <li>제안은 현재가에 최소 제안 단위를 더한 금액부터 받습니다. 마감 3분 안에 제안이 들어오면 마감이 그 제안으로부터 3분 뒤로 늦춰집니다.</li>
+        <li>제안 판매는 정해진 요일이 없습니다. 심마니가 등록 신청을 하면서 제안 받을 기간(3일·5일·7일)을 고르고, 운영자가 사진·채취 근거·합격증을 확인하면 그날 바로 열립니다. 고른 기간의 마지막 날 저녁 8시에 끝납니다. 반려되면 등록료는 환불됩니다.</li>
+        <li>제안은 현재 최고 제안에 최소 제안 단위를 더한 금액부터 받습니다. 끝나는 시각은 늦춰지지 않습니다.</li>
         <li>즉시 구매가가 있으면 그 금액 이상을 부르는 순간 제안 판매가 끝납니다.</li>
         <li>마감 때 가장 높은 제안을 판매자가 확인하고 <b>수락하면 판매가 확정</b>됩니다(판매자는 48시간 안에 답합니다). 확정되면 24시간 안에 결제하고, 결제하지 않으면 판매자가 다음 순위 제안자에게 넘길 수 있습니다.</li>
         <li>제안자가 없으면 미판매이고, 같은 물건은 등록료 없이 다음 제안 판매에 한 번 다시 올릴 수 있습니다.</li>
@@ -1409,7 +1409,12 @@ function aucCfg(){let s={};try{s=S.site||{}}catch(e){}return {cycle:s.aucCycle==
 const cyc=()=>aucCfg().cycle==="weekly"?"매주":"격주";
 function nextSat(from){const d=new Date(from+MIN_LEAD);const t=new Date(d);t.setHours(AUC_HOUR,0,0,0);let add=(AUC_DOW-t.getDay()+7)%7;t.setDate(t.getDate()+add);if(t.getTime()<d.getTime())t.setDate(t.getDate()+7);
   const c=aucCfg();if(c.cycle==="biweekly"){const wk=Math.round((t.getTime()-c.anchor)/(7*864e5));if(((wk%2)+2)%2===1)t.setDate(t.getDate()+7)}return t.getTime()}
-const satLabel=t=>{const d=new Date(t);return `${d.getMonth()+1}월 ${d.getDate()}일(토) 저녁 8시`};
+const satLabel=t=>{const d=new Date(t);return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]}) 저녁 8시`};
+/* 제안 판매는 정해진 요일 없이, 승인된 날부터 판매자가 고른 날수(3·5·7일) 동안 열리고 그날 저녁 8시에 끝납니다 */
+const AUC_DAYS=[3,5,7];
+const aucDays=a=>AUC_DAYS.includes(+a.days)?+a.days:7;
+function aucEnd(a,now){if(a.schedule==="test")return now+a.duration;const t=new Date(now+aucDays(a)*864e5);t.setHours(AUC_HOUR,0,0,0);return t.getTime()}
+const soonEnd=()=>{const e=liveAucs().map(a=>auc(a).end).sort((x,y)=>x-y);return e[0]||0};
 function inc(p){return p<100000?1000:p<1000000?5000:p<10000000?10000:50000}
 const CONFIRM_MS=8*864e5;
 /* 검수 기준 금액: 운영자 설정(settings/site)에서 바꿀 수 있음 */
@@ -1844,7 +1849,6 @@ function auc(a){
       if(b.amount<min)continue;
       valid.push(b);
       if(a.buyNow&&b.amount>=a.buyNow){end=b.t;buyNowHit=true;break}
-      if(end-b.t<EXT)end=b.t+EXT;
     }
   }
   const top=valid[valid.length-1]||null;
@@ -1922,7 +1926,7 @@ function aucRow(a){const x=auc(a),ms=x.end-Date.now();
   return `<button class="arow" type="button" data-open-a="${esc(a.id)}"><span class="athumb">${thumbHTML(a,"aid")}</span><span class="ainfo"><b>${esc(a.title)}</b><span class="meta">${a.grow?.startsWith("자연산")?"심마니 자연산":"재배"} · ${esc(a.region)}${x.count?` · 제안 ${x.count}회`:""}</span></span><span class="aprice"><b class="num">${won(x.cur)}</b>${x.phase==="진행중"?`<span class="meta num" data-end="${x.end}">${left(ms)}</span>`:`<span class="meta">${esc(x.phase==="유찰"?"미판매":"마감")}</span>`}</span></button>`}
 function homeWinsHTML(){const w=recentWins(1),up=S.auctions.filter(a=>a.status==="검수대기"&&!a.demo);let h="";
   if(w.length){const {a,x}=w[0];h+=`<button class="aline" type="button" data-open-a="${esc(a.id)}"><span class="meta">최근 판매 확정</span> ${esc(a.title)} <b class="num">${won(x.winner.amount)}</b></button>`}
-  if(up.length){const cats=[...new Set(up.map(a=>a.cat==="기타 귀한 임산물"||a.cat==="기타"?(a.item||a.cat):a.cat))];h+=`<div class="aline"><span class="meta">다음 제안 판매 예고</span> ${esc(cats.slice(0,3).join("·"))} <b class="num">${up.length}점</b> 검수 중</div>`}
+  if(up.length){const cats=[...new Set(up.map(a=>a.cat==="기타 귀한 임산물"||a.cat==="기타"?(a.item||a.cat):a.cat))];h+=`<div class="aline"><span class="meta">곧 올라올 제안 판매</span> ${esc(cats.slice(0,3).join("·"))} <b class="num">${up.length}점</b> 검수 중</div>`}
   return h}
 function aucCard(a){
   const x=auc(a),ms=x.end-Date.now(),watched=LS.watch.includes(a.id);
@@ -2207,16 +2211,16 @@ function renderHome(){renderSeason();
     if($("#homeIcons").dataset.k!==key){$("#homeIcons").dataset.k=key;$("#homeIcons").innerHTML=show.map(c=>soonIco(icoBtn(c,"shop"),!cnt(c))).join("");$("#homeIcons").style.setProperty("--cols",Math.min(show.length,4));requestAnimationFrame(paintAll)}}
   {const la_=liveAucs(),cnt=c=>la_.filter(a=>a.cat===c).length,ai=AUC_ICONS(),ord=[...ai].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();$("#aucKinds").textContent=`${ai.length}가지 · 옆으로 넘겨 보기`;const live_=ord.filter(c=>cnt(c));$("#aucKinds").textContent=`${live_.length}가지 진행 중`;$("#homeAucKinds").hidden=true;if($("#homeAucIcons").dataset.k!==key){$("#homeAucIcons").dataset.k=key;$("#homeAucIcons").innerHTML=live_.map(c=>icoBtn(c,"auction",ASEASON[c]?"제철":"")).join("");requestAnimationFrame(paintAll)}}
   renderUses();renderAlertHome();renderGiftBan();
-  {const first=!S.auctions.some(a=>a.startedAt&&auc(a).ended),e=nextSat(Date.now()),n=liveAucs().length;
-    const st=$("#aucStrip");if(st)st.innerHTML=`<span><b>${first?"농마니 첫 제안 판매":"이번 제안 판매"} · ${satLabel(e)} 마감</b><span class="num">${n?`지금 ${n}건 등록 · 남은 시간 <span data-end="${e}">${left(e-Date.now())}</span>`:"지금 등록을 받고 있습니다"}</span></span><i>제안 판매 보기 →</i>`;
-    const se=$("#sideEyebrow");if(se)se.textContent=first?"농마니 첫 제안 판매 마감까지":"이번 제안 판매 마감까지";
-    const hh=$("#homeAucH");if(hh)hh.textContent=(first?"농마니 첫 제안 판매":"이번 제안 판매")+(n?(n<=5?` · 단 ${n}점`:` · ${n}점`):"");}
+  {const e=soonEnd(),n=liveAucs().length;
+    const st=$("#aucStrip");if(st)st.innerHTML=`<span><b>제안 판매 · ${n?`지금 ${n}건 제안 받는 중`:"지금 등록을 받고 있습니다"}</b><span class="num">${n?`가장 빨리 끝나는 물건까지 <span data-end="${e}">${left(e-Date.now())}</span>`:"물건마다 3~7일 동안 제안을 받습니다"}</span></span><i>제안 판매 보기 →</i>`;
+    const se=$("#sideEyebrow");if(se)se.textContent="가장 빨리 끝나는 제안까지";
+    const hh=$("#homeAucH");if(hh)hh.textContent="곧 마감되는 제안 판매"+(n?(n<=5?` · 단 ${n}점`:` · ${n}점`):"");}
   {const dm=$("details.more");if(dm&&!dm.dataset.touched)dm.open=live().length<12}
   const sl=Object.keys(S.sellers).map(id=>({id,t:trust(id),r:sellerRating(id)})).sort((a,b)=>(b.t.cert-a.t.cert)||(respFast(b.id)-respFast(a.id))||(b.t.done-a.t.done)||(b.r.n-a.r.n)).slice(0,6);
   $("#homeSellers").innerHTML=sl.length?sl.map(({id,t,r})=>{const s=S.sellers[id];return `<button class="prow" type="button" data-profile="${esc(id)}">${avaHTML(id)}<div><b>${esc(s.shopName)}</b>${t.cert?' <span class="chip ok">인증</span>':""}<div class="meta">${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div><div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} 후기 ${r.n} · `:""}완료 거래 ${t.done}건</div></div><span class="meta">›</span></button>`}).join(""):emptyBox("아직 상점을 연 농부·심마니가 없습니다.",'<button class="btn" data-go="seller">내 상점 열기</button>');
   const la=liveAucs().sort((a,b)=>proofFirst(a,b)||auc(a).end-auc(b).end).slice(0,4);
-  $("#homeAuc").innerHTML=la.length?la.map(aucRow).join(""):emptyBox(`이번 제안 판매에 올라온 물건이 아직 없습니다. 제안 판매는 ${cyc()} 토요일 저녁 8시에 한꺼번에 마감합니다. 첫 등록 3번은 등록료가 무료입니다.`,'<button class="btn gold" data-go="seller">제안 판매 등록 신청</button>');
-  {const e=nextSat(Date.now()),sl=$("#sideLeft");if(sl){sl.dataset.end=e;sl.textContent=left(e-Date.now());$("#sideAuc").textContent=liveAucs().length;$("#sideShop").textContent=live().filter(p=>p.stock>0).length}}
+  $("#homeAuc").innerHTML=la.length?la.map(aucRow).join(""):emptyBox(`지금 제안을 받는 물건이 아직 없습니다. 제안 판매는 운영자 확인을 마치면 바로 열리고, 3~7일 동안 제안을 받습니다. 첫 등록 3번은 등록료가 무료입니다.`,'<button class="btn gold" data-go="seller">제안 판매 등록 신청</button>');
+  {const e=soonEnd(),sl=$("#sideLeft");if(sl){sl.dataset.end=e;sl.textContent=e?left(e-Date.now()):"—";$("#sideAuc").textContent=liveAucs().length;$("#sideShop").textContent=live().filter(p=>p.stock>0).length}}
   const ps=live().filter(p=>p.stock>0).sort((a,b)=>(soldOf(b.id)+ratingOf(b.id).n)-(soldOf(a.id)+ratingOf(a.id).n)||b.createdAt-a.createdAt).slice(0,9);
   {const all=live().filter(p=>p.stock>0),wild=all.filter(p=>p.grow===GROWS[0]).length;
     if($("#sideShop2"))$("#sideShop2").textContent=all.length;
@@ -2393,7 +2397,7 @@ function renderAdmin(){
   $("#pendAuc").innerHTML=pendA.length?pendA.map(a=>{const flag=CLAIMS.filter(w=>(a.title+a.desc).includes(w));
     return `<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b><span class="meta">${esc(shopName(a.sellerId))}</span></div>
     ${a.photo?`<img src="${esc(a.photo)}" alt="상품 사진" style="max-height:160px;width:auto;border-radius:8px;justify-self:start">`:'<div class="meta">사진 없음 (예시 데이터)</div>'}
-    <div class="meta num">${esc(a.cat)} · ${esc(a.grow)} · ${esc(a.weight)} · ${esc(a.region)} · 채취 ${esc(a.date)} · 시작가 ${won(a.start)} · ${a.schedule==="test"?"시험용 "+left(a.duration):"승인하면 "+satLabel(nextSat(Date.now()))+" 마감"}</div>
+    <div class="meta num">${esc(a.cat)} · ${esc(a.grow)} · ${esc(a.weight)} · ${esc(a.region)} · 채취 ${esc(a.date)} · 시작가 ${won(a.start)} · ${a.schedule==="test"?"시험용 "+left(a.duration):"승인하면 "+aucDays(a)+"일 동안 제안 받기"}</div>
     <div class="actions">${itemChip(a.item||a.cat,a.title)}</div>${a.titleEn||a.titleZh||a.titleJa?`<div class="meta">해외 제목: ${esc(a.titleEn||"-")} / ${esc(a.titleZh||"-")} / ${esc(a.titleJa||"-")}${claimIntl((a.titleEn||"")+(a.titleZh||"")+(a.titleJa||"")).length?' <span class="chip hot">효능 표현 의심</span>':""}</div>`:""}${blockHits(a.title+" "+(a.desc||"")).length?`<div class="notice bad">판매 불가 품목 이름 포함: ${esc(blockHits(a.title+" "+(a.desc||"")).map(h=>h.name).join(", "))}</div>`:""}
     <div class="actions"><span class="chip gold">${esc(a.tier||tierOf(a.start))} 검수</span>${certChip(a.sellerId)}<span class="chip ok">${esc(a.permit)}</span>${a.proofNeed==="photo"?(a.proofOk?'<span class="chip solid">증빙 확인됨</span>':'<span class="chip hot">서류 확인 필요</span>'):a.proofRef&&!a.proofOk?'<span class="chip">서류 사진 있음</span>':""}${a.video?`<a class="chip ok" href="${esc(a.video)}" target="_blank" rel="noopener">인증 영상 보기</a>`:""}${a.cert?`<span class="chip ok">합격증 ${esc(a.cert)}</span>`:a.cat==="산양삼"?'<span class="chip hot">합격증 번호 없음</span>':""}${a.appraise?`<span class="chip gold">${esc(a.appraise)}</span>`:""}${flag.length?`<span class="chip hot">효능 표현 의심: ${esc(flag.join(", "))}</span>`:""}<span class="chip">등록료 ${won(a.listFee)}</span></div>
     ${a.apPhoto?`<img src="${esc(a.apPhoto)}" alt="감정서 사진" style="max-height:140px;width:auto;border-radius:8px;justify-self:start">`:""}
@@ -2540,7 +2544,7 @@ function fillAuction(id,refresh){
       <div class="now"><span class="meta">${x.count?"현재가":"시작가"}</span><b>${won(x.cur)}</b></div>
       <div><span class="meta">${live_?"남은 시간":"상태"}</span><b ${live_?`data-end="${x.end}"`:""}>${live_?left(x.end-Date.now()):esc(x.phase==="유찰"?"미판매":"마감")}</b></div>
     </div>
-    <div class="meta num">제안 ${x.count}회 · ${x.bidders}명 참여 · 마감 ${day(x.end)}${x.end>a.endsAt&&!x.buyNowHit?" (마감 직전 제안으로 연장됨)":""}${a.buyNow?" · 즉시 구매 "+won(a.buyNow):""}</div>
+    <div class="meta num">제안 ${x.count}회 · ${x.bidders}명 참여 · 마감 ${day(x.end)}${a.buyNow?" · 즉시 구매 "+won(a.buyNow):""}</div>
     ${live_&&!own?`
      <div class="notice">제안할 때는 돈이 나가지 않습니다. 제안은 취소할 수 없고, 판매자가 수락해 판매가 확정되면 24시간 안에 확정가와 배송비만 결제합니다. 구매자 수수료는 없습니다.</div>`
     :own?'<div class="notice">내가 올린 제안 판매입니다. 판매자 센터에서 진행 상황을 볼 수 있습니다.</div>':x.winner?`<div class="notice">${x.phase==="판매자확인"?(x.winner.bidderId===S.uid?"최고 제안입니다. 판매자가 확인하고 수락하면 결제 안내를 드려요.":"마감됐습니다. 판매자가 최고 제안 "+won(x.winner.amount)+"을 확인하고 있습니다"):x.winner.bidderId===S.uid?"축하합니다. 판매가 확정되었습니다. 내 거래에서 결제해 주세요.":"제안 판매가 끝났습니다. 확정가 "+won(x.winner.amount)}</div>`:'<div class="notice">제안 없이 마감되었습니다.</div>'}
@@ -2708,8 +2712,8 @@ const ACT={
   async shipAuc(id){const t=$("#tr-"+id).value.trim();if(!t){toast("송장번호를 입력하세요");return}await guard(()=>S.db.doc("auctions/"+id).update({deal:"발송완료",courier:$("#cr-"+id).value,tracking:t.slice(0,40),shippedAt:Date.now()}),"발송 처리했습니다")},
   async recvAuc(id){await guard(()=>S.db.doc("auctions/"+id).update({deal:"수령확인",receivedAt:Date.now()}),"수령을 확인했습니다. 판매자 정산이 진행됩니다")},
   async relist(id){const a=A(id),st=Math.max(10000,+$("#rl-"+id).value||a.start);const now=Date.now();
-    await guard(async()=>{const {id:_,...rest}=a;await S.db.collection("auctions").add({...rest,start:st,buyNow:a.buyNow&&a.buyNow>st?a.buyNow:0,listFee:0,relistOf:id,status:"진행중",startedAt:now,endsAt:a.schedule==="test"?now+a.duration:nextSat(now),createdAt:now,skip:[],deal:null,offerAt:0});await S.db.doc("auctions/"+id).update({relisted:true})},"등록료 없이 다시 올렸습니다")},
-  async approveA(id){const a=A(id),now=Date.now(),end=a.schedule==="test"?now+a.duration:nextSat(now);await guard(()=>S.db.doc("auctions/"+id).update({status:"진행중",startedAt:now,endsAt:end,reviewedAt:now}),`승인했습니다. ${satLabel(end).replace(/\(토\).*/,"")} 제안 판매에 올라갑니다`)},
+    await guard(async()=>{const {id:_,...rest}=a;await S.db.collection("auctions").add({...rest,start:st,buyNow:a.buyNow&&a.buyNow>st?a.buyNow:0,listFee:0,relistOf:id,status:"진행중",startedAt:now,endsAt:aucEnd(a,now),createdAt:now,skip:[],deal:null,offerAt:0});await S.db.doc("auctions/"+id).update({relisted:true})},"등록료 없이 다시 올렸습니다")},
+  async approveA(id){const a=A(id),now=Date.now(),end=aucEnd(a,now);await guard(()=>S.db.doc("auctions/"+id).update({status:"진행중",startedAt:now,endsAt:end,reviewedAt:now}),`승인했습니다. 지금부터 ${satLabel(end)}까지 제안을 받습니다`)},
   async rejectA(id){const why=$("#rj-"+id).value.trim();if(!why){toast("반려 사유를 적어 주세요");return}await guard(()=>S.db.doc("auctions/"+id).update({status:"반려",rejectReason:why.slice(0,200)}),"반려했습니다. 등록료는 환불 처리됩니다")},
   async payoutA(id){if(proofMissing(A(id))){toast("채취 근거가 확인되지 않아 정산할 수 없습니다. 증빙을 확인하거나 환불해 주세요");return}await guard(()=>S.db.doc("auctions/"+id).update({deal:"정산완료",settledAt:Date.now()}),"정산 완료로 바꿨습니다")},
   async cancel(id){const o=S.orders.find(x=>x.id===id);await guard(async()=>{await S.db.doc("orders/"+id).update({status:"취소"});const p=S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})},"주문을 취소했습니다")},
@@ -2869,7 +2873,7 @@ function aucUI(){
   const tier=tierOf(st),cert=!!S.uid&&trust(S.uid).cert;
   $("#videoWrap").hidden=tier==="기본";$("#apPhotoWrap").hidden=tier!=="감정";
   $("#aAppraiseLbl").textContent=tier==="감정"?"감정 기관·감정서 번호 (필수)":"감정 기관·감정서 번호 (있으면)";
-  $("#aTier").textContent=tier==="기본"?`시작가 ${man(videoWon())} 미만 · 검수 없이 바로 다음 제안 판매에 올라갑니다. 운영자가 나중에 훑어봅니다.`:tier==="영상"?`시작가 ${man(videoWon())}~${man(reviewWon())} · 30초 인증 영상 링크가 필요합니다. 검수 없이 바로 올라갑니다.`:`시작가 ${man(reviewWon())} 이상 · 감정서 사진과 번호가 필요하고, 운영자가 직접 확인한 뒤 올라갑니다. 감정비는 판매자 부담입니다.`;
+  $("#aTier").textContent=tier==="기본"?`시작가 ${man(videoWon())} 미만 · 검수 없이 바로 제안 판매가 열립니다. 운영자가 나중에 훑어봅니다.`:tier==="영상"?`시작가 ${man(videoWon())}~${man(reviewWon())} · 30초 인증 영상 링크가 필요합니다. 검수 없이 바로 올라갑니다.`:`시작가 ${man(reviewWon())} 이상 · 감정서 사진과 번호가 필요하고, 운영자가 직접 확인한 뒤 올라갑니다. 감정비는 판매자 부담입니다.`;
   $("#aSubmit").textContent=tier!=="감정"?(lf?`등록료 ${won(lf)} 테스트 결제하고 바로 등록`:"첫 등록 무료로 바로 등록"):(lf?`등록료 ${won(lf)} 테스트 결제하고 검수 요청`:"첫 등록 무료로 검수 요청");
   $("#videoLbl")&&($("#videoLbl").textContent=`인증 영상 링크 (${man(videoWon())} 이상 필수)`);$("#apLbl")&&($("#apLbl").textContent=`감정서 사진 (${man(reviewWon())} 이상 필수)`);
   const hit=CLAIMS.filter(w=>($("#aTitle").value+$("#aDesc").value).includes(w));
@@ -2904,7 +2908,7 @@ $("#aucForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast("
   if(CLAIMS.some(w=>($("#aTitle").value+$("#aDesc").value).includes(w))){toast("효능 표현을 빼고 다시 올려 주세요");return}
   const aSiteId=$("#aSite").value,pRef=aSiteId?"":await saveProof(aProof,{permit:$("#aPermit").value,parcel:$("#aParcel").value,title:$("#aTitle").value.trim(),kind:"auctions"});if(pRef===null)return;
   const tEn=$("#aTitleEn").value.trim().slice(0,80),tZh=$("#aTitleZh").value.trim().slice(0,60),tJa=$("#aTitleJa").value.trim().slice(0,60),ci=claimIntl(tEn+" "+tZh+" "+tJa);if(ci.length){toast(`해외 제목에서 효능 표현을 빼 주세요: ${ci.join(", ")}`);return}
-  const fee0=feeFor(S.uid,st);const ok=await guard(()=>S.db.collection("auctions").add({title:$("#aTitle").value.trim().slice(0,60),titleEn:tEn,titleZh:tZh,titleJa:tJa,cat,grow:$("#aGrow").value,weight:$("#aWeight").value.trim().slice(0,40),form:$("#aForm").value,region:$("#aRegion").value.trim().slice(0,40),date:$("#aDate").value,permit:$("#aPermit").value,cert:cat==="산양삼"?$("#aCert").value.trim().slice(0,40):"",appraise:$("#aAppraise").value.trim().slice(0,60),start:st,buyNow:bn,schedule:$("#aDur").value==="sat"?"sat":"test",duration:$("#aDur").value==="sat"?0:+$("#aDur").value,ship:$("#aForm").value==="생물"?7000:4000,item:hh?hh.name:item.slice(0,30),itemStatus:ist,photo:aPhoto,apPhoto:tier==="감정"?aApPhoto:"",video:tier==="기본"?"":video.slice(0,300),tier,desc:$("#aDesc").value.slice(0,1000),...proofFields(pNeed,pRef,aSiteId),listFee:fee0,sellerId:S.uid,status:auto?"진행중":"검수대기",startedAt:auto?now:0,endsAt:auto?(sched==="sat"?nextSat(now):now+(+sched)):0,autoApproved:auto,createdAt:now}),auto?`바로 ${sched==="sat"?satLabel(nextSat(now)):"시험용"} 제안 판매에 올렸습니다`:(fee0?`등록료 ${won(fee0)}를 테스트 결제하고 검수를 요청했습니다`:"첫 등록 무료로 검수를 요청했습니다"));
+  const fee0=feeFor(S.uid,st);const ok=await guard(()=>S.db.collection("auctions").add({title:$("#aTitle").value.trim().slice(0,60),titleEn:tEn,titleZh:tZh,titleJa:tJa,cat,grow:$("#aGrow").value,weight:$("#aWeight").value.trim().slice(0,40),form:$("#aForm").value,region:$("#aRegion").value.trim().slice(0,40),date:$("#aDate").value,permit:$("#aPermit").value,cert:cat==="산양삼"?$("#aCert").value.trim().slice(0,40):"",appraise:$("#aAppraise").value.trim().slice(0,60),start:st,buyNow:bn,schedule:+$("#aDur").value<=7?"days":"test",days:+$("#aDur").value<=7?+$("#aDur").value:0,duration:+$("#aDur").value<=7?0:+$("#aDur").value,ship:$("#aForm").value==="생물"?7000:4000,item:hh?hh.name:item.slice(0,30),itemStatus:ist,photo:aPhoto,apPhoto:tier==="감정"?aApPhoto:"",video:tier==="기본"?"":video.slice(0,300),tier,desc:$("#aDesc").value.slice(0,1000),...proofFields(pNeed,pRef,aSiteId),listFee:fee0,sellerId:S.uid,status:auto?"진행중":"검수대기",startedAt:auto?now:0,endsAt:auto?(+sched<=7?aucEnd({days:+sched},now):now+(+sched)):0,autoApproved:auto,createdAt:now}),auto?(+sched<=7?`바로 올렸습니다. ${satLabel(aucEnd({days:+sched},now))}까지 제안을 받습니다`:"시험용 제안 판매를 바로 열었습니다"):(fee0?`등록료 ${won(fee0)}를 테스트 결제하고 검수를 요청했습니다`:"첫 등록 무료로 검수를 요청했습니다"));
   if(ok){await sharePhoto("a",aPhoto,item,$("#aTitle").value.trim()+" · "+$("#aRegion").value.trim());$("#aTitle").value="";$("#aDesc").value="";$("#aVideo").value="";aPhoto="";aApPhoto="";aProof="";$("#aTitleEn").value="";$("#aTitleZh").value="";$("#aTitleJa").value="";$("#aParcel").value="";$("#aSite").value="";$("#aPhoto").value="";$("#aApPhoto").value="";$("#aProof").value="";$("#aPhotoPrev").hidden=true;$("#aApPhotoPrev").hidden=true;$("#aProofPrev").hidden=true;$("#aOath").checked=false;aucUI()}};
 $("#sellForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast("직거래 유도 신고로 판매가 정지되었습니다. 운영자에게 문의해 주세요");return}
   if(!S.sellers[S.uid]){toast("위에서 상점 정보를 먼저 저장해 주세요");return}
@@ -3372,11 +3376,11 @@ function winsHTML(n){const w=recentWins(n);if(!w.length)return "";
   return `<div class="wins"><div class="wh"><b>최근 판매 확정</b><span class="meta">실제로 거래된 값입니다</span></div>${w.map(({a,x})=>`<button class="win" type="button" data-open-a="${esc(a.id)}"><b>${esc(a.title)}</b><span class="num">${won(x.winner.amount)}</span><span class="meta num">제안 ${x.count}번 · ${x.bidders}명 경쟁 · ${new Date(x.end).getMonth()+1}월 ${new Date(x.end).getDate()}일 판매 확정</span></button>`).join("")}</div>`}
 function upNextHTML(){const up=S.auctions.filter(a=>a.status==="검수대기"&&!a.demo);if(!up.length)return "";
   const cats=[...new Set(up.map(a=>a.cat==="기타 귀한 임산물"||a.cat==="기타"?(a.item||a.cat):a.cat))];
-  return `<div class="upnext"><b>다음 제안 판매 예고</b> · ${esc(cats.slice(0,4).join("·"))}${cats.length>4?" 등":""} <b class="num">${up.length}점</b>이 검수 중입니다. ${satLabel(nextSat(Date.now()))} 마감 제안 판매에 올라옵니다.</div>`}
+  return `<div class="upnext"><b>곧 올라올 제안 판매</b> · ${esc(cats.slice(0,4).join("·"))}${cats.length>4?" 등":""} <b class="num">${up.length}점</b>이 검수 중입니다. 확인이 끝나는 대로 바로 올라옵니다.</div>`}
 const waitN=c=>c?(S.alerts||[]).filter(a=>a.kind==="auction"&&a.key===c).length:0;
 function renderAucExtras(){
   document.querySelectorAll(".cyc").forEach(e=>e.textContent=cyc());
-  document.querySelectorAll(".nextSat").forEach(e=>e.textContent="다음 마감: "+satLabel(nextSat(Date.now())));
+  document.querySelectorAll(".nextSat").forEach(e=>{const t=soonEnd();e.textContent=t?"가장 빨리 끝나는 물건: "+satLabel(t):"물건마다 3~7일 동안 제안을 받습니다"});
   if($("#homeWins"))$("#homeWins").innerHTML=homeWinsHTML();
   const ac=S.acat&&S.acat!=="전체"?S.acat:"",wn=waitN(ac),lv=$("#aucState")?.value==="live";
   const row=ac&&lv&&liveAucs().some(a=>a.cat===ac)?`<div class="alertrow"><span>${wn?`<b class="num">${wn}명</b>이 ${esc(ac)} 제안 판매를 기다리고 있습니다`:`다음 ${esc(ac)} 제안 판매 소식을 받아 보세요`}</span>${alertBtn(ac,"auction")}</div>`:"";
@@ -3384,7 +3388,7 @@ function renderAucExtras(){
   if(S.owner&&$("#alertCounts")){const m={};(S.alerts||[]).filter(a=>a.kind==="auction").forEach(a=>m[a.key]=(m[a.key]||0)+1);const rows=Object.entries(m).sort((a,b)=>b[1]-a[1]);
     $("#alertCounts").innerHTML=rows.length?rows.map(([c,k])=>`<div class="item sunk"><div class="itop"><b>${esc(c)}</b><span class="num">${k}명 대기</span></div></div>`).join(""):`<div class="empty">아직 제안 판매 알림을 신청한 손님이 없습니다.</div>`;
     const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();if(!["cfgVideo","cfgReview","cfgProof","cfgPhone","cfgHours","cfgGiftTitle","cfgGiftStart","cfgGiftEnd","cfgGiftCut"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon();$("#cfgPhone").value=S.site?.csPhone||"";$("#cfgHours").value=S.site?.csHours||"";giftCfgFill()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
-    $("#cfgNote").textContent=`다음 마감: ${satLabel(nextSat(Date.now()))}`}
+    $("#cfgNote").textContent="제안 판매는 승인된 날부터 판매자가 고른 3·5·7일 동안 열립니다"}
 }
 $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:00:00+09:00");if(!an||new Date(an+9*3600e3).getUTCDay()!==6){toast("기준 제안 판매일은 토요일로 골라 주세요");return}
   const vw=+$("#cfgVideo").value,rw=+$("#cfgReview").value,pw=+$("#cfgProof").value;
@@ -3473,7 +3477,7 @@ function renderSell(){
   }else if(WZ.step===3){
     body=`<h2>${esc(n)}을(를)<br>어떻게 팔까요?</h2>
      <div class="choice">
-      <button type="button" class="opt auc" data-wzmode="auc" aria-pressed="${WZ.mode==="auc"}"><span class="rec">추천${waitN(n)?` · ${waitN(n)}명 대기 중`:""}</span><b>제안 판매로 팔기</b><span>오래되고 귀한 물건은 손님들이 값을 올려 줍니다. ${cyc()} 토요일 저녁 8시 마감.</span></button>
+      <button type="button" class="opt auc" data-wzmode="auc" aria-pressed="${WZ.mode==="auc"}"><span class="rec">추천${waitN(n)?` · ${waitN(n)}명 대기 중`:""}</span><b>제안 판매로 팔기</b><span>오래되고 귀한 물건은 손님들이 값을 제안합니다. 3~7일 동안 받고, 팔지는 직접 정합니다.</span></button>
       <button type="button" class="opt" data-wzmode="shop" aria-pressed="${WZ.mode==="shop"}"><b>정한 값에 팔기</b><span>값을 정해 두면 손님이 바로 삽니다. 여러 개를 꾸준히 팔 때 좋습니다.</span></button>
      </div>`;
     foot=`<button class="bigbtn ${WZ.mode==="auc"?"gold":"pri"}" type="button" id="wzNext" ${WZ.mode?"":"disabled"}>다음</button>`;
@@ -4367,7 +4371,7 @@ const DEMO_P=[
 $("#seedDemo").onclick=async()=>{
   if(!S.sellers[S.uid])await guard(()=>S.db.doc("sellers/"+S.uid).set({shopName:"농마니 예시 상점",role:"농부·심마니 모두",region:"전국",bio:"운영자가 넣은 예시입니다.",updatedAt:Date.now()}));
   let n=0;const now=Date.now();
-  for(const d of DEMO_A){const {dur,...rest}=d;if(await guard(()=>S.db.collection("auctions").add({...rest,cert:rest.cert||"",appraise:rest.appraise||"",date:iso(new Date(now-2*864e5)),schedule:dur?"test":"sat",duration:dur||0,ship:7000,listFee:listFee(rest.start),sellerId:S.uid,status:"진행중",startedAt:now,endsAt:dur?now+dur:nextSat(now),demo:true,createdAt:now-n*1000})))n++}
+  for(const d of DEMO_A){const {dur,...rest}=d;if(await guard(()=>S.db.collection("auctions").add({...rest,cert:rest.cert||"",appraise:rest.appraise||"",date:iso(new Date(now-2*864e5)),schedule:dur?"test":"days",days:7,duration:dur||0,ship:7000,listFee:listFee(rest.start),sellerId:S.uid,status:"진행중",startedAt:now,endsAt:dur?now+dur:aucEnd({days:7},now),demo:true,createdAt:now-n*1000})))n++}
   for(const d of DEMO_P){if(await guard(()=>S.db.collection("products").add({...d,cert:d.cert||"",stock:20,sellerId:S.uid,status:"판매중",demo:true,createdAt:now-n*1000})))n++}
   if(n)toast(`예시 ${n}건을 넣었습니다`)};
 $("#clearDemo").onclick=async()=>{const as=S.auctions.filter(a=>a.demo),ps=S.products.filter(p=>p.demo);
@@ -4435,7 +4439,7 @@ loadNews();
 $("#homeSearch").onsubmit=e=>{e.preventDefault();logHealth($("#homeQ").value);S.cat="전체";S.use="";$("#shopQ").value=$("#homeQ").value.trim();go("shop")};
 renderWiz();
 /* ---------- 연결 ---------- */
-renderGuide();document.querySelectorAll(".nextSat").forEach(e=>e.textContent="다음 마감: "+satLabel(nextSat(Date.now())));$("#aDur").onchange=()=>{$("#aDurNote").textContent=$("#aDur").value==="sat"?`검수 후 ${satLabel(nextSat(Date.now()))} 마감 제안 판매에 올라갑니다`:"시험용입니다. 승인 즉시 10분 제안 판매가 열립니다"};$("#aDur").onchange();render();go(startView());
+renderGuide();document.querySelectorAll(".nextSat").forEach(e=>{const t=soonEnd();e.textContent=t?"가장 빨리 끝나는 물건: "+satLabel(t):"물건마다 3~7일 동안 제안을 받습니다"});$("#aDur").onchange=()=>{$("#aDurNote").textContent=+$("#aDur").value<=7?`운영자 확인이 끝나면 바로 열리고, ${$("#aDur").value}일 뒤 저녁 8시에 끝납니다`:"시험용입니다. 승인 즉시 10분 제안 판매가 열립니다"};$("#aDur").onchange();render();go(startView());
 document.addEventListener("click",e=>{const t=e.target.closest("#sellerStart,#sellerStart2");if(!t)return;try{if(!/go=seller/.test(location.search))history.replaceState(null,"",location.pathname+"?go=seller")}catch(_){}window.nmAuth?.open("",{seller:true,kakao:t.id==="sellerStart"})});
 /* 산야초사전 페이지의 "장터에서 찾기" 링크(?q=곰취)로 들어오면 바로 그 상품 검색 */
 try{const q0=(new URLSearchParams(location.search).get("q")||"").trim().slice(0,40);if(q0){S.cat="전체";S.use="";$("#shopQ").value=q0;$("#homeQ").value=q0;go("shop")}}catch(e){}
