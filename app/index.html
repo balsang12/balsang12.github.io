@@ -1006,7 +1006,6 @@ label.btn{display:inline-block}
   <div class="actions"><button class="btn primary" type="button" data-sell="1" style="min-height:52px;font-size:17px;padding-inline:22px">+ 사진 찍어 쉽게 올리기</button><span class="meta">아래 양식은 가공품·자세한 등록용입니다</span></div>
   <div class="stats" id="sellerStats"></div>
   <div id="credBox"></div>
-  <div id="siteBox"></div>
   <details class="panel bulk" id="bulk">
     <summary><b>엑셀로 여러 개 한꺼번에 올리기</b><span class="meta">상품이 많을 때 컴퓨터에서 쓰세요 · 가공품은 아래 양식으로 하나씩</span></summary>
     <div class="bulkb">
@@ -1174,6 +1173,7 @@ label.btn{display:inline-block}
       <div class="panel goldp"><h3>내 제안 판매</h3><div class="list" id="sellerAucs"></div></div>
     </div>
   </div>
+  <div id="siteBox"></div>
 </section>
 
 <!-- ADMIN -->
@@ -3239,10 +3239,10 @@ async function addSite(){const parcel=$("#siteParcel").value.trim(),permit=$("#s
   let photo="";const f=$("#sitePhoto").files[0];if(f){try{photo=await shrinkPhoto(f)}catch(e){toast("사진을 읽지 못했습니다");return}}
   if(permit!==PERMITS[0]&&!photo){toast("본인 산이 아니면 허가증·동의서 사진이나 산주 동의 문자 캡처를 넣어 주세요");return}
   if(await guard(()=>S.db.collection("sites").add({by:S.uid,parcel:parcel.slice(0,120),permit,photo,until,status:"대기",createdAt:Date.now()}),"채취지를 등록했습니다. 운영자가 확인하면 올릴 때 고를 수 있습니다")){$("#siteParcel").value="";$("#sitePhoto").value="";$("#siteUntil").value=""}}
-function renderSites(){const box=$("#siteBox");if(!box)return;
+function renderSites(){const box=$("#siteBox");if(!box)return;if(box.contains(document.activeElement))return;const wasOpen=!!box.querySelector("details")?.open;
   if(!S.uid||!S.sellers[S.uid]){box.innerHTML="";return}
   const mine=(S.sites||[]).filter(x=>x.by===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
-  box.innerHTML=`<details class="panel" ${mine.length?"":"open"}><summary><b>내 채취지</b> <span class="meta">자주 가는 산을 한 번 등록해 두면 산삼을 올릴 때마다 근거를 낼 필요가 없습니다</span></summary>
+  box.innerHTML=`<details class="panel" ${wasOpen?"open":""}><summary><b>내 채취지 (선택)</b> <span class="meta">산삼처럼 근거가 필요한 물건을 자주 올리는 분만. 한 번 등록해 두면 올릴 때마다 서류를 낼 필요가 없어요${mine.length?` · 등록 ${mine.length}곳`:""}</span></summary>
    <div class="list" style="margin-top:8px">${mine.map(x=>`<div class="item sunk"><div class="itop"><b>${esc(x.parcel)}</b><span class="chip ${x.status==="확인"?"ok":x.status==="부족"?"hot":""}">${x.status==="확인"?(x.until&&x.until<Date.now()?"기간 끝남":"확인됨"):x.status==="부족"?"보완 필요":"확인 중"}</span></div><div class="meta">${esc(x.permit)}${x.until?" · "+day(x.until)+"까지":""}${x.reason?` · <span style="color:var(--berry)">${esc(x.reason)}</span>`:""}</div></div>`).join("")}</div>
    <div class="row2" style="margin-top:8px"><div class="field"><label for="siteParcel">산 지번</label><input id="siteParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
    <div class="field"><label for="sitePermit">근거</label><select id="sitePermit">${PERMITS.map(x=>`<option>${x}</option>`).join("")}</select></div></div>
