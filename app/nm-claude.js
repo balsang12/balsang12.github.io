@@ -409,8 +409,12 @@
   function showMail(on) { var b = el.querySelector("#nmEmailBox"), m = el.querySelector("#nmMore"); b.hidden = !on; m.hidden = on; m.setAttribute("aria-expanded", on ? "true" : "false"); }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
   function open(reason, o) { build(); o = o || {}; var t = L(), ko = !window.NM_LANG || window.NM_LANG === "ko";
-    el.querySelector("#nmAuthH").textContent = o.seller && ko ? "판매자 로그인" : t.h;
-    el.querySelector("#nmAuthP").textContent = o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
+    /* 이 기기에서 전에 동의·로그인한 적이 있으면 '가입'처럼 보이지 않게: 동의 칸을 접고 '다시 로그인'으로 */
+    var back = false; try { back = !!localStorage.getItem("nm_consent"); } catch (e) {}
+    var cb = el.querySelector("#nmConsent"); if (cb) cb.hidden = back && ko;
+    el.querySelector("#nmKakao").textContent = back && ko ? "카카오로 로그인" : t.kakao;
+    el.querySelector("#nmAuthH").textContent = back && ko ? (o.seller ? "판매자 다시 로그인" : "다시 로그인") : o.seller && ko ? "판매자 로그인" : t.h;
+    el.querySelector("#nmAuthP").textContent = back && ko ? "전에 쓰시던 카카오(또는 이메일)로 로그인하시면 그대로 이어집니다. 다시 가입하실 필요 없어요." : o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
     document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); showMail(!ko || !!o.email); el.hidden = false; say(reason || "");
     /* 창은 항상 맨 위(동의 칸)부터 보이게. 휴대폰에서는 이메일 칸에 자동 커서를 두지 않음(키보드가 올라와 화면이 밀림) */
     var bx = el.querySelector(".box"); if (bx) bx.scrollTop = 0; el.scrollTop = 0;
