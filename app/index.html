@@ -2054,6 +2054,7 @@ function openBulk(){const dlg=$("#dlg");openA=null;const tm=new Date(Date.now()+
    <label class="ochk"><input type="checkbox" id="bkWrap" checked> 선물 포장</label><label class="ochk"><input type="checkbox" id="bkPc" checked> 생산자 카드 넣기</label><label class="ochk"><input type="checkbox" id="bkInv"> 계산서가 필요해요 (사업자 판매자만 발행할 수 있어요)</label>
    <div class="field"><label for="bkMemo">더 바라는 점 (선택)</label><textarea id="bkMemo" rows="2" maxlength="300" placeholder="예: 로고 스티커를 붙이고 싶어요. 받는 분 명단은 견적이 정해지면 보낼게요"></textarea></div>
    <p class="meta" style="margin:0 0 8px">받는 분 이름·주소는 판매자를 고른 뒤 안전하게 따로 받습니다. 여기엔 전화번호·주소를 적지 마세요.</p>
+   <p class="meta" style="margin:0 0 8px"><b>결제:</b> 견적을 고르면 3일 안에 카드나 계좌이체로 결제합니다. 돈은 결제대행사가 보관했다가 물건을 받으신 뒤 판매자에게 지급되니 안심하세요.</p>
    <div class="actions"><button class="btn primary needWrite" type="submit">무료로 견적 받기</button></div></form></div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
   $("#bulkForm").onsubmit=async e=>{e.preventDefault();if(!S.uid){toast("로그인하면 요청서를 올릴 수 있어요");return}
@@ -2277,7 +2278,7 @@ function renderRequests(){
     ${qs.map(q=>`<div class="item ${q.price===best&&r.status==="모집중"?"best":""}">
       <div class="itop"><span><b style="font-size:15px">${esc(shopName(q.sellerId))}</b> <span class="meta">${esc(S.sellers[q.sellerId]?.region||"")}</span>${invChip(q.sellerId)}</span><span class="price num">${won(q.price)}</span></div>
       <div class="meta">약 ${q.days}일 소요${q.note?" · "+esc(q.note):""}</div>
-      <div class="actions">${q.status==="선택됨"?statusChip("선택됨"):r.status==="모집중"?`<button class="btn sm primary needWrite" data-act="accept" data-id="${q.id}">이 견적으로 의뢰하기</button>`:""}${q.price===best&&r.status==="모집중"&&qs.length>1?'<span class="chip hot">최저가</span>':""}<button class="btn sm" type="button" data-profile="${esc(q.sellerId)}">프로필</button><button class="btn sm" type="button" data-chat="${esc(q.sellerId)}" data-ctx="${esc(r.item)} 견적 문의">대화</button></div>
+      <div class="actions">${q.status==="선택됨"?statusChip("선택됨"):r.status==="모집중"?`<button class="btn sm primary needWrite" data-act="accept" data-id="${q.id}">${r.bulk?"이 견적으로 주문하기":"이 견적으로 의뢰하기"}</button>`:""}${q.price===best&&r.status==="모집중"&&qs.length>1?'<span class="chip hot">최저가</span>':""}<button class="btn sm" type="button" data-profile="${esc(q.sellerId)}">프로필</button><button class="btn sm" type="button" data-chat="${esc(q.sellerId)}" data-ctx="${esc(r.item)} 견적 문의">대화</button></div>
     </div>`).join("")||'<div class="meta">아직 도착한 견적이 없습니다.</div>'}
     ${r.status==="모집중"?`<div class="actions"><button class="btn sm danger" data-act="closeReq" data-id="${r.id}">요청 닫기</button></div>`:""}
     </div>`}).join(""):`<div class="empty">올린 요청서가 없습니다. 질문에 답하면 요청서가 바로 만들어집니다.</div>`;
@@ -2315,7 +2316,8 @@ function renderMy(){
     ${o.tracking?`<div class="meta">송장: ${esc(o.courier||"")} ${esc(o.tracking)}</div>`:""}
     <div class="actions">
       ${o.status==="채취중"?`<span class="meta">채취인이 캐러 갔습니다. 채취가 끝나 사진이 올라오면 그때 결제합니다. 아직 돈은 나가지 않았어요.</span><button class="btn sm danger" data-act="cancel" data-id="${o.id}">의뢰 취소</button>`:""}
-      ${o.status==="결제대기"?`${o.harvestPhoto?`<img src="${esc(o.harvestPhoto)}" alt="채취한 ${esc(o.productName)} 사진" style="max-width:220px;border-radius:10px;display:block;margin:6px 0">`:""}<span class="meta num">채취 완료${o.harvestNote?" · "+esc(o.harvestNote):""} · 최종 ${won(o.total)}${o.quoted&&o.quoted!==o.total?` (견적 ${won(o.quoted)})`:""} · ${day(o.payBy)}까지 결제</span><button class="btn sm primary needWrite" data-act="payQ" data-id="${o.id}">사진 확인했어요 · 결제하기</button><button class="btn sm danger" data-act="cancel" data-id="${o.id}">사지 않을게요</button>`:""}
+      ${o.status==="결제대기"&&o.bulk?`<span class="meta num">견적 확정 · ${won(o.total)} · ${day(o.payBy)}까지 결제 · 결제하면 판매자가 준비를 시작합니다. 돈은 결제대행사가 보관했다가 받으신 뒤 판매자에게 지급됩니다.</span><button class="btn sm primary needWrite" data-act="payQ" data-id="${o.id}">결제하기</button><button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
+      ${o.status==="결제대기"&&!o.bulk?`${o.harvestPhoto?`<img src="${esc(o.harvestPhoto)}" alt="채취한 ${esc(o.productName)} 사진" style="max-width:220px;border-radius:10px;display:block;margin:6px 0">`:""}<span class="meta num">채취 완료${o.harvestNote?" · "+esc(o.harvestNote):""} · 최종 ${won(o.total)}${o.quoted&&o.quoted!==o.total?` (견적 ${won(o.quoted)})`:""} · ${day(o.payBy)}까지 결제</span><button class="btn sm primary needWrite" data-act="payQ" data-id="${o.id}">사진 확인했어요 · 결제하기</button><button class="btn sm danger" data-act="cancel" data-id="${o.id}">사지 않을게요</button>`:""}
       ${o.status==="결제완료"?`<button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
       ${ordEff(o)==="발송완료"?`<button class="btn sm primary" data-act="receive" data-id="${o.id}">상품 받았어요</button><input id="dp-${o.id}" placeholder="설명과 다른 점" aria-label="문제 내용"><button class="btn sm danger" data-act="disputeO" data-id="${o.id}">문제 신고</button><span class="meta">${day(o.shippedAt+CONFIRM_MS)}까지 확인이 없으면 자동 수령 확인</span>`:""}
       ${["수령확인","정산완료"].includes(ordEff(o))&&o.productId&&!reviewed?`<button class="btn sm" data-act="review" data-id="${o.id}">후기 쓰기</button>`:""}
@@ -2362,7 +2364,8 @@ function renderSeller(){renderSites();
     ${o.qdPct?`<div class="meta">📦 수량 할인 ${o.qdPct}% 적용 (-${won(o.qdOff||0)})</div>`:""}${giftNote(o)}${shipNoteSeller(o)}
     ${ordRate(o)<FEE?`<div class="meta"><span class="chip ok">단골 주문</span> 이 손님의 ${REPEAT_FROM}번째 이상 주문이라 수수료가 7%입니다.</div>`:""}
     ${o.status==="채취중"?`<div class="notice">채취 의뢰 · 손님은 아직 결제 전입니다. 채취가 끝나면 사진과 최종 금액을 올려 주세요. 손님이 사진을 보고 결제하면 발송하시면 됩니다.</div><div class="actions"><input id="hp-${o.id}" type="file" accept="image/*" aria-label="채취한 물건 사진"><input id="hv-${o.id}" type="number" min="1000" step="100" value="${o.total}" aria-label="최종 금액(원)" class="num" style="max-width:130px"><input id="hn-${o.id}" placeholder="무게·상태 한마디" aria-label="채취 메모"><button class="btn sm primary" data-act="harvestDone" data-id="${o.id}">채취 완료 · 결제 요청</button><button class="btn sm danger" data-act="harvestFail" data-id="${o.id}">채취 못 함</button></div>`:""}
-    ${o.status==="결제대기"?`<div class="meta">손님 결제를 기다리는 중 · ${day(o.payBy)}까지</div>`:""}
+    ${o.status==="결제대기"?`<div class="meta">손님 결제를 기다리는 중 · ${day(o.payBy)}까지${o.bulk?" · 결제되면 준비를 시작하세요":""}</div>`:""}
+     ${o.status==="결제완료"&&o.bulk?`<div class="notice">대량 주문이 결제됐습니다. 준비해서 보내 주세요. 받는 곳이 여러 군데면 대화로 명단을 받아 하나씩 송장을 넣어 주세요.</div>`:""}
     ${o.status==="결제완료"?`<div class="meta">송장에는 개인 휴대폰 대신 택배사 <b>안심번호</b>를 적어 주세요.</div>`:""}
     ${o.status==="결제완료"?`<div class="actions"><select id="cr-${o.id}" aria-label="택배사"><option>CJ대한통운</option><option>우체국택배</option><option>한진택배</option><option>롯데택배</option></select><input id="tr-${o.id}" placeholder="송장번호" aria-label="송장번호"><button class="btn sm primary" data-act="ship" data-id="${o.id}">발송 처리</button></div>`:o.tracking?`<div class="meta">송장 ${esc(o.courier)} ${esc(o.tracking)}</div>`:""}
     </div>`).join(""):`<div class="empty">아직 받은 주문이 없습니다.</div>`);
@@ -2741,7 +2744,10 @@ const ACT={
   async accept(id){const q=S.quotes.find(x=>x.id===id),r=S.requests.find(x=>x.id===q.requestId);
     /* 채취 의뢰는 고를 때 결제하지 않습니다. 채취가 끝나 사진과 확정 금액이 올라오면 그때 일반 주문처럼 결제합니다 */
     const ok=await guard(async()=>{await S.db.doc("quotes/"+id).update({status:"선택됨"});await S.db.doc("requests/"+r.id).update({status:"진행중"});
-      await S.db.collection("orders").add({productId:null,requestId:r.id,fromQuote:true,productName:`${r.item} (${r.form})`,unit:`${r.qty}${r.unit}`,qty:1,unitPrice:q.price,ship:0,total:q.price,quoted:q.price,buyerId:S.uid,sellerId:q.sellerId,memo:r.memo||"",status:"채취중",createdAt:Date.now()})},"견적을 골랐습니다. 아직 돈은 나가지 않아요. 채취가 끝나 사진이 올라오면 그때 결제합니다");if(ok)go("my")},
+      /* 대량·단체 주문은 견적을 고를 때 값이 정해지므로 바로 결제(3일 안). 판매자가 미리 만들어 두고 떼이는 일을 막습니다 */
+      const bulk=!!r.bulk;
+      await S.db.collection("orders").add({productId:null,requestId:r.id,fromQuote:true,...(bulk?{bulk:true,payBy:Date.now()+3*864e5}:{}),productName:bulk?`${r.item} × ${r.bulk.count}개`:`${r.item} (${r.form})`,unit:bulk?`${r.bulk.count}개`:`${r.qty}${r.unit}`,qty:1,unitPrice:q.price,ship:0,total:q.price,quoted:q.price,buyerId:S.uid,sellerId:q.sellerId,memo:r.memo||"",status:bulk?"결제대기":"채취중",createdAt:Date.now()})},
+      r.bulk?"견적을 골랐습니다. 3일 안에 결제하시면 판매자가 준비를 시작합니다. 돈은 결제대행사가 보관했다가 받으신 뒤 판매자에게 지급됩니다":"견적을 골랐습니다. 아직 돈은 나가지 않아요. 채취가 끝나 사진이 올라오면 그때 결제합니다");if(ok)go("my")},
   async harvestDone(id){const o=S.orders.find(x=>x.id===id);if(!o||o.sellerId!==S.uid)return;
     const f=$("#hp-"+id)?.files?.[0];if(!f){toast("채취한 물건 사진을 한 장 올려 주세요");return}
     const price=Math.round(+$("#hv-"+id).value||0);if(price<1000){toast("최종 금액을 적어 주세요");return}
