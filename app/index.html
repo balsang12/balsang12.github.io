@@ -2825,7 +2825,7 @@ $("#dlg").addEventListener("click",e=>{if(e.target.id==="dlg")$("#dlg").close()}
 $("#dlg").addEventListener("close",()=>{openA=null;S.openCl=null;try{phUnsub&&phUnsub()}catch(_){}phUnsub=null;try{fnUnsub&&fnUnsub()}catch(_){}fnUnsub=null});
 
 /* 바로가기 링크: nongmani.com/app/?go=seller 처럼 열면 그 화면으로 */
-function startView(){try{const g=new URLSearchParams(location.search).get("go")||location.hash.replace(/^#/,"");return ["seller","shop","auction","request","help","herbs","my"].includes(g)?g:"home"}catch(e){return "home"}}
+function startView(){try{const g=new URLSearchParams(location.search).get("go")||location.hash.replace(/^#/,"");return ["seller","shop","auction","request","help","herbs","my","admin"].includes(g)?g:"home"}catch(e){return "home"}}
 let NAVPOP=false;
 function go(v){
   if(v==="admin"&&!S.owner)v="home";
@@ -4532,7 +4532,7 @@ try{const q0=(new URLSearchParams(location.search).get("q")||"").trim().slice(0,
   const user=await use("user"),db=await use("db");
   S.db=db;S.sample=await use("sample");
   if(user){
-    const me=await user.me();S.uid=me.id;S.owner=await user.isOwner();renderNews();
+    const me=await user.me();S.uid=me.id;S.owner=await user.isOwner();renderNews();try{if(S.owner&&startView()==="admin")setTimeout(()=>go("admin"),0)}catch(e){}
     const cw=await user.can("data.write");if(cw===false)S.canWrite=false;
     if(S.uid){$("#who").innerHTML=`${me.avatarUrl?`<img alt="" src="${esc(me.avatarUrl)}">`:""}<span></span>`;$("#who span").textContent=(me.name||"나")+(S.owner?" · 운영자":"")}
     $("#adminTab").hidden=!S.owner;$("#adminMenu").hidden=!S.owner;S.userApi=user;
