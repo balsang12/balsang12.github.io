@@ -8,6 +8,17 @@
   var SB_KEY = "sb_publishable_4MyQuV4WbsSnyIdE_s8XIQ_cfRlY6tz";
   var APP_URL = location.origin + location.pathname.replace(/[^/]*$/, "");
 
+  /* 휴대폰 '뒤로'로 이미 쓴 카카오 로그인 주소에 다시 들어오면 Supabase가 ?error=... 를 붙여 돌려보냄.
+     그대로 두면 supabase-js가 저장된 로그인까지 지워 버리므로, 클라이언트를 만들기 전에 그 꼬리표를 떼어 냄 */
+  try {
+    var u0 = new URL(location.href), hp = new URLSearchParams(location.hash.replace(/^#/, ""));
+    if (u0.searchParams.has("error") || u0.searchParams.has("error_description") || hp.has("error") || hp.has("error_description")) {
+      ["error", "error_code", "error_description", "code", "state"].forEach(function (k) { u0.searchParams.delete(k); });
+      u0.hash = "";
+      history.replaceState(history.state, "", u0.toString());
+    }
+  } catch (e) {}
+
   var sb = window.supabase.createClient(SB_URL, SB_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" },
     realtime: { params: { eventsPerSecond: 5 } }
