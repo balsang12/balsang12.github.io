@@ -2266,7 +2266,7 @@ function renderRequests(){
   $("#myReqs").innerHTML=mine.length?mine.map(r=>{
     const qs=S.quotes.filter(q=>q.requestId===r.id).sort((a,b)=>a.price-b.price);const best=qs.length?qs[0].price:0;
     return `<div class="item sunk"><div class="itop"><b>${esc(r.item)} ${r.qty}${esc(r.unit.split("(")[0])}</b>${statusChip(r.status)}</div>
-    <div class="meta num">${esc(r.form)} · ${esc(r.grow)} · ${esc(r.region)} · 납기 ${esc(r.due)} · 견적 ${qs.length}건</div>${bulkInfo(r,true)}
+    <div class="meta num">${esc(r.form)} · ${esc(r.grow)} · ${esc(r.region)} · ${r.reserve?`<span class="chip gold">제철 예약 · ${esc(r.season||"")}</span> `:""}납기 ${esc(r.due)} · 견적 ${qs.length}건</div>${bulkInfo(r,true)}
     ${qs.map(q=>`<div class="item ${q.price===best&&r.status==="모집중"?"best":""}">
       <div class="itop"><span><b style="font-size:15px">${esc(shopName(q.sellerId))}</b> <span class="meta">${esc(S.sellers[q.sellerId]?.region||"")}</span>${invChip(q.sellerId)}</span><span class="price num">${won(q.price)}</span></div>
       <div class="meta">약 ${q.days}일 소요${q.note?" · "+esc(q.note):""}</div>
@@ -2364,7 +2364,7 @@ function renderSeller(){renderSites();
   $("#openReqs").innerHTML=!me?`<div class="empty">상점 정보를 저장하면 구매자 의뢰에 견적을 보낼 수 있습니다.</div>`:open.length?open.map(r=>{
     const sent=S.quotes.find(q=>q.requestId===r.id&&q.sellerId===S.uid);
     return `<div class="item sunk"><div class="itop"><b>${esc(r.item)} ${r.qty}${esc(r.unit.split("(")[0])}</b><span class="meta">${day(r.createdAt)}</span></div>
-    <div class="meta">${esc(r.form)} · ${esc(r.grow)} · ${esc(r.region)} · 납기 ${esc(r.due)}</div>${bulkInfo(r,canInv)}${r.memo?`<div class="meta">"${esc(r.memo)}"</div>`:""}
+    <div class="meta">${esc(r.form)} · ${esc(r.grow)} · ${esc(r.region)} · ${r.reserve?`<span class="chip gold">제철 예약 · ${esc(r.season||"")}</span> `:""}납기 ${esc(r.due)}</div>${bulkInfo(r,canInv)}${r.memo?`<div class="meta">"${esc(r.memo)}"</div>`:""}
     ${sent?`<div class="meta">보낸 견적: <b class="num">${won(sent.price)}</b> · 약 ${sent.days}일</div>`:`<div class="actions"><input id="qp-${r.id}" type="number" min="1000" step="100" placeholder="총액(원)" aria-label="견적 금액" class="num"><input id="qd-${r.id}" type="number" min="1" placeholder="소요일" aria-label="소요일" style="max-width:80px" class="num"><input id="qn-${r.id}" placeholder="한마디" aria-label="메모"><button class="btn sm primary needWrite" data-act="quote" data-id="${r.id}">${credCost()?`견적 보내기 · 이용료 ${won(credCost())}`:"무료로 견적 보내기"}</button></div><div class="meta num" id="qe-${r.id}">총액을 적으면 손님이 골랐을 때 받는 돈이 보입니다${credCost()?` · 선택되면 이용료 ${won(credCost())}은 돌려드립니다`:""}</div>`}<div class="actions"><button class="btn sm" type="button" data-chat="${esc(r.buyerId)}" data-ctx="${esc(r.item)} 의뢰 관련 질문">구매자에게 질문</button></div>
     </div>`}).join(""):`<div class="empty">지금 견적을 기다리는 의뢰가 없습니다.</div>`;
   {const w=new Map();S.alerts.forEach(a=>{const k=a.key+"|"+a.kind;const o=w.get(k)||{key:a.key,kind:a.kind,u:new Set()};o.u.add(a.uid);w.set(k,o)});
@@ -3677,17 +3677,33 @@ const WSTEPS=[
  {q:"채취인에게 더 전할 말이 있나요?",k:"memo"},
  {q:"요청서를 확인해 주세요",k:"done"}
 ];
-function dueOf(){return W.dueKind==="1주 안"?plus(7):W.dueKind==="2주 안"?plus(14):W.dueKind==="한 달 안"?plus(30):W.due}
-function wizNext(){if(W.step<WSTEPS.length-1){W.step++;renderWiz()}}
+/* 채취 시기(월). 생물·손질로 받을 때 제철인지 알려 주는 데 씀. 긴 이름을 먼저 둬서 '개두릅'이 '두릅'보다 먼저 맞게 함 */
+const HARVEST=[["개두릅",[4,5]],["엄나무순",[4,5]],["두릅",[4,5]],["곰취",[4,5,6]],["참취",[4,5,6]],["취나물",[4,5,6]],["참나물",[4,5,6]],["산마늘",[4,5]],["명이",[4,5]],["고사리",[4,5]],["고비",[4,5]],["머위",[3,4,5]],["쑥",[3,4,5]],["냉이",[2,3,4]],["달래",[3,4]],["더덕",[3,4,9,10,11]],["도라지",[3,4,9,10,11]],["잔대",[3,4,9,10,11]],["둥굴레",[3,4,10,11]],["천마",[3,4,10,11]],["하수오",[3,10,11]],["우슬",[3,10,11]],["삽주",[3,10,11]],["칡",[1,2,3,11,12]],["고로쇠",[2,3]],["산양삼",[5,6,7,8,9,10]],["산삼",[5,6,7,8,9]],["오디",[5,6]],["산딸기",[6,7]],["복분자",[6,7]],["개복숭아",[6,7]],["돌복숭아",[6,7]],["블루베리",[6,7,8]],["영지",[7,8,9]],["개다래",[8,9]],["초피",[8,9]],["오미자",[9,10]],["마가목",[9,10]],["송이",[9,10]],["능이",[9,10]],["다래",[9,10]],["으름",[9,10]],["머루",[9,10]],["구기자",[9,10]],["꾸지뽕",[9,10]],["산초",[9,10]],["헛개",[10,11]],["산수유",[10,11]],["겨우살이",[1,2,11,12]]];
+function harvestOf(n){n=String(n||"").replace(/\s/g,"");const h=HARVEST.find(([k])=>n.includes(k));return h?h[1]:null}
+function monthsText(m){const a=[...m].sort((x,y)=>x-y),runs=[];for(const x of a){const r=runs[runs.length-1];if(r&&x===r[1]+1)r[1]=x;else runs.push([x,x])}
+  if(runs.length>1&&runs[0][0]===1&&runs[runs.length-1][1]===12){const l=runs.pop();runs[0][0]=l[0]}
+  return runs.map(([x,y])=>x===y?x+"월":x+"~"+y+"월").join(", ")}
+/* 지금이 제철인지, 아니면 다음 제철이 언제 시작·끝나는지 */
+function seasonInfo(name,form){if(form==="건조")return null;const m=harvestOf(name);if(!m)return null;const d=new Date(),cur=d.getMonth()+1;
+  const label=monthsText(m);if(m.includes(cur))return {now:true,label};
+  let i=1;while(i<12&&!m.includes((cur+i-1)%12+1))i++;const start=(cur+i-1)%12+1;let end=start,j=i;while(m.includes(end%12+1)&&j<12){end=end%12+1;j++}
+  const y=d.getFullYear()+(cur+j-1>12?1:0),last=new Date(y,end,0);
+  return {now:false,label,start,end,due:`${y}-${String(end).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`,range:start===end?start+"월":start+"~"+end+"월"}}
+const RESERVE="다음 제철에 받기";
+const eunNeun=w=>{const c=String(w).trim().slice(-1).charCodeAt(0);return w+(c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?"은":"는")};
+function dueOf(){if(W.dueKind===RESERVE){const si=seasonInfo(W.item,W.form);return si&&!si.now?si.due:plus(30)}return W.dueKind==="1주 안"?plus(7):W.dueKind==="2주 안"?plus(14):W.dueKind==="한 달 안"?plus(30):W.due}
+function wizNext(){if(W.step<WSTEPS.length-1){W.step++;if(WSTEPS[W.step].k==="due"&&!W.dueSet){const si=seasonInfo(W.item,W.form);W.dueKind=si&&!si.now?RESERVE:"2주 안"}renderWiz()}}
 function renderWiz(){
   const st=WSTEPS[W.step],el=$("#wiz"),n=WSTEPS.length;
   let body="";
   if(st.k==="item")body=`<div class="field"><input id="wItem" class="wbig" list="herbList" autocomplete="off" placeholder="예: 자연산 더덕" value="${esc(W.item)}" aria-label="품목"><div class="notice" id="wItemNote" hidden></div></div><div><div class="meta" style="margin-bottom:6px">많이 찾는 품목</div><div class="pills">${POP.map(p=>`<button type="button" class="pill" data-wp="${p}" aria-pressed="${W.item===p}">${p}</button>`).join("")}</div></div>`;
   else if(st.opts)body=`<div class="choices">${st.opts.map(([v,d])=>`<button type="button" class="choice" data-wv="${v}" aria-pressed="${W[st.k]===v}"><span>${v}</span>${d?`<small>${d}</small>`:""}</button>`).join("")}</div>`;
   else if(st.k==="qty")body=`<div class="stepper"><button type="button" id="wMinus" aria-label="줄이기">−</button><input id="wQty" type="number" min="1" class="num" value="${W.qty}" aria-label="수량"><button type="button" id="wPlus" aria-label="늘리기">+</button></div><div class="pills">${["kg","근(600g)","뿌리","관(3.75kg)"].map(u=>`<button type="button" class="pill" data-wu="${u}" aria-pressed="${W.unit===u}">${u}</button>`).join("")}</div>`;
-  else if(st.k==="due")body=`<div class="choices">${[["1주 안",plus(7)],["2주 안",plus(14)],["한 달 안",plus(30)],["날짜 직접 고르기",""]].map(([v,d])=>`<button type="button" class="choice" data-wd="${v}" aria-pressed="${W.dueKind===v}"><span>${v}</span>${d?`<small>${d.slice(5).replace("-","/")}까지</small>`:""}</button>`).join("")}</div>${W.dueKind==="날짜 직접 고르기"?`<div class="field"><label for="wDue">받을 날짜</label><input id="wDue" type="date" min="${plus(1)}" value="${esc(W.due||plus(14))}"></div>`:""}`;
+  else if(st.k==="due"){const si=seasonInfo(W.item,W.form),opts=[["1주 안",plus(7)],["2주 안",plus(14)],["한 달 안",plus(30)]];if(si&&!si.now)opts.unshift([RESERVE,si.due,si.range+" 제철 · 예약"]);opts.push(["날짜 직접 고르기",""]);
+    const note=si?(si.now?`<div class="notice" style="color:var(--pine)">🌿 지금이 ${esc(W.item)} 제철이에요 (${si.label}). 빨리 받으실 수 있어요.</div>`:`<div class="notice">📅 ${esc(eunNeun(W.item))} ${si.label}에 나요. 지금은 캐기 어려워요. <b>예약해 두시면 ${si.range} 제철이 되면 판매자가 먼저 견적을 보내 드립니다.</b> 돈은 다 캔 뒤에 냅니다.</div>`):"";
+    body=note+`<div class="choices">${opts.map(([v,d,t])=>`<button type="button" class="choice" data-wd="${v}" aria-pressed="${W.dueKind===v}"><span>${v}</span>${d?`<small>${t?esc(t):d.slice(5).replace("-","/")+"까지"}</small>`:""}</button>`).join("")}</div>${W.dueKind==="날짜 직접 고르기"?`<div class="field"><label for="wDue">받을 날짜</label><input id="wDue" type="date" min="${plus(1)}" value="${esc(W.due||plus(14))}"></div>`:""}`}
   else if(st.k==="memo")body=`<div class="field"><textarea id="wMemo" rows="4" placeholder="크기, 손질 상태, 포장, 예산 (선택)" aria-label="요청 사항">${esc(W.memo)}</textarea></div>`;
-  else body=`<dl class="spec"><dt>품목</dt><dd>${esc(W.item)}</dd><dt>생산 방식</dt><dd>${esc(W.grow)}</dd><dt>수량</dt><dd class="num">${W.qty} ${esc(W.unit)}</dd><dt>형태</dt><dd>${esc(W.form)}</dd><dt>받을 날</dt><dd class="num">${esc(dueOf())}까지</dd><dt>산지</dt><dd>${esc(W.region)}</dd>${W.memo?`<dt>요청 사항</dt><dd>${esc(W.memo)}</dd>`:""}</dl><div class="notice">요청서를 올리면 활동 중인 농부·심마니에게 보입니다. 받은 견적은 오른쪽(휴대폰은 아래)에서 비교하고, 궁금한 점은 대화로 물어보세요.</div>`;
+  else body=`<dl class="spec"><dt>품목</dt><dd>${esc(W.item)}</dd><dt>생산 방식</dt><dd>${esc(W.grow)}</dd><dt>수량</dt><dd class="num">${W.qty} ${esc(W.unit)}</dd><dt>형태</dt><dd>${esc(W.form)}</dd><dt>받을 날</dt><dd class="num">${W.dueKind===RESERVE?`제철 예약 (${esc((seasonInfo(W.item,W.form)||{}).range||"")}) · `:""}${esc(dueOf())}까지</dd><dt>산지</dt><dd>${esc(W.region)}</dd>${W.memo?`<dt>요청 사항</dt><dd>${esc(W.memo)}</dd>`:""}</dl><div class="notice">요청서를 올리면 활동 중인 농부·심마니에게 보입니다. 받은 견적은 오른쪽(휴대폰은 아래)에서 비교하고, 궁금한 점은 대화로 물어보세요.</div>`;
   const needNext=["item","qty","memo"].includes(st.k)||(st.k==="due"&&W.dueKind==="날짜 직접 고르기");
   el.innerHTML=`<div class="meta num">${W.step+1} / ${n}</div><div class="wbar"><i style="width:${(W.step+1)/n*100}%"></i></div><div class="wq">${st.q}</div>${body}
    <div class="wnav">${W.step?'<button type="button" class="btn" id="wBack">이전</button>':""}${st.k==="done"?'<button type="button" class="btn primary needWrite" id="wSend">요청서 올리기</button>':needNext?`<button type="button" class="btn primary" id="wNext">${st.k==="memo"&&!W.memo?"건너뛰기":"다음"}</button>`:""}</div>`;
@@ -3697,14 +3713,14 @@ function renderWiz(){
   if(st.opts)el.querySelectorAll("[data-wv]").forEach(b=>b.onclick=()=>{W[st.k]=b.dataset.wv;wizNext()});
   if(st.k==="qty"){const q=$("#wQty"),set=v=>{W.qty=Math.max(1,Math.round(v)||1);q.value=W.qty};$("#wMinus").onclick=()=>set(W.qty-1);$("#wPlus").onclick=()=>set(W.qty+1);q.oninput=()=>{W.qty=Math.max(1,+q.value||1)};
     el.querySelectorAll("[data-wu]").forEach(b=>b.onclick=()=>{W.unit=b.dataset.wu;el.querySelectorAll("[data-wu]").forEach(x=>x.setAttribute("aria-pressed",x===b))})}
-  if(st.k==="due"){el.querySelectorAll("[data-wd]").forEach(b=>b.onclick=()=>{W.dueKind=b.dataset.wd;if(W.dueKind==="날짜 직접 고르기"){W.due=W.due||plus(14);renderWiz()}else wizNext()});if($("#wDue"))$("#wDue").onchange=()=>{W.due=$("#wDue").value}}
+  if(st.k==="due"){el.querySelectorAll("[data-wd]").forEach(b=>b.onclick=()=>{W.dueKind=b.dataset.wd;W.dueSet=true;if(W.dueKind==="날짜 직접 고르기"){W.due=W.due||plus(14);renderWiz()}else wizNext()});if($("#wDue"))$("#wDue").onchange=()=>{W.due=$("#wDue").value}}
   if(st.k==="memo")$("#wMemo").oninput=()=>{W.memo=$("#wMemo").value;$("#wNext").textContent=W.memo?"다음":"건너뛰기"};
   if($("#wNext"))$("#wNext").onclick=()=>{if(st.k==="due"&&!(W.due>=plus(1))){toast("내일 이후 날짜를 골라 주세요");return}wizNext()};
   if($("#wSend"))$("#wSend").onclick=async()=>{
     if(!S.uid){toast("로그인이 필요합니다");return}
     $("#wSend").disabled=true;
-    const ok=await guard(()=>S.db.collection("requests").add({item:W.item.slice(0,60),qty:W.qty,unit:W.unit,form:W.form,grow:W.grow,due:dueOf(),region:W.region,memo:W.memo.slice(0,500),buyerId:S.uid,status:"모집중",createdAt:Date.now()}),"요청서를 올렸습니다. 견적이 오면 여기에 표시됩니다");
-    if(ok){Object.assign(W,{step:0,item:"",memo:""});renderWiz();$("#myReqs").scrollIntoView({behavior:"smooth",block:"start"})}else $("#wSend").disabled=false};
+    const ok=await guard(()=>S.db.collection("requests").add({item:W.item.slice(0,60),qty:W.qty,unit:W.unit,form:W.form,grow:W.grow,due:dueOf(),reserve:W.dueKind===RESERVE,season:W.dueKind===RESERVE?((seasonInfo(W.item,W.form)||{}).range||""):"",region:W.region,memo:W.memo.slice(0,500),buyerId:S.uid,status:"모집중",createdAt:Date.now()}),"요청서를 올렸습니다. 견적이 오면 여기에 표시됩니다");
+    if(ok){Object.assign(W,{step:0,item:"",memo:"",dueSet:false,dueKind:"2주 안"});renderWiz();$("#myReqs").scrollIntoView({behavior:"smooth",block:"start"})}else $("#wSend").disabled=false};
   applyWrite();
 }
 
