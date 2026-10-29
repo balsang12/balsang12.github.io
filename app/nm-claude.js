@@ -419,9 +419,33 @@
   function openReset() { build(); el.querySelector("#nmMain").hidden = true; el.querySelector("#nmNewForm").hidden = false; el.querySelector("#nmNewForm").style.display = "flex"; el.hidden = false; say(""); }
   function close() { if (el) el.hidden = true; }
 
+  /* 로그아웃: 서버 응답이 늦거나 실패해도 이 기기의 로그인 정보는 반드시 지우고 새로고침 */
+  function signOut() {
+    var done = false, fin = function () { if (done) return; done = true;
+      try { Object.keys(localStorage).forEach(function (k) { if (/^sb-.*-auth-token/.test(k)) localStorage.removeItem(k); }); } catch (e) {}
+      location.reload(); };
+    setTimeout(fin, 3000);
+    return sb.auth.signOut({ scope: "local" }).then(fin, fin);
+  }
+  /* 확인 창: 카카오톡 등 앱 안 브라우저는 confirm()을 막아 버려서 직접 만든 창을 씀 */
+  function askSignOut() {
+    var d = document.getElementById("nmOut");
+    if (!d) {
+      d = document.createElement("div"); d.id = "nmOut"; d.className = "nmauth"; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true");
+      d.innerHTML = '<div class="box" style="max-width:320px"><h2 style="font-size:20px">로그아웃할까요?</h2><p>다시 들어오실 때는 카카오로 한 번 더 로그인하시면 됩니다.</p>' +
+        '<button type="button" class="nm-mail" id="nmOutYes">로그아웃</button><button type="button" class="nm-close" id="nmOutNo">취소</button></div>';
+      if (!document.getElementById("nmAuthCss")) { var st = document.createElement("style"); st.id = "nmAuthCss"; st.textContent = css; document.head.appendChild(st); }
+      document.body.appendChild(d);
+      d.addEventListener("click", function (e) { if (e.target === d) d.hidden = true; });
+      d.querySelector("#nmOutNo").onclick = function () { d.hidden = true; };
+      d.querySelector("#nmOutYes").onclick = function () { this.disabled = true; this.textContent = "로그아웃 중…"; signOut(); };
+    }
+    d.hidden = false;
+  }
+
   window.nmAuth = Object.freeze({
     open: open, close: close,
-    signOut: function () { return sb.auth.signOut().then(function () { location.reload(); }); },
+    signOut: signOut, askSignOut: askSignOut,
     session: function () { return sessionReady; },
     mgrFind: function (hash) { return sb.rpc("mgr_find", { p_hash: hash }).then(function (r) { return r.data || null; }, function () { return null; }); }
   });
