@@ -156,6 +156,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .spec dt{color:var(--muted)}
 .spec dd{margin:0;min-width:0}
 .proofopt{border:1px dashed var(--line);border-radius:12px;padding:8px 12px;display:grid;gap:10px}.proofopt>summary{cursor:pointer;font-size:14.5px;list-style:none}.proofopt>summary::-webkit-details-marker{display:none}.proofopt>summary b{color:var(--pine)}.proofopt[open]>summary{margin-bottom:4px}
+.field input[type=checkbox],.field input[type=radio]{width:18px;height:18px;min-height:0;padding:0;flex:none}
 input[type=file].nmf{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}.nmfb{display:inline-flex;align-items:center;gap:4px;min-height:42px;padding:0 14px;border:1.5px solid var(--pine);border-radius:10px;background:var(--surface);color:var(--pine);font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}.nmfb:hover{background:var(--pine-soft)}.nmfn{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 .oath{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:12px;cursor:pointer}.oath input{width:22px;height:22px;flex:none;margin-top:1px}
 #wz .oath{display:flex!important;flex-direction:row!important;grid-template-columns:none}#wz .oath input{width:22px!important;height:22px!important;min-height:0!important;padding:0!important;border-radius:4px;flex:none;box-shadow:none}#wz .oath span{flex:1;min-width:0}
@@ -1082,7 +1083,7 @@ label.btn{display:inline-block}
           
         </div>
         <div class="field" id="certWrap" hidden><label for="sCert">친환경 인증번호</label><input id="sCert" placeholder="예: 제00-00-0-000호"></div>
-        <div class="field"><label for="sPhoto">사진 (선택)</label><div class="photo-pick"><input id="sPhoto" type="file" accept="image/*"><img id="sPhotoPrev" alt="" hidden></div></div><div class="field" id="sShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="sShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 산야초 사전에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="sSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
+        <div class="field"><label for="sPhoto">사진 (선택)</label><div class="photo-pick"><input id="sPhoto" type="file" accept="image/*"><img id="sPhotoPrev" alt="" hidden></div></div><div class="field" id="sShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="sShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 산야초 사전에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><label for="sSharePart" id="sSharePartL" style="font-size:13px;font-weight:700" hidden>사전에 실을 때: 무엇을 찍은 사진인가요?</label><select id="sSharePart" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
         <div id="procWrap" hidden>
           <div class="notice">가공품은 영업 신고(허가)를 한 곳에서 만든 것만 팔 수 있습니다. 운영자가 신고 번호를 확인한 뒤 판매가 시작됩니다. 일반식품이라 효능은 쓸 수 없습니다.</div>
           <div class="row2">
@@ -1156,7 +1157,7 @@ label.btn{display:inline-block}
         <div class="field" id="videoWrap" hidden><label for="aVideo" id="videoLbl">인증 영상 링크 (30만 원 이상 필수)</label><input id="aVideo" type="url" placeholder="https:// 유튜브·네이버 동영상 등 링크"><span class="meta">당일 날짜를 쓴 메모, 저울 위 물건, 채취 장소가 30초 안에 나오게 찍어 주세요.</span></div>
         <div class="notice" id="aTier"></div>
         <div class="field"><label for="aDur">마감</label><select id="aDur"><option value="7" selected>7일 동안 제안 받기 (추천)</option><option value="5">5일 동안</option><option value="3">3일 동안</option><option value="600000">10분 (시험용)</option></select><span class="meta" id="aDurNote"></span></div>
-        <div class="field"><label for="aPhoto">실물 사진 (1장, 필수)</label><div class="photo-pick"><input id="aPhoto" type="file" accept="image/*"><img id="aPhotoPrev" alt="" hidden></div></div><div class="field" id="aShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 산야초 사전에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="aSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
+        <div class="field"><label for="aPhoto">실물 사진 (1장, 필수)</label><div class="photo-pick"><input id="aPhoto" type="file" accept="image/*"><img id="aPhotoPrev" alt="" hidden></div></div><div class="field" id="aShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 산야초 사전에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><label for="aSharePart" id="aSharePartL" style="font-size:13px;font-weight:700" hidden>사전에 실을 때: 무엇을 찍은 사진인가요?</label><select id="aSharePart" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
         <div class="field"><label for="aDesc">설명</label><textarea id="aDesc" rows="3" placeholder="채취 장소의 환경, 잔뿌리·뇌두 상태, 보관 방법"></textarea></div>
         <div class="notice" id="aClaim">효능·질병 표현(예: "암에 좋은")은 쓸 수 없습니다. 크기·모양·채취 과정 위주로 적어 주세요.</div>
         <div class="feebox num" id="aFee"></div>
@@ -4291,7 +4292,7 @@ $("#ytForm").onsubmit=async e=>{e.preventDefault();const u=$("#ytUrl").value.tri
 $("#ytClear").onclick=()=>guard(()=>S.db.doc("settings/site").set({...S.site,ytChannel:"",updatedAt:Date.now()}),"채널 연결을 해제했습니다");
 
 /* ---------- 상품·제안 판매 사진을 약초 사전으로 ---------- */
-["s","a"].forEach(p=>{const c=$("#"+p+"Share");if(c)c.onchange=()=>{$("#"+p+"SharePart").hidden=!c.checked}});
+["s","a"].forEach(p=>{const c=$("#"+p+"Share");if(c){c.onchange=()=>{$("#"+p+"SharePart").hidden=$("#"+p+"SharePartL").hidden=!c.checked};c.onchange()}});
 async function sharePhoto(p,data,itemText,caption){
   const c=$("#"+p+"Share");if(!c||!c.checked||!data)return;
   const hh=findHerb(itemText)||guessHerb(itemText);
