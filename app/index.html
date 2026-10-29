@@ -4541,6 +4541,7 @@ document.getElementById("nmIntlX").onclick=function(){e.hidden=true;e.style.disp
   document.getElementById("nmIosX").onclick=function(){var d=document.getElementById("nmIos");d.hidden=true;d.style.display="none"};
   var kakao=/KAKAOTALK/i.test(ua),android=/Android/i.test(ua),inapp=kakao||/NAVER\(inapp|Instagram|FBAN|FBAV|Line\/|DaumApps|; wv\)/i.test(ua);
   var m=document.getElementById("nmInstMenu");if(m){m.onclick=go;if(mob)m.hidden=false}
+  function chromeBtn(t){return '<a href="intent://'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end" style="display:grid;place-items:center;min-height:50px;border-radius:12px;border:1.5px solid var(--pine);color:var(--pine);font-weight:700;font-size:17px;text-decoration:none">'+t+'</a>'}
   function steps(a){return '<ol style="margin:0;padding-left:22px;display:grid;gap:8px">'+a.map(function(t){return "<li>"+t+"</li>"}).join("")+"</ol>"}
   function sellerGuide(){var b=document.getElementById("nmSelBody"),d=document.getElementById("nmSel");
     if(ev&&!kakao)b.innerHTML='<button type="button" id="nmSelGo" style="min-height:52px;border-radius:12px;border:0;background:var(--pine);color:var(--pine-ink);font:inherit;font-weight:700;font-size:18px;cursor:pointer">아이콘 만들기</button><p style="margin:0;color:var(--muted);font-size:15px">누른 뒤 뜨는 창에서 ‘설치’ 또는 ‘추가’를 누르시면 됩니다.</p>';
@@ -4548,7 +4549,8 @@ document.getElementById("nmIntlX").onclick=function(){e.hidden=true;e.style.disp
     else if(inapp&&android)b.innerHTML='<a href="intent://'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end" style="display:grid;place-items:center;min-height:52px;border-radius:12px;background:var(--pine);color:var(--pine-ink);font-weight:700;font-size:18px;text-decoration:none">크롬으로 열기</a><p style="margin:0;color:var(--muted);font-size:15px">이 앱 안의 화면에서는 아이콘을 만들 수 없어요. 크롬으로 연 뒤 이 안내를 다시 따라 하시면 됩니다.</p>';
     else if(inapp)b.innerHTML=steps(["화면 오른쪽 위나 아래의 <b>⋯ 메뉴</b>를 누르세요.","<b>‘사파리로 열기’</b> 또는 <b>‘다른 브라우저로 열기’</b>를 누르세요.","사파리에서 아래쪽 <b>공유 버튼</b>(↑) → <b>‘홈 화면에 추가’</b>를 누르세요."]);
     else if(ios)b.innerHTML=steps(["사파리 아래쪽 <b>공유 버튼</b>(네모에 화살표 ↑)을 누르세요.","목록을 올려 <b>‘홈 화면에 추가’</b>를 누르세요.","오른쪽 위 <b>‘추가’</b>를 누르면 끝입니다."]);
-    else b.innerHTML=steps(["오른쪽 위(삼성 인터넷은 오른쪽 아래) <b>메뉴(⋮ 또는 ≡)</b>를 누르세요.","<b>‘홈 화면에 추가’</b> 또는 <b>‘앱 설치’</b>를 누르세요. (삼성 인터넷: ‘현재 페이지 추가’ → ‘홈 화면’)","‘추가’를 누르면 끝입니다."])+'<p style="margin:0;color:var(--muted);font-size:15px">문자에서 눌러 열었는데 메뉴에 ‘홈 화면에 추가’가 없으면, 메뉴의 <b>‘Chrome에서 열기’</b>를 먼저 누르세요.</p>';
+    else if(/SamsungBrowser/i.test(ua))b.innerHTML=steps(["화면 아래 오른쪽 <b>≡ 메뉴</b>를 누르세요.","<b>‘현재 페이지 추가’</b>를 누르세요.","<b>‘홈 화면’</b>을 고르면 끝입니다."])+chromeBtn("메뉴가 다르게 보이면 크롬으로 열기");
+    else b.innerHTML=steps(["오른쪽 위 <b>⋮ 메뉴</b>를 누르세요.","<b>‘홈 화면에 추가’</b> 또는 <b>‘앱 설치’</b>를 누르세요.","‘추가’를 누르면 끝입니다."])+(android?'<p style="margin:0;color:var(--muted);font-size:15px">문자에서 눌러 열어 메뉴에 ‘홈 화면에 추가’가 없으면 아래 버튼을 누르세요.</p>'+chromeBtn("크롬으로 열기"):"");
     var g=document.getElementById("nmSelGo");if(g)g.onclick=function(){d.hidden=true;d.style.display="none";go()};
     d.hidden=false;d.style.display="grid"}
   document.getElementById("nmSelX").onclick=function(){var d=document.getElementById("nmSel");d.hidden=true;d.style.display="none"};
