@@ -155,6 +155,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .spec{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;margin:0}
 .spec dt{color:var(--muted)}
 .spec dd{margin:0;min-width:0}
+.proofopt{border:1px dashed var(--line);border-radius:12px;padding:8px 12px;display:grid;gap:10px}.proofopt>summary{cursor:pointer;font-size:14.5px;list-style:none}.proofopt>summary::-webkit-details-marker{display:none}.proofopt>summary b{color:var(--pine)}.proofopt[open]>summary{margin-bottom:4px}
 .oath{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:12px;cursor:pointer}.oath input{width:22px;height:22px;flex:none;margin-top:1px}
 #wz .oath{display:flex!important;flex-direction:row!important;grid-template-columns:none}#wz .oath input{width:22px!important;height:22px!important;min-height:0!important;padding:0!important;border-radius:4px;flex:none;box-shadow:none}#wz .oath span{flex:1;min-width:0}
 .notice{font-size:12px;color:var(--muted);background:var(--sunk);border-radius:8px;padding:10px}
@@ -1077,7 +1078,7 @@ label.btn{display:inline-block}
         </div>
         <div class="row2">
           <div class="field"><label for="sGrow">생산 방식</label><select id="sGrow"></select></div>
-          <div class="field"><label for="sPermit">채취 근거</label><select id="sPermit"><option>본인 소유 임야·재배</option><option>국유림 임산물 채취 허가</option><option>사유림 소유자 동의서</option><option>국유림 보호협약(마을 양여)</option><option>산 임차 계약</option></select></div>
+          
         </div>
         <div class="field" id="certWrap" hidden><label for="sCert">친환경 인증번호</label><input id="sCert" placeholder="예: 제00-00-0-000호"></div>
         <div class="field"><label for="sPhoto">사진 (선택)</label><div class="photo-pick"><input id="sPhoto" type="file" accept="image/*"><img id="sPhotoPrev" alt="" hidden></div></div><div class="field" id="sShareWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="sShare" style="margin-top:5px"> <span>이 사진을 <b>산야초 사전</b>에도 올리기<br><span class="meta">운영자가 확인한 뒤 공개 산야초 사전에 상점 이름과 함께 실립니다. 직접 찍은 사진일 때만 고르세요.</span></span></label><select id="sSharePart" aria-label="무엇을 찍었나요" hidden><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option></select></div>
@@ -1107,10 +1108,11 @@ label.btn{display:inline-block}
           <div class="field"><label for="sQd2n">수량 할인 ② (선택)</label><div class="qdrow"><input id="sQd2n" type="number" min="2" placeholder="30" class="num"><span>개 이상</span><input id="sQd2p" type="number" min="1" max="50" placeholder="10" class="num"><span>% 할인</span></div></div></div>
         <div class="row2 giftsell"><label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="sGift"> 🎁 선물 포장 가능 (명절 선물 코너에 함께 보여요)</label>
           <div class="field"><label for="sGiftWrap">선물 포장비 (원, 무료면 0)</label><input id="sGiftWrap" type="number" min="0" max="50000" step="500" value="0" class="num"></div></div>
-        <div class="field"><label for="sProof" id="sProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="sProof" type="file" accept="image/*"><img id="sProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
-        <div class="field" hidden><label for="sSite">확인된 내 채취지에서 캤나요?</label><select id="sSite"><option value="">아니요</option></select></div>
-        <div class="field"><label for="sParcel">본인 산이면 지번 (서류 대신)</label><input id="sParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
-        <label class="oath"><input type="checkbox" id="sOath"><span>법을 지켜 채취·생산했습니다. 남의 산에서 허락 없이 캐지 않았습니다.</span></label>
+                                <details class="proofopt" id="sProofBox"><summary><b>📎 증빙 올리고 ‘채취 증빙 확인’ 배지 받기</b> <span class="meta">(선택 · 배지가 붙으면 앞쪽에 보여요)</span></summary><div class="field"><label for="sPermit">채취 근거</label><select id="sPermit"><option>본인 소유 임야·재배</option><option>국유림 임산물 채취 허가</option><option>사유림 소유자 동의서</option><option>국유림 보호협약(마을 양여)</option><option>산 임차 계약</option></select></div><div class="field"><label for="sProof" id="sProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="sProof" type="file" accept="image/*"><img id="sProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
+<div class="field" hidden><label for="sSite">확인된 내 채취지에서 캤나요?</label><select id="sSite"><option value="">아니요</option></select></div>
+<div class="field"><label for="sParcel">본인 산이면 지번 (서류 대신)</label><input id="sParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
+</details>
+        <label class="oath"><input type="checkbox" id="sOath"><span id="sOathT">제가 직접 키운 것입니다.</span></label>
         <div class="notice" id="sClaim">효능 표현과 인증 없는 "무농약·유기농·친환경" 문구는 등록할 수 없습니다.</div>
         <button class="btn primary needWrite" type="submit">검수 요청하고 등록</button>
       </form>
@@ -1137,11 +1139,12 @@ label.btn{display:inline-block}
           <div class="field"><label for="aRegion">채취지역</label><input id="aRegion" required placeholder="예: 강원 인제"></div>
           <div class="field"><label for="aDate">채취일</label><input id="aDate" type="date" required></div>
         </div>
-        <div class="field"><label for="aPermit">채취 근거</label><select id="aPermit"><option>국유림 임산물 채취 허가</option><option>사유림 소유자 동의서</option><option>본인 소유 임야·재배</option><option>국유림 보호협약(마을 양여)</option><option>산 임차 계약</option></select></div>
-        <div class="field"><label for="aProof" id="aProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="aProof" type="file" accept="image/*"><img id="aProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
-        <div class="field" hidden><label for="aSite">확인된 내 채취지에서 캤나요?</label><select id="aSite"><option value="">아니요</option></select></div>
-        <div class="field"><label for="aParcel">본인 산이면 지번 (서류 대신)</label><input id="aParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
-        <label class="oath"><input type="checkbox" id="aOath"><span>법을 지켜 채취했습니다. 남의 산에서 허락 없이 캐지 않았습니다.</span></label>
+        
+                                <details class="proofopt" id="aProofBox"><summary><b>📎 증빙 올리고 ‘채취 증빙 확인’ 배지 받기</b> <span class="meta">(선택 · 배지가 붙으면 앞쪽에 보여요)</span></summary><div class="field"><label for="aPermit">채취 근거</label><select id="aPermit"><option>국유림 임산물 채취 허가</option><option>사유림 소유자 동의서</option><option>본인 소유 임야·재배</option><option>국유림 보호협약(마을 양여)</option><option>산 임차 계약</option></select></div><div class="field"><label for="aProof" id="aProofLbl">채취 근거 사진 (선택 · 운영자만 봅니다)</label><div class="photo-pick"><input id="aProof" type="file" accept="image/*"><img id="aProofPrev" alt="" hidden></div><p class="meta" style="margin:4px 0 0">허가증·동의서 사진, 또는 산주가 보낸 동의 문자·카톡 캡처도 됩니다.</p></div>
+<div class="field" hidden><label for="aSite">확인된 내 채취지에서 캤나요?</label><select id="aSite"><option value="">아니요</option></select></div>
+<div class="field"><label for="aParcel">본인 산이면 지번 (서류 대신)</label><input id="aParcel" maxlength="120" placeholder="예: 강원 인제군 기린면 OO리 산12"></div>
+</details>
+        <label class="oath"><input type="checkbox" id="aOath"><span id="aOathT">허락받은 산이나 제 산에서 캤습니다.</span></label>
         <div class="field" id="certWrapA" hidden><label for="aCert">산양삼 품질검사 합격증 번호</label><input id="aCert" placeholder="한국임업진흥원 합격증 번호"></div>
         <div class="field" id="appraiseWrap"><label for="aAppraise" id="aAppraiseLbl">감정 기관·감정서 번호 (있으면)</label><input id="aAppraise" placeholder="예: OO심마니협회 감정서 제2026-000호"></div>
         <div class="field" id="apPhotoWrap" hidden><label for="aApPhoto" id="apLbl">감정서 사진 (100만 원 이상 필수)</label><div class="photo-pick"><input id="aApPhoto" type="file" accept="image/*"><img id="aApPhotoPrev" alt="" hidden></div></div>
@@ -1293,7 +1296,7 @@ label.btn{display:inline-block}
     <div>
       <h3>채취 근거</h3>
       <ul>
-        <li>모든 등록에는 "법을 지켜 채취·생산했습니다" 확인이 필요합니다. 남의 산에서 허락 없이 캔 것은 팔 수 없습니다.</li>
+        <li>등록할 때 "직접 키운 것" 또는 "허락받은 산이나 제 산에서 캔 것"이라는 확인에 체크합니다. 남의 산에서 허락 없이 캔 것은 팔 수 없습니다. 지번·서류는 선택이며, 올리면 '채취 증빙 확인' 배지가 붙습니다(자연산 산삼과 고가 상품은 정산 전까지 필요).</li>
         <li>산양삼·장뇌삼은 생산신고번호나 품질검사 합격증 번호가 있어야 합니다.</li>
         <li>자연산 산삼과 <span class="pw">100만 원</span> 이상 상품은 먼저 올리고, <b>정산 전 14일 안</b>에 채취 근거를 내면 됩니다. 허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다.</li>
         <li>근거가 확인되면 "채취 증빙 확인" 배지가 붙고 목록 앞쪽에 보입니다. 기한 안에 근거가 없으면 구매자에게 환불됩니다.</li>
@@ -2855,10 +2858,14 @@ $("#aTr").onclick=async()=>{const b=$("#aTr");b.disabled=true;b.textContent="번
 let aApPhoto="";$("#aApPhoto").onchange=()=>pick($("#aApPhoto"),$("#aApPhotoPrev"),u=>aApPhoto=u);
 $("#sPhoto").onchange=()=>pick($("#sPhoto"),$("#sPhotoPrev"),u=>sPhoto=u);
 let aProof="",sProof="";$("#aProof").onchange=()=>pick($("#aProof"),$("#aProofPrev"),u=>aProof=u);$("#sProof").onchange=()=>pick($("#sProof"),$("#sProofPrev"),u=>sProof=u);
+const oathText=g=>String(g||"").startsWith("자연산")?"허락받은 산이나 제 산에서 캤습니다.":"제가 직접 키운 것입니다.";
 function proofUI(){const a=proofNeed($("#aCat").value==="기타 귀한 임산물"?$("#aItem").value:$("#aCat").value,$("#aGrow").value,Math.max(+$("#aStart").value||0,+$("#aBuyNow").value||0));
   $("#aProofLbl").textContent=a==="photo"?"채취 근거 사진 (정산 전까지 필요 · 운영자만 봅니다)":"채취 근거 사진 (선택 · 운영자만 봅니다)";
   const s=proofNeed($("#sItem").value,$("#sGrow").value,+$("#sPrice").value||0);$("#sProofLbl").textContent=s==="photo"?"채취 근거 사진 (정산 전까지 필요 · 운영자만 봅니다)":"채취 근거 사진 (선택 · 운영자만 봅니다)";
-  if(s==="cert")$("#certWrap").hidden=false}
+  if(s==="cert")$("#certWrap").hidden=false;
+  $("#sOathT").textContent=oathText($("#sGrow").value);$("#aOathT").textContent=oathText($("#aGrow").value);
+  /* 근거가 꼭 필요한 상품(자연산 산삼·고가)이면 접힌 칸을 펼치고 제목도 '필요'로 */
+  [["s",s],["a",a]].forEach(([k,n])=>{const d=$("#"+k+"ProofBox");if(!d)return;const b=d.querySelector("summary b"),m=d.querySelector("summary .meta");if(n==="photo"){d.open=true;b.textContent="📎 채취 근거 (정산 전 14일 안에 필요)";m.textContent="(지금 없어도 먼저 올릴 수 있어요)"}else{b.textContent="📎 증빙 올리고 ‘채취 증빙 확인’ 배지 받기";m.textContent="(선택 · 배지가 붙으면 앞쪽에 보여요)"}})}
 ["aCat","aItem","aGrow","aStart","aBuyNow","sItem","sGrow","sPrice"].forEach(i=>{$("#"+i).addEventListener("input",proofUI);$("#"+i).addEventListener("change",proofUI)});
 function aucUI(){
   const cat=$("#aCat").value;
@@ -2924,7 +2931,7 @@ $("#sellForm").onsubmit=async e=>{e.preventDefault();if(suspended(S.uid)){toast(
     if($("#pBiz").value.startsWith("위탁")&&!pv("pMaker")){toast("위탁 생산이면 제조원을 적어 주세요");return}
     if(CLAIMS.some(w=>pv("pIngr").includes(w))){toast("원재료 칸에 효능 표현을 뺀 뒤 다시 올려 주세요");return}}
   if(CLAIMS.some(w=>t.includes(w))||(!isCert({grow:g})&&ECO.some(w=>t.includes(w)))){toast("쓸 수 없는 표현을 빼고 다시 올려 주세요");return}
-  const pNeedS=pr?"basic":proofNeed(itemRaw,g,+$("#sPrice").value),pErrS=pr?($("#sOath").checked?"":"‘법을 지켜 채취·생산했습니다’에 체크해 주세요"):proofCheck({item:itemRaw,grow:g,price:+$("#sPrice").value,oath:$("#sOath").checked,photo:sProof,cert:$("#sCert").value});if(pErrS){toast(pErrS);return}
+  const pNeedS=pr?"basic":proofNeed(itemRaw,g,+$("#sPrice").value),pErrS=pr?($("#sOath").checked?"":"‘"+oathText(g).replace(/\.$/,"")+"’에 체크해 주세요"):proofCheck({item:itemRaw,grow:g,price:+$("#sPrice").value,oath:$("#sOath").checked,photo:sProof,cert:$("#sCert").value});if(pErrS){toast(pErrS);return}
   const sSiteId=pr?"":$("#sSite").value,pRefS=sSiteId?"":await saveProof(sProof,{permit:$("#sPermit").value,parcel:$("#sParcel").value,title:$("#sName").value.trim(),kind:"products"});S.lastSite=sSiteId;if(pRefS===null)return;S.lastProofRef=pRefS;
   const autoP=AUTO_ST.includes(pst);
   const ok=await guard(()=>S.db.collection("products").add({item:hp?hp.name:itemRaw.slice(0,30),itemStatus:pst,name:$("#sName").value.trim().slice(0,60),cat:$("#sCat").value,form:$("#sForm").value,price:+$("#sPrice").value,unit:$("#sUnit").value,region:$("#sRegion").value.trim().slice(0,40),stock:+$("#sStock").value,permit:$("#sPermit").value,grow:g,cert:$("#sCert").value.trim().slice(0,40),photo:sPhoto,desc:$("#sDesc").value.slice(0,1000),gift:!!$("#sGift")?.checked,giftWrap:wrapFee($("#sGiftWrap")?.value),faq:faqRead("sFq"),qd:qdRead("sQd"),...(()=>{const r=setRead("sSet");return r.bad?{}:r})(),...proofFields(pNeedS,pRefS,sSiteId),auto:autoP,...(pr?{proc:{biz:$("#pBiz").value,bizNo:pv("pBizNo").slice(0,40),maker:pv("pMaker").slice(0,80),ingr:pv("pIngr").slice(0,200),vol:pv("pVol").slice(0,40),shelf:pv("pShelf").slice(0,40)}}:{}),sellerId:S.uid,status:autoP?"판매중":"검수대기",createdAt:Date.now()}),autoP?(pr?"바로 판매를 시작했습니다. 운영자가 영업 신고 번호를 확인하면 정산됩니다":"바로 판매를 시작했습니다"):"검수 요청을 보냈습니다");
@@ -3212,7 +3219,7 @@ const PROOF_TXT={basic:"산지와 준법 확인만 있으면 됩니다. 서류 �
   get photo(){return `자연산 산삼과 ${man(proofWon())} 이상 상품은 채취 근거가 필요합니다. 지금 없어도 먼저 올릴 수 있고, 정산 전(14일 안)까지 셋 중 하나만 올리면 됩니다: ① 허가증·동의서 사진 ② 산주가 보낸 동의 문자·카톡 캡처 ③ 본인 산이면 지번. 확인된 내 채취지에서 캤으면 고르기만 하면 됩니다. 근거가 없으면 구매자에게 환불됩니다.`}};
 const PROOF_DAYS=14;
 function proofCheck(o){const need=proofNeed(o.item,o.grow,o.price);
-  if(!o.oath)return "‘법을 지켜 채취·생산했습니다’에 체크해 주세요";
+  if(!o.oath)return "‘"+oathText(o.grow).replace(/\.$/,"")+"’에 체크해 주세요";
   if(need==="cert"&&!String(o.cert||"").trim())return PROOF_TXT.cert;
   return ""}
 function proofId(){return "pf"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
@@ -3333,7 +3340,7 @@ function bkRender(msg){
   bkCheck();
   const todo=BK.rows.filter(r=>!r.done),good=todo.filter(r=>!r.err),bad=todo.length-good.length,done=BK.rows.length-todo.length,canW=S.canWrite&&S.uid;
   out.innerHTML=`<div class="bksum"><div><b class="num">${todo.length}줄 중 ${good.length}개를 올릴 수 있습니다</b>${bad?` <span class="meta">빨간 줄 ${bad}개는 엑셀에서 고친 뒤 다시 붙여 넣어 주세요</span>`:""}${done?` <span class="meta">· ${done}개 올림</span>`:""}</div>
-    <label class="oath" style="margin:8px 0"><input type="checkbox" id="bkOath" ${BK.oath?"checked":""}><span>올리는 상품 모두 법을 지켜 채취·생산했습니다.</span></label><div class="actions"><button class="btn" type="button" id="bkClear">비우기</button><button class="btn primary" type="button" id="bkGo" ${good.length&&canW&&!BK.busy?"":"disabled"} title="${canW?"":"로그인과 참여 권한이 필요합니다"}">${BK.busy?"올리는 중…":`${good.length}개 검수 요청하고 올리기`}</button></div></div>
+    <label class="oath" style="margin:8px 0"><input type="checkbox" id="bkOath" ${BK.oath?"checked":""}><span>올리는 상품은 모두 직접 키웠거나 허락받은 산·제 산에서 캔 것입니다.</span></label><div class="actions"><button class="btn" type="button" id="bkClear">비우기</button><button class="btn primary" type="button" id="bkGo" ${good.length&&canW&&!BK.busy?"":"disabled"} title="${canW?"":"로그인과 참여 권한이 필요합니다"}">${BK.busy?"올리는 중…":`${good.length}개 검수 요청하고 올리기`}</button></div></div>
     <div class="tbl"><table class="bkt"><thead><tr><th class="r">줄</th><th>사진</th><th>상품명</th><th>품목 · 분류</th><th class="r">가격</th><th class="r">재고</th><th>산지 · 방식</th><th>확인</th></tr></thead><tbody>
     ${BK.rows.map((r,i)=>{const d=r.d;return `<tr class="${r.done?"done":r.err?"bad":""}"><td class="r num">${r.n}</td><td>${r.file?`<img class="ph" data-bkph="${i}" alt="">`:`<span class="noph" title="사진 없음"></span>`}</td><td><b>${esc(d.name||"—")}</b></td><td>${esc(d.item||"—")} · ${esc(d.cat||"—")}</td><td class="r num">${Number.isFinite(d.price)?won(d.price):"—"} / ${esc(d.unit||"—")}</td><td class="r num">${Number.isFinite(d.stock)?d.stock:"—"}</td><td>${esc(d.region||"—")} · ${esc(GROW_SHORT(d.grow||"")||"—")}</td><td class="st">${r.done?`<span class="ok">✔ 올렸습니다</span>`:r.err?`<span class="err">${esc(r.err)}</span>`:`<span class="ok">✔ 올릴 수 있음</span>`}</td></tr>`}).join("")}
     </tbody></table></div>`;
@@ -3343,7 +3350,7 @@ function bkRender(msg){
   $("#bkGo").onclick=bkUpload}
 async function bkUpload(){
   if(BK.busy)return;if(!S.sellers[S.uid]){toast("상점 정보를 먼저 저장해 주세요");return}
-  if(!BK.oath){toast("‘모두 법을 지켜 채취·생산했습니다’에 체크해 주세요");return}
+  if(!BK.oath){toast("‘직접 키웠거나 허락받은 산에서 캔 것’에 체크해 주세요");return}
   bkCheck();const list=BK.rows.filter(r=>!r.done&&!r.err);if(!list.length)return;
   BK.busy=true;bkRender();let n=0,auto=0,fail=0;
   for(const r of list){const b=$("#bkGo");if(b)b.textContent=`올리는 중 ${n+fail+1} / ${list.length}`;
@@ -3526,15 +3533,17 @@ function renderSell(){
      ${!auc_&&isCert({grow:WZ.grow})?`<label class="fld"><span>친환경 인증번호 (필수)</span><input id="wzCertNo" value="${esc(WZ.certNo)}" placeholder="예: 제00-00-0-000호"></label>`:""}
      ${!auc_?`<p class="meta" style="margin:0">${esc(SHIP_KO[shipClass({cat:wzCat(),form:WZ.form})])}</p>`:""}
      <label class="fld"><span>${auc_?"캔 곳":"산지"}</span><input id="wzRegion" value="${esc(WZ.region)}" placeholder="예: 경북 봉화"></label>
-     <label class="fld"><span>채취 근거</span><select id="wzPermit">${PERMITS.map(p=>`<option ${WZ.permit===p?"selected":""}>${p}</option>`).join("")}</select></label>
      ${!auc_&&need==="cert"&&!isCert({grow:WZ.grow})?`<label class="fld"><span>생산신고번호 또는 합격증 번호 (필수)</span><input id="wzCertNo" value="${esc(WZ.certNo)}" placeholder="예: 산양삼 생산신고 제00호"></label>`:""}
+     <details class="fld proofopt" ${need==="photo"||WZ.proofPh||WZ.site?"open":""}><summary><b>${need==="photo"?"📎 채취 근거 (정산 전 14일 안에 필요)":"📎 증빙 올리고 ‘채취 증빙 확인’ 배지 받기"}</b> <span class="meta">${need==="photo"?"(지금 없어도 먼저 올릴 수 있어요)":"(선택 · 배지가 붙으면 앞쪽에 보여요)"}</span></summary>
+     <label class="fld"><span>채취 근거</span><select id="wzPermit">${PERMITS.map(p=>`<option ${WZ.permit===p?"selected":""}>${p}</option>`).join("")}</select></label>
      ${mySites().length?`<label class="fld"><span>확인된 내 채취지에서 캤나요?</span><select id="wzSite"><option value="">아니요 (아래에서 근거 내기)</option>${mySites().map(x=>`<option value="${esc(x.id)}" ${WZ.site===x.id?"selected":""}>${esc(x.parcel)}</option>`).join("")}</select></label>`:""}
      ${WZ.site?`<div class="hint">확인된 채취지라 채취 근거가 바로 확인됩니다.</div>`:`<div class="hint">${PROOF_TXT[need]}</div>`}
      <div class="fld"><span>채취 근거 사진 ${need==="photo"?"(정산 전까지)":"(선택)"} · 운영자만 봅니다</span>
       ${WZ.proofPh?`<div class="from"><img src="${WZ.proofPh}" alt="서류 사진"><span>서류 사진을 넣었어요. <button type="button" class="lk" id="wzProofDel" style="border:0;background:none;padding:0;font:inherit;color:var(--pine);text-decoration:underline;cursor:pointer">빼기</button></span></div>`:`<label class="addrow" style="display:block;text-align:center;cursor:pointer">📄 허가증·동의서 사진 또는 산주 동의 문자 캡처<input id="wzProofPh" type="file" accept="image/*" hidden></label>`}
       ${WZ.permit===PERMITS[0]?`<input id="wzOwnParcel" value="${esc(WZ.ownParcel||"")}" placeholder="본인 산이면 지번만 적어도 됩니다 (예: 인제군 기린면 OO리 산12)" style="margin-top:8px">`:""}</div>
      ${need==="photo"&&!WZ.proofPh?(WZ.landOpen?`<div class="fld"><span>산주 찾기 — 캔 산의 위치</span><input id="wzParcel" value="${esc(WZ.parcel||"")}" placeholder="예: 강원 인제군 기린면 OO리 산12 (모르면 대략의 위치)"><input id="wzContact" value="${esc(WZ.contact||"")}" placeholder="연락받을 전화번호" inputmode="tel" style="margin-top:8px"><button type="button" class="bigbtn" id="wzLandSend" style="margin-top:8px">산주 찾기 요청 보내기</button><p class="meta" style="margin:4px 0 0">산림조합을 통해 산주를 찾아 동의서를 받도록 연결해 드립니다. 동의서를 받은 뒤 다시 올려 주세요.</p></div>`:`<button type="button" class="addrow" id="wzLand">서류가 없어요 → 산주 찾기 요청</button>`):""}
-     <label class="oath"><input type="checkbox" id="wzOath" ${WZ.oath?"checked":""}><span>법을 지켜 ${auc_?"채취":"채취·생산"}했습니다. 남의 산에서 허락 없이 캐지 않았습니다.</span></label>
+     </details>
+     <label class="oath"><input type="checkbox" id="wzOath" ${WZ.oath?"checked":""}><span>${oathText(WZ.grow)}</span></label>
      ${auc_?`<label class="fld"><span>캔 날짜</span><input id="wzDate" type="date" value="${WZ.date}"></label>`:""}
      <div class="fld"><span style="display:flex;justify-content:space-between;align-items:center">설명 (선택)<button type="button" class="mic" id="wzMic">🎤 말로 쓰기</button></span><textarea id="wzDesc" placeholder="${auc_?"캔 곳의 환경, 잔뿌리·뇌두 상태, 보관 방법":"키운 방법, 손질 상태, 보관법"}">${esc(WZ.desc)}</textarea></div>
      <p class="meta" style="margin:0">“당뇨에 좋다” 같은 효능 표현은 법으로 쓸 수 없습니다. 크기·모양·캔 과정 위주로 적어 주세요.</p>`;
