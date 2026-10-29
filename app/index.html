@@ -2805,7 +2805,7 @@ document.addEventListener("click",e=>{
   const dc=e.target.closest("[data-dict]");if(dc){openDict(dc.dataset.dict);return}
   const pf=e.target.closest("[data-profile]");if(pf){openProfile(pf.dataset.profile);return}
   const ch=e.target.closest("[data-chat]");if(ch){if($("#dlg").open)$("#dlg").close();openThread(ch.dataset.chat,ch.dataset.ctx||"");return}
-  const th=e.target.closest("[data-thread]");if(th){openThread(th.dataset.thread,"");return}
+  const th=e.target.closest("[data-thread]");if(th){openThread(th.dataset.thread,"");requestAnimationFrame(()=>{const t=$("#cText");if(t){t.scrollIntoView({block:"nearest"});t.focus({preventScroll:true})}});return}
   const ic=e.target.closest("[data-icon]");if(ic){const c=ic.dataset.icon;if(ic.dataset.iv==="auction"){S.acat=c;go("auction")}else{S.cat=c;S.use="";$("#shopQ").value="";go("shop")}return}
   const oa=e.target.closest("[data-open-a]");if(oa){openAuction(oa.dataset.openA);return}
   const g=e.target.closest("[data-go]");if(g){if($("#dlg").open)$("#dlg").close();go(g.dataset.go);return}
@@ -4387,7 +4387,7 @@ function renderChat(){
   $("#bdChat").hidden=!total;$("#bdChat").textContent=total;
   const el=$("#threads");
   if(!S.uid){el.innerHTML='<div class="empty">로그인하면 판매자·구매자와 나눈 대화가 보입니다.</div>';return}
-  el.innerHTML=ts.length?ts.map(t=>`<button class="thread" type="button" data-thread="${esc(t.o)}" aria-current="${t.o===S.chatWith}">${avaHTML(t.o,"sm")}<div><b>${esc(nameOf(t.o))}</b><div class="last">${t.last?esc((t.last.from===S.uid?"나: ":"")+t.last.text):"새 대화"}</div></div><span class="when">${t.last?day(t.last.createdAt).split(" ")[0]:""}${t.unread?`<span class="unread">${t.unread}</span>`:""}</span></button>`).join(""):'<div class="empty">아직 대화가 없습니다. 상품·제안 판매·견적 화면에서 판매자 프로필의 "문의하기"를 눌러 보세요.</div>';
+  el.innerHTML=ts.length?ts.map(t=>`<button class="thread" type="button" data-thread="${esc(t.o)}" aria-current="${t.o===S.chatWith}">${avaHTML(t.o,"sm")}<div><b>${esc(nameOf(t.o))}</b><div class="last">${t.last?esc((t.last.from===S.uid?"나: ":"")+t.last.text):"아직 주고받은 말이 없어요"}</div></div><span class="when">${t.last?day(t.last.createdAt).split(" ")[0]:""}${t.unread?`<span class="unread">${t.unread}</span>`:""}</span></button>`).join(""):'<div class="empty">아직 대화가 없습니다. 상품·제안 판매·견적 화면에서 판매자 프로필의 "문의하기"를 눌러 보세요.</div>';
 }
 function openThread(other,prefill){
   if(!S.uid){toast("로그인하면 대화할 수 있습니다");return}
