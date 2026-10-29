@@ -159,6 +159,8 @@ section[data-view]>*,.doc>*{min-width:0}
 .field input[type=checkbox],.field input[type=radio]{width:18px;height:18px;min-height:0;padding:0;flex:none}
 .xthumbs{display:flex;flex-wrap:wrap;gap:8px}.xthumbs:empty{display:none}.xth{position:relative}.xth img{width:72px;height:72px;object-fit:cover;border-radius:10px;display:block;background:var(--sunk)}.xth button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--ink);color:var(--bg);cursor:pointer;line-height:24px;padding:0}.xadd{display:grid;place-items:center;width:72px;height:72px;border:2px dashed var(--line);border-radius:10px;font-size:28px;color:var(--pine);cursor:pointer}
 .thumb .xgal{position:absolute;left:0;right:0;bottom:0;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.45));display:grid;gap:6px}.xgal .xcnt{justify-self:end;color:#fff;font-size:12px;font-weight:700;background:rgba(0,0,0,.4);border-radius:999px;padding:1px 8px}.xrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.xrow button{flex:none;width:52px;height:52px;padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;cursor:pointer;background:none}.xrow button[aria-current]{border-color:#fff}.xrow img{width:100%;height:100%;object-fit:cover}.thumb .xnav{position:absolute;top:40%;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.85);font-size:22px;line-height:1;cursor:pointer}.thumb .xp{left:8px}.thumb .xn{right:8px}
+body.noauc .tab.auc,body.noauc .bnav [data-tab=auction],body.noauc .hgroup.auc,body.noauc #aucStrip,body.noauc .hcard.auc,body.noauc [data-go="auction"],body.noauc #aucForm,body.noauc [data-wzmode="auc"],body.noauc #homeAucKinds{display:none!important}
+@media (max-width:860px){body.noauc .bnav{grid-template-columns:repeat(4,1fr)}}
 input[type=file].nmf{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}.nmfb{display:inline-flex;align-items:center;gap:4px;min-height:42px;padding:0 14px;border:1.5px solid var(--pine);border-radius:10px;background:var(--surface);color:var(--pine);font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}.nmfb:hover{background:var(--pine-soft)}.nmfn{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 .oath{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:12px;cursor:pointer}.oath input{width:22px;height:22px;flex:none;margin-top:1px}
 #wz .oath{display:flex!important;flex-direction:row!important;grid-template-columns:none}#wz .oath input{width:22px!important;height:22px!important;min-height:0!important;padding:0!important;border-radius:4px;flex:none;box-shadow:none}#wz .oath span{flex:1;min-width:0}
@@ -1195,6 +1197,7 @@ label.btn{display:inline-block}
       <div class="row2"><div class="field"><label for="cfgGiftStart">여는 날</label><input id="cfgGiftStart" type="date"></div><div class="field"><label for="cfgGiftEnd">닫는 날</label><input id="cfgGiftEnd" type="date"></div></div>
       <div class="field"><label for="cfgGiftCut">택배 마감일 (이날까지 주문하면 제때 도착)</label><input id="cfgGiftCut" type="date"></div>
       <p class="meta" style="margin:0 0 8px">판매자가 ‘선물 포장 가능’으로 표시한 상품이 자동으로 들어갑니다. 상품 화면의 ‘선물 코너에 넣기/빼기’로 직접 고를 수도 있습니다.</p></div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="cfgAuc"> 제안 판매 열기 (끄면 메뉴·홈 화면·등록에서 숨깁니다. 이미 진행 중인 건은 끝까지 진행됩니다)</label>
     <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="cfgBeta"> 베타 모드 (구매·제안·견적 결제를 받지 않고 오픈 알림만 받음, 등록료 무료)</label>
     <div class="actions"><button class="btn gold" type="button" id="cfgSave">저장</button><span class="meta" id="cfgNote"></span></div>
     <h3 style="margin-top:14px">제안 판매 열림 알림을 기다리는 손님</h3><div class="list" id="alertCounts"></div>
@@ -1361,7 +1364,7 @@ const FEE=0.10, PG=0.034, VAT=0.10, EXT=3*60*1000, PAY_LIMIT=24*3600*1000;
 function listFee(start){return start>=1000000?20000:start>=100000?5000:3000}
 const FREE_N=3;
 function freeLeft(uid){try{return uid?Math.max(0,FREE_N-S.auctions.filter(a=>a.sellerId===uid&&!a.demo).length):0}catch(e){return 0}}
-const BETA=()=>(S.site||{}).beta!==false;
+const BETA=()=>(S.site||{}).beta!==false,aucOn=()=>(S.site||{}).aucOn!==false;
 /* ---------- 가게 관리자 (가족·매니저 대리 관리) ---------- */
 const MGR_CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 function mgrNewCode(){const a=crypto.getRandomValues(new Uint8Array(8));let c="";a.forEach((v,i)=>{c+=MGR_CH[v%32];if(i===3)c+="-"});return c}
@@ -2516,7 +2519,7 @@ function renderGuide(){
   const ex=[["더덕 제안 판매, 시작가 5만 원",50000,80000,"auc"],["잔대 제안 판매, 시작가 20만 원",200000,350000,"auc"],["자연산 산삼 제안 판매, 시작가 100만 원",1000000,3000000,"auc"],["마켓 도라지 3kg",0,60000,"shop"]];
   $("#exTable").innerHTML=ex.map(([t,st,h,k])=>{let out,net;if(k==="auc"){const n=aucNet(h),lf=listFee(st);out=h-n.net+lf;net=n.net-lf;t+=`, 판매 확정 ${won(h)}`}else{const n=shopNet(h);out=h-n.net;net=n.net}return `<tr><td>${t}</td><td class="r num">${won(h)}</td><td class="r num">${won(out)} (${(out/h*100).toFixed(1)}%)</td><td class="r num"><b>${won(net)}</b></td></tr>`}).join("");
 }
-function render(){
+function render(){document.body.classList.toggle("noauc",!aucOn());
   {const bb=$("#betaBar");if(bb)bb.hidden=!BETA();}
   {const sv=document.querySelector('[data-view="seller"]'),g=$("#sellerGate");if(sv&&g){const guest=!S.uid&&!!window.nmAuth;sv.classList.toggle("guest",guest);g.hidden=!guest}}
   try{renderMgr()}catch(e){}
@@ -2829,6 +2832,7 @@ function startView(){try{const g=new URLSearchParams(location.search).get("go")|
 let NAVPOP=false;
 function go(v){
   if(v==="admin"&&!S.owner)v="home";
+  if(v==="auction"&&!aucOn()&&!S.owner)v="home";
   if(!NAVPOP&&S.view&&S.view!==v){try{history.pushState({nmv:v},"")}catch(e){}}
   S.view=v;
   document.querySelectorAll("section[data-view]").forEach(s=>s.hidden=s.dataset.view!==v);
@@ -3406,7 +3410,7 @@ function renderAucExtras(){
   if($("#aucExtra"))$("#aucExtra").innerHTML=row+upNextHTML()+(lv?winsHTML(5):"");
   if(S.owner&&$("#alertCounts")){const m={};(S.alerts||[]).filter(a=>a.kind==="auction").forEach(a=>m[a.key]=(m[a.key]||0)+1);const rows=Object.entries(m).sort((a,b)=>b[1]-a[1]);
     $("#alertCounts").innerHTML=rows.length?rows.map(([c,k])=>`<div class="item sunk"><div class="itop"><b>${esc(c)}</b><span class="num">${k}명 대기</span></div></div>`).join(""):`<div class="empty">아직 제안 판매 알림을 신청한 손님이 없습니다.</div>`;
-    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();if(!["cfgVideo","cfgReview","cfgProof","cfgPhone","cfgHours","cfgGiftTitle","cfgGiftStart","cfgGiftEnd","cfgGiftCut"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon();$("#cfgPhone").value=S.site?.csPhone||"";$("#cfgHours").value=S.site?.csHours||"";giftCfgFill()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
+    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();$("#cfgAuc").checked=aucOn();if(!["cfgVideo","cfgReview","cfgProof","cfgPhone","cfgHours","cfgGiftTitle","cfgGiftStart","cfgGiftEnd","cfgGiftCut"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon();$("#cfgPhone").value=S.site?.csPhone||"";$("#cfgHours").value=S.site?.csHours||"";giftCfgFill()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
     $("#cfgNote").textContent="제안 판매는 승인된 날부터 판매자가 고른 3·5·7일 동안 열립니다"}
 }
 $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:00:00+09:00");if(!an||new Date(an+9*3600e3).getUTCDay()!==6){toast("기준 제안 판매일은 토요일로 골라 주세요");return}
@@ -3416,7 +3420,7 @@ $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:0
   const gS=$("#cfgGiftStart").value,gE=$("#cfgGiftEnd").value,gC=$("#cfgGiftCut").value;
   if($("#cfgGift").checked&&!(gS&&gE)){toast("선물 코너를 열려면 여는 날과 닫는 날을 골라 주세요");return}
   if(gS&&gE&&gS>gE){toast("선물 코너 닫는 날이 여는 날보다 빠릅니다");return}
-  const v={giftOn:$("#cfgGift").checked,giftTitle:$("#cfgGiftTitle").value.trim().slice(0,30),giftStart:gS,giftEnd:gE,giftCut:gC,aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,videoWon:vw,reviewWon:rw,proofWon:pw,csPhone:$("#cfgPhone").value.trim().slice(0,20),csHours:$("#cfgHours").value.trim().slice(0,40),updatedAt:Date.now()};
+  const v={giftOn:$("#cfgGift").checked,giftTitle:$("#cfgGiftTitle").value.trim().slice(0,30),giftStart:gS,giftEnd:gE,giftCut:gC,aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,aucOn:$("#cfgAuc").checked,videoWon:vw,reviewWon:rw,proofWon:pw,csPhone:$("#cfgPhone").value.trim().slice(0,20),csHours:$("#cfgHours").value.trim().slice(0,40),updatedAt:Date.now()};
   if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),"운영 설정을 저장했습니다. 제안 판매 주기는 새로 올라오는 제안 판매부터 적용됩니다")){S.site={...(S.site||{}),...v};render()}};
 
 /* ---------- 판매 마법사 (사진 → 품목 → 방식 → 값 → 확인) ---------- */
