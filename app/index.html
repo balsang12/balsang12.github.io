@@ -837,7 +837,7 @@ label.btn{display:inline-block}
   <div id="todoHome"></div>
   <div id="alertHome"></div>
   <div class="giftwrap" id="giftBan" hidden></div>
-  <div class="hgroup mkt"><div class="hg-head"><b>마켓 장보기</b><span id="mktSub">정한 값에 바로 구매</span></div><div class="icons" id="homeIcons"></div></div>
+  <div class="hgroup mkt"><div class="hg-head"><b>마켓 장보기</b><span id="mktSub"></span></div><div class="icons" id="homeIcons"></div></div>
   <div class="hgroup auc hauclist" hidden><div class="hg-head"><b id="homeAucH">곧 마감되는 제안 판매</b><span class="nextSat"></span></div>
    <div id="homeAuc" class="alist"></div><div id="homeWins"></div>
    <button class="hmore" type="button" data-go="auction">제안 판매 전체 보기 ›</button></div>
@@ -2236,7 +2236,7 @@ function renderHome(){renderSeason();
   {const all=live().filter(p=>p.stock>0),wild=all.filter(p=>p.grow===GROWS[0]).length;
     if($("#sideShop2"))$("#sideShop2").textContent=all.length;
     if($("#sideShopMix"))$("#sideShopMix").textContent=all.length?`심마니 채취 ${wild} · 농부 재배 ${all.length-wild}`:"첫 상품을 기다리고 있습니다";
-    if($("#mktSub"))$("#mktSub").textContent=all.length?`정한 값에 바로 구매 · ${all.length}개 판매 중`:"정한 값에 바로 구매";
+    if($("#mktSub"))$("#mktSub").textContent=all.length?`${all.length}개 판매 중`:"";
     const shown=new Set(ps.map(p=>p.id)),nw=all.filter(p=>!shown.has(p.id)).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8);
     $("#homeNewH").hidden=!nw.length;$("#homeNew").classList.toggle("hrow",nw.length>0);$("#homeNew").innerHTML=nw.map(card).join("")}
   $("#homeShop").classList.toggle("hrow",ps.length>0);$("#homeShop").innerHTML=ps.length?ps.map(card).join(""):emptyBox("아직 판매 중인 마켓 상품이 없습니다.",'<button class="btn" data-go="seller">상품 올리기</button><button class="btn" data-go="request">채취 의뢰하기</button>');
