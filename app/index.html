@@ -161,6 +161,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .thumb .xgal{position:absolute;left:0;right:0;bottom:0;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.45));display:grid;gap:6px}.xgal .xcnt{justify-self:end;color:#fff;font-size:12px;font-weight:700;background:rgba(0,0,0,.4);border-radius:999px;padding:1px 8px}.xrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.xrow button{flex:none;width:52px;height:52px;padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;cursor:pointer;background:none}.xrow button[aria-current]{border-color:#fff}.xrow img{width:100%;height:100%;object-fit:cover}.thumb .xnav{position:absolute;top:40%;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.85);font-size:22px;line-height:1;cursor:pointer}.thumb .xp{left:8px}.thumb .xn{right:8px}
 body.noauc .tab.auc,body.noauc .bnav [data-tab=auction],body.noauc .hgroup.auc,body.noauc #aucStrip,body.noauc .hcard.auc,body.noauc [data-go="auction"],body.noauc #aucForm,body.noauc [data-wzmode="auc"],body.noauc #homeAucKinds,body.noauc .aucinfo,body.nosub .subinfo{display:none!important}
 @media (max-width:860px){body.noauc .bnav{grid-template-columns:repeat(4,1fr)}}
+.panel.flash{outline:3px solid var(--pine);outline-offset:3px;transition:outline-color .4s}
 input[type=file].nmf{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}.nmfb{display:inline-flex;align-items:center;gap:4px;min-height:42px;padding:0 14px;border:1.5px solid var(--pine);border-radius:10px;background:var(--surface);color:var(--pine);font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}.nmfb:hover{background:var(--pine-soft)}.nmfn{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 .oath{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:12px;cursor:pointer}.oath input{width:22px;height:22px;flex:none;margin-top:1px}
 #wz .oath{display:flex!important;flex-direction:row!important;grid-template-columns:none}#wz .oath input{width:22px!important;height:22px!important;min-height:0!important;padding:0!important;border-radius:4px;flex:none;box-shadow:none}#wz .oath span{flex:1;min-width:0}
@@ -3678,10 +3679,10 @@ function renderTodo(){
   const h=$("#todoHome");if(h)h.innerHTML="";
   if(!d)return;
   const rows=[];
-  if(d.ship)rows.push(`<div class="ti"><span>보낼 주문 <b>${d.ship}건</b></span><button type="button" data-go="seller">발송하기</button></div>`);
-  if(d.rej)rows.push(`<div class="ti"><span>반려된 상품 <b>${d.rej}건</b> · 사유 확인</span><button type="button" data-go="seller">보기</button></div>`);
-  if(d.out)rows.push(`<div class="ti"><span>품절된 상품 <b>${d.out}건</b></span><button type="button" data-go="seller">재고 채우기</button></div>`);
-  if(d.reqs)rows.push(`<div class="ti"><span>견적 기다리는 의뢰 <b>${d.reqs}건</b></span><button type="button" data-go="seller">견적 보내기</button></div>`);
+  if(d.ship)rows.push(`<div class="ti"><span>보낼 주문 <b>${d.ship}건</b></span><button type="button" data-go="seller" data-jump="sellerOrders">발송하기</button></div>`);
+  if(d.rej)rows.push(`<div class="ti"><span>반려된 상품 <b>${d.rej}건</b> · 사유 확인</span><button type="button" data-go="seller" data-jump="myItems">보기</button></div>`);
+  if(d.out)rows.push(`<div class="ti"><span>품절된 상품 <b>${d.out}건</b></span><button type="button" data-go="seller" data-jump="myItems">재고 채우기</button></div>`);
+  if(d.reqs)rows.push(`<div class="ti"><span>견적 기다리는 의뢰 <b>${d.reqs}건</b></span><button type="button" data-go="seller" data-jump="openReqs">견적 보내기</button></div>`);
   if(d.liveA)rows.push(`<div class="ti"><span>진행 중 제안 판매 ${d.liveA}건 · 제안 ${d.bids}번${d.top&&d.top.x.count?` · ${esc(d.top.a.title)} 현재 ${won(d.top.x.cur)}`:""}</span><button type="button" data-go="seller">보기</button></div>`);
   if(d.pend)rows.push(`<div class="ti"><span>운영자 확인 기다리는 중 ${d.pend}건</span></div>`);
   const urgent=d.ship+d.rej+d.out+d.reqs;
@@ -4520,6 +4521,10 @@ loadNews();
 $("#homeSearch").onsubmit=e=>{e.preventDefault();logHealth($("#homeQ").value);S.cat="전체";S.use="";$("#shopQ").value=$("#homeQ").value.trim();go("shop")};
 renderWiz();
 /* ---------- 연결 ---------- */
+/* '오늘 할 일' 버튼: 판매자 화면 안의 해당 칸으로 바로 내려가서 첫 입력칸에 커서 */
+document.addEventListener("click",e=>{const b=e.target.closest("[data-jump]");if(!b)return;const id=b.dataset.jump;
+  setTimeout(()=>{const el=$("#"+id);if(!el)return;const box=el.closest(".panel")||el;box.scrollIntoView({behavior:"smooth",block:"start"});
+    box.classList.add("flash");setTimeout(()=>box.classList.remove("flash"),1600);const f=el.querySelector("input:not([type=hidden]):not([type=file]),textarea");if(f)setTimeout(()=>f.focus({preventScroll:true}),500)},60)});
 /* 파일 고르기 버튼을 한국어로: 브라우저 기본 'Choose File' 대신 '📷 사진 고르기' */
 function fileBtns(){document.querySelectorAll('input[type=file]:not([hidden]):not(.nmf)').forEach(i=>{i.classList.add("nmf");if(!i.id)i.id="nmf"+Math.random().toString(36).slice(2,8);
   const b=document.createElement("label");b.className="nmfb";b.htmlFor=i.id;b.tabIndex=0;b.textContent="📷 "+(i.multiple?"사진 여러 장 고르기":"사진 고르기");b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();i.click()}};
