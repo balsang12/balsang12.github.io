@@ -842,8 +842,8 @@ label.btn{display:inline-block}
   <div class="hgroup auc hauclist" hidden><div class="hg-head"><b id="homeAucH">곧 마감되는 제안 판매</b><span class="nextSat"></span></div>
    <div id="homeAuc" class="alist"></div><div id="homeWins"></div>
    <button class="hmore" type="button" data-go="auction">제안 판매 전체 보기 ›</button></div>
-  <div class="sechead" style="margin-top:26px"><div><h2>마켓 인기 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
-  <div class="grid" id="homeShop"></div>
+  <div id="popWrap"><div class="sechead" style="margin-top:26px"><div><h2>마켓 인기 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
+  <div class="grid" id="homeShop"></div></div>
   <div class="sechead" id="homeNewH" hidden><div><div class="eyebrow">산지에서 막 올라온</div><h2>새로 들어온 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
   <div class="grid" id="homeNew"></div>
   </div>
@@ -2242,6 +2242,10 @@ function renderHome(){renderSeason();
     const shown=new Set(ps.map(p=>p.id)),nw=all.filter(p=>!shown.has(p.id)).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8);
     $("#homeNewH").hidden=!nw.length;$("#homeNew").classList.toggle("hrow",nw.length>0);$("#homeNew").innerHTML=nw.map(card).join("")}
   $("#homeShop").classList.toggle("hrow",ps.length>0);$("#homeShop").innerHTML=ps.length?ps.map(card).join(""):emptyBox("아직 판매 중인 마켓 상품이 없습니다.",'<button class="btn" data-go="seller">상품 올리기</button><button class="btn" data-go="request">채취 의뢰하기</button>');
+  /* 판매 중인 상품이 4개 이상이면 '마켓 인기 상품'을 '마켓 장보기'(분류 아이콘) 위로. 적을 땐 빈 칸이 먼저 보이지 않게 아래에 둠 */
+  {const pw=$("#popWrap"),mk=document.querySelector(".hgroup.mkt");if(pw&&mk){const many=live().filter(p=>p.stock>0).length>=4;
+    const home=document.querySelector(".hgroup.auc.hauclist")||mk;
+    if(many){if(pw.nextElementSibling!==mk)mk.before(pw)}else if(home.nextElementSibling!==pw)home.after(pw)}}
 }
 function renderAuctions(){
   $("#aucCats").innerHTML=(aucOpen(S.acat)?0:(S.acat="전체"),openACATS()).map(c=>`<button class="cat" aria-pressed="${c===S.acat}" data-acat="${c}">${ASEASON[c]?'<span class="chip gold" style="margin-right:4px;padding:0 6px">제철</span>':""}${c}</button>`).join("");
