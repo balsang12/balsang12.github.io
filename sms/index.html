@@ -24,6 +24,7 @@ h1{margin:0;font-size:21px}h1 b{color:#17A356}h1 i{font-style:normal;color:#C890
 .card h2{margin:0 0 8px;font-size:17px}.card h2 span{color:var(--muted);font-weight:400;font-size:14px}
 .txt{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:10px 12px;font-size:15.5px;line-height:1.65;max-height:9.5em;overflow:hidden;position:relative}
 .card.open .txt{max-height:none}.more{border:0;background:none;color:var(--pine);font:inherit;font-size:14px;padding:4px 0;cursor:pointer}
+.txt a{color:var(--pine);font-weight:600;text-decoration:underline;text-underline-offset:3px;word-break:break-all}
 .txt mark{background:var(--gold-soft);color:var(--gold);border-radius:4px;padding:0 2px}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .btns button,.btns a{display:grid;place-items:center;min-height:50px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer}
@@ -163,7 +164,7 @@ let cat="전체";const $=s=>document.querySelector(s);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 function filled(t){let s=t;KEYS.forEach(k=>{const v=$("#f_"+k).value.trim();if(v)s=s.split("["+k+"]").join(v)});
   if($("#adOn").checked)s="(광고) "+s+"\n무료수신거부 010-8167-8040 (‘거부’라고 문자 주세요)";return s}
-function show(t){return esc(t).replace(/\[(이름|품목|양|날짜|금액|단체명|명절|제철 품목)\]/g,'<mark>[$1]</mark>')}
+function show(t){return esc(t).replace(/\[(이름|품목|양|날짜|금액|단체명|명절|제철 품목)\]/g,'<mark>[$1]</mark>').replace(/https:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`)}
 function render(){
   $("#tabs").innerHTML=CATS.map(c=>`<button type="button" role="tab" aria-pressed="${c===cat}" data-c="${c}">${c}</button>`).join("");
   $("#list").innerHTML=T.map((t,i)=>[t,i]).filter(([t])=>cat==="전체"||t[0]===cat).map(([t,i])=>{const s=filled(t[2]);
