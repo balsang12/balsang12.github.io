@@ -8,6 +8,17 @@
   var SB_KEY = "sb_publishable_4MyQuV4WbsSnyIdE_s8XIQ_cfRlY6tz";
   var APP_URL = location.origin + location.pathname.replace(/[^/]*$/, "");
 
+  /* 휴대폰 '뒤로'로 이미 쓴 카카오 로그인 주소에 다시 들어오면 Supabase가 ?error=... 를 붙여 돌려보냄.
+     그대로 두면 supabase-js가 저장된 로그인까지 지워 버리므로, 클라이언트를 만들기 전에 그 꼬리표를 떼어 냄 */
+  try {
+    var u0 = new URL(location.href), hp = new URLSearchParams(location.hash.replace(/^#/, ""));
+    if (u0.searchParams.has("error") || u0.searchParams.has("error_description") || hp.has("error") || hp.has("error_description")) {
+      ["error", "error_code", "error_description", "code", "state"].forEach(function (k) { u0.searchParams.delete(k); });
+      u0.hash = "";
+      history.replaceState(history.state, "", u0.toString());
+    }
+  } catch (e) {}
+
   var sb = window.supabase.createClient(SB_URL, SB_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" },
     realtime: { params: { eventsPerSecond: 5 } }
@@ -236,9 +247,9 @@
     ".nmauth .nm-kakao{background:#FEE500;color:#191600;border:0;font-weight:700}.nmauth .nm-mail{background:var(--pine,#2B5B41);color:var(--pine-ink,#fff);border:0;font-weight:700}" +
     ".nmauth input{border:1px solid var(--line,#D3DCCD);background:var(--bg,#F4F6F1);color:inherit}.nmauth .nm-close{background:none;border:0;color:var(--muted,#566659);min-height:40px}" +
     ".nmauth .nm-up{background:none;border:1px solid var(--pine,#2B5B41);color:var(--pine,#2B5B41);font-weight:700}.nmauth details summary{cursor:pointer;font-size:14px;color:var(--muted,#566659)}.nmauth [hidden]{display:none!important}" +
-    ".nmauth .nm-or{text-align:center;font-size:13px;color:var(--muted,#566659)}.nmauth .nm-msg:empty{display:none}.nmauth .nm-msg{font-size:14px;color:var(--pine,#2B5B41)}.nmauth .nm-msg.nm-err{color:var(--berry,#A3324A)}";
+    ".nmauth .nm-or{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted,#566659)}.nmauth .nm-or::before,.nmauth .nm-or::after{content:'';flex:1;height:1px;background:var(--line,#D3DCCD)}.nmauth .nm-msg:empty{display:none}.nmauth .nm-msg{font-size:14px;color:var(--pine,#2B5B41)}.nmauth .nm-msg.nm-err{color:var(--berry,#A3324A)}";
   var T = {
-    ko: { h: "농마니 로그인", p: "로그인하면 주문·입찰·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.", kakao: "카카오로 시작하기", or: "또는 이메일로 받은 링크로 로그인", lbl: "이메일 주소", ph: "예: hong@naver.com", send: "로그인 링크 받기", close: "닫기",
+    ko: { h: "농마니 로그인", p: "로그인하면 주문·제안·판매를 할 수 있습니다. 처음이면 자동으로 가입됩니다.", kakao: "카카오로 시작하기", or: "또는 이메일로 받은 링크로 로그인", lbl: "이메일 주소", ph: "예: hong@naver.com", send: "로그인 링크 받기", close: "닫기",
       goKakao: "카카오로 이동합니다…", noKakao: "카카오 로그인을 준비 중입니다. 이메일로 로그인해 주세요.", badMail: "이메일 주소를 다시 확인해 주세요.", sending: "보내는 중…",
       rate: "잠시 뒤 다시 시도해 주세요. 메일을 너무 자주 요청했습니다.", fail: "메일을 보내지 못했습니다. 주소를 확인해 주세요.", sent: function (m) { return m + " 으로 로그인 링크를 보냈습니다. 메일함에서 링크를 누르면 로그인됩니다. (스팸함도 확인해 주세요)"; } },
     en: { h: "Sign in to Nongmani", p: "Sign in to bid. New here? An account is created automatically.", kakao: "Continue with Kakao", or: "or get a sign-in link by email", lbl: "Email address", ph: "you@example.com", send: "Email me a sign-in link", close: "Close",
@@ -256,7 +267,7 @@
   };
 
   var T2 = {
-    ko: { p: "로그인하면 주문·입찰·판매를 할 수 있습니다.", pwH: "이메일과 비밀번호로", pwLbl: "비밀번호", pwPh: "8자 이상", pin: "로그인", up: "처음이에요 · 가입하기", forgot: "비밀번호를 잊으셨나요?", linkH: "비밀번호 없이 이메일 링크로 로그인",
+    ko: { p: "로그인하면 주문·제안·판매를 할 수 있습니다.", pwH: "또는 이메일로", pwLbl: "비밀번호", pwPh: "8자 이상", pin: "이메일로 로그인", up: "이메일로 새로 가입하기", forgot: "비밀번호를 잊으셨나요?", linkH: "비밀번호 없이 이메일 링크로 로그인",
       short: "비밀번호는 8자 이상으로 정해 주세요.", bad: "이메일이나 비밀번호가 맞지 않아요.", unconf: "가입 확인 메일의 링크를 먼저 한 번 눌러 주세요.", exists: "이미 가입된 이메일이에요. 위의 로그인을 눌러 주세요.",
       joined: "가입 신청을 받았습니다. 메일함의 확인 링크를 한 번 누르면 로그인됩니다. (스팸함도 확인해 주세요)", resetSent: function (m) { return m + " 으로 비밀번호를 새로 정하는 링크를 보냈습니다."; }, needMail: "이메일을 먼저 적어 주세요.",
       newH: "새 비밀번호 정하기", newSave: "새 비밀번호 저장", newOk: "비밀번호를 바꿨습니다. 이제 이 비밀번호로 로그인하세요.", wait: "확인 중…", show: "보기" },
@@ -296,6 +307,8 @@
     el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' + consent +
       '<div id="nmMain" style="display:flex;flex-direction:column;gap:12px">' +
       '<button type="button" class="nm-kakao" id="nmKakao"></button>' +
+      '<button type="button" class="nm-close" id="nmMore" aria-expanded="false" style="text-decoration:underline;font-size:15px"></button>' +
+      '<div id="nmEmailBox" hidden style="display:flex;flex-direction:column;gap:12px">' +
       '<div class="nm-or" id="nmPwH"></div>' +
       '<form id="nmPwForm" style="display:flex;flex-direction:column;gap:8px">' +
         '<label for="nmPwMail" id="nmPwMailL" ' + lab + '></label><input id="nmPwMail" type="email" autocomplete="email" inputmode="email" required>' +
@@ -306,26 +319,40 @@
       '</form>' +
       '<details class="nm-link"><summary id="nmLinkH"></summary>' +
       '<form id="nmMailForm" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><label for="nmMail" id="nmMailL" ' + lab + '></label><input id="nmMail" type="email" autocomplete="email" inputmode="email" required><button class="nm-mail" type="submit" id="nmSend"></button></form>' +
-      '</details></div>' +
+      '</details></div></div>' +
       '<form id="nmNewForm" hidden style="display:flex;flex-direction:column;gap:8px"><label for="nmNewPw" id="nmNewL" ' + lab + '></label><input id="nmNewPw" type="password" autocomplete="new-password" minlength="8" required><button class="nm-mail" type="submit" id="nmNewSave"></button></form>' +
       '<div class="nm-msg" id="nmMsg" role="status"></div><button type="button" class="nm-close" id="nmClose"></button></div>';
     [["#nmAuthH", t.h], ["#nmAuthP", t.p], ["#nmKakao", t.kakao], ["#nmPwH", t.pwH], ["#nmPwMailL", t.lbl], ["#nmPwL", t.pwLbl], ["#nmPwShow", t.show], ["#nmPwIn", t.pin], ["#nmPwUp", t.up], ["#nmForgot", t.forgot],
      ["#nmLinkH", t.linkH], ["#nmMailL", t.lbl], ["#nmSend", t.send], ["#nmNewL", t.newH], ["#nmNewSave", t.newSave], ["#nmClose", t.close]].forEach(function (x) { el.querySelector(x[0]).textContent = x[1]; });
     el.querySelector("#nmMail").placeholder = t.ph; el.querySelector("#nmPwMail").placeholder = t.ph; el.querySelector("#nmPw").placeholder = t.pwPh; el.querySelector("#nmNewPw").placeholder = t.pwPh;
+    el.querySelector("#nmMore").textContent = ko ? "카카오가 없으면 이메일로 ›" : t.pwH + " ›";
+    el.querySelector("#nmMore").onclick = function () { showMail(true); var i = el.querySelector("#nmPwMail"); setTimeout(function () { i.scrollIntoView({ block: "nearest" }); }, 30); };
     document.body.appendChild(el);
     var cs = [].slice.call(el.querySelectorAll(".nmC")), call = el.querySelector("#nmCAll");
     var had = false; try { had = !!localStorage.getItem("nm_consent"); } catch (_) {}
     if (had) { cs.forEach(function (c) { c.checked = true; }); if (call) call.checked = true; }
-    if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); };
-    cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); }; });
-    var needC = function () {
+    var okC = function () { if (!cs.every(function (x) { return x.checked; })) return; var h = el.querySelector("#nmCHint"), bx = el.querySelector("#nmConsent"); if (h) h.remove(); bx.style.borderColor = ""; bx.style.background = ""; say(""); };
+    if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); okC(); };
+    cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); okC(); }; });
+    var needC = function (again) {
       if (cs.every(function (c) { return c.checked; })) { try { localStorage.setItem("nm_consent", new Date().toISOString()); } catch (_) {} return true; }
-      say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true); el.querySelector("#nmConsent").scrollIntoView({ block: "nearest" }); return false;
+      say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true);
+      var bx = el.querySelector("#nmConsent"); bx.scrollIntoView({ block: "nearest" });
+      /* 동의 칸을 깜박여 어디를 눌러야 하는지 보여 줌 */
+      var n = 0, tm = setInterval(function () { bx.style.borderColor = n % 2 ? "" : "#C0392B"; bx.style.background = n % 2 ? "" : "#FDECEA"; if (++n > 5) { clearInterval(tm); bx.style.borderColor = "#C0392B"; bx.style.background = ""; } }, 220);
+      var hint = el.querySelector("#nmCHint"); if (!hint) { hint = document.createElement("div"); hint.id = "nmCHint"; hint.setAttribute("role", "alert"); hint.style.cssText = "color:#C0392B;font-size:14px;font-weight:700"; bx.appendChild(hint); }
+      hint.textContent = ko ? "↑ 위 칸에 체크해 주세요 ('모두 동의합니다'를 누르면 한 번에 됩니다)" : "Please tick the box above.";
+      /* 휴대폰이 서툰 분을 위해: 버튼 하나로 모두 동의하고 하려던 일을 바로 이어서 */
+      if (again) { var go = document.createElement("button"); go.type = "button"; go.className = "nm-mail"; go.style.cssText = "margin-top:8px;width:100%";
+        go.textContent = ko ? "✔ 모두 동의하고 계속하기" : "Agree to all and continue";
+        go.onclick = function () { cs.forEach(function (c) { c.checked = true; }); if (call) call.checked = true; okC(); again(); };
+        hint.appendChild(document.createElement("br")); hint.appendChild(go); }
+      return false;
     };
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
     el.querySelector("#nmKakao").onclick = function () {
-      if (!needC()) return;
+      if (!needC(function () { el.querySelector("#nmKakao").click(); })) return;
       say(t.goKakao); remember();
       sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: APP_URL } }).then(function (r) {
         if (r.error) say(t.noKakao, true);
@@ -383,14 +410,51 @@
     if (!build.keyed) { build.keyed = true; document.addEventListener("keydown", function (e) { if (e.key === "Escape" && el && !el.hidden) close(); }); }
     return el;
   }
+  /* 이메일 칸은 접어 두고 카카오를 먼저 보여 줌. 한국어가 아니면(해외 손님은 카카오가 없는 경우가 많음) 처음부터 펼침 */
+  function showMail(on) { var b = el.querySelector("#nmEmailBox"), m = el.querySelector("#nmMore"); b.hidden = !on; m.hidden = on; m.setAttribute("aria-expanded", on ? "true" : "false"); }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
-  function open(reason) { build(); document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); el.hidden = false; say(reason || ""); setTimeout(function () { el.querySelector("#nmPwMail").focus(); }, 30); }
+  function open(reason, o) { build(); o = o || {}; var t = L(), ko = !window.NM_LANG || window.NM_LANG === "ko";
+    /* 이 기기에서 전에 동의·로그인한 적이 있으면 '가입'처럼 보이지 않게: 동의 칸을 접고 '다시 로그인'으로 */
+    var back = false; try { back = !!localStorage.getItem("nm_consent"); } catch (e) {}
+    var cb = el.querySelector("#nmConsent"); if (cb) cb.hidden = back && ko;
+    el.querySelector("#nmKakao").textContent = back && ko ? "카카오로 로그인" : t.kakao;
+    el.querySelector("#nmAuthH").textContent = back && ko ? (o.seller ? "판매자 다시 로그인" : "다시 로그인") : o.seller && ko ? "판매자 로그인" : t.h;
+    el.querySelector("#nmAuthP").textContent = back && ko ? "전에 쓰시던 카카오(또는 이메일)로 로그인하시면 그대로 이어집니다. 다시 가입하실 필요 없어요." : o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
+    document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); showMail(!ko || !!o.email); el.hidden = false; say(reason || "");
+    /* 창은 항상 맨 위(동의 칸)부터 보이게. 휴대폰에서는 이메일 칸에 자동 커서를 두지 않음(키보드가 올라와 화면이 밀림) */
+    var bx = el.querySelector(".box"); if (bx) bx.scrollTop = 0; el.scrollTop = 0;
+    var fine = window.matchMedia && matchMedia("(pointer:fine)").matches;
+    setTimeout(function () { if (bx) bx.scrollTop = 0; el.scrollTop = 0; if (fine && !o.kakao && !el.querySelector("#nmEmailBox").hidden) el.querySelector("#nmPwMail").focus({ preventScroll: true }); else { var h = el.querySelector("#nmAuthH"); h.setAttribute("tabindex", "-1"); h.style.outline = "none"; h.focus({ preventScroll: true }); } }, 30); }
   function openReset() { build(); el.querySelector("#nmMain").hidden = true; el.querySelector("#nmNewForm").hidden = false; el.querySelector("#nmNewForm").style.display = "flex"; el.hidden = false; say(""); }
   function close() { if (el) el.hidden = true; }
 
+  /* 로그아웃: 서버 응답이 늦거나 실패해도 이 기기의 로그인 정보는 반드시 지우고 새로고침 */
+  function signOut() {
+    var done = false, fin = function () { if (done) return; done = true;
+      try { Object.keys(localStorage).forEach(function (k) { if (/^sb-.*-auth-token/.test(k)) localStorage.removeItem(k); }); } catch (e) {}
+      location.reload(); };
+    setTimeout(fin, 3000);
+    return sb.auth.signOut({ scope: "local" }).then(fin, fin);
+  }
+  /* 확인 창: 카카오톡 등 앱 안 브라우저는 confirm()을 막아 버려서 직접 만든 창을 씀 */
+  function askSignOut() {
+    var d = document.getElementById("nmOut");
+    if (!d) {
+      d = document.createElement("div"); d.id = "nmOut"; d.className = "nmauth"; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true");
+      d.innerHTML = '<div class="box" style="max-width:320px"><h2 style="font-size:20px">로그아웃할까요?</h2><p>다시 들어오실 때는 카카오로 한 번 더 로그인하시면 됩니다.</p>' +
+        '<button type="button" class="nm-mail" id="nmOutYes">로그아웃</button><button type="button" class="nm-close" id="nmOutNo">취소</button></div>';
+      if (!document.getElementById("nmAuthCss")) { var st = document.createElement("style"); st.id = "nmAuthCss"; st.textContent = css; document.head.appendChild(st); }
+      document.body.appendChild(d);
+      d.addEventListener("click", function (e) { if (e.target === d) d.hidden = true; });
+      d.querySelector("#nmOutNo").onclick = function () { d.hidden = true; };
+      d.querySelector("#nmOutYes").onclick = function () { this.disabled = true; this.textContent = "로그아웃 중…"; signOut(); };
+    }
+    d.hidden = false;
+  }
+
   window.nmAuth = Object.freeze({
     open: open, close: close,
-    signOut: function () { return sb.auth.signOut().then(function () { location.reload(); }); },
+    signOut: signOut, askSignOut: askSignOut,
     session: function () { return sessionReady; },
     mgrFind: function (hash) { return sb.rpc("mgr_find", { p_hash: hash }).then(function (r) { return r.data || null; }, function () { return null; }); }
   });

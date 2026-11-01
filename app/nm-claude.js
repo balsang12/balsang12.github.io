@@ -334,7 +334,7 @@
     var okC = function () { if (!cs.every(function (x) { return x.checked; })) return; var h = el.querySelector("#nmCHint"), bx = el.querySelector("#nmConsent"); if (h) h.remove(); bx.style.borderColor = ""; bx.style.background = ""; say(""); };
     if (call) call.onchange = function () { cs.forEach(function (c) { c.checked = call.checked; }); okC(); };
     cs.forEach(function (c) { c.onchange = function () { if (call) call.checked = cs.every(function (x) { return x.checked; }); okC(); }; });
-    var needC = function () {
+    var needC = function (again) {
       if (cs.every(function (c) { return c.checked; })) { try { localStorage.setItem("nm_consent", new Date().toISOString()); } catch (_) {} return true; }
       say(ko ? "필수 항목에 모두 동의해 주세요." : "Please agree to the required items.", true);
       var bx = el.querySelector("#nmConsent"); bx.scrollIntoView({ block: "nearest" });
@@ -342,12 +342,17 @@
       var n = 0, tm = setInterval(function () { bx.style.borderColor = n % 2 ? "" : "#C0392B"; bx.style.background = n % 2 ? "" : "#FDECEA"; if (++n > 5) { clearInterval(tm); bx.style.borderColor = "#C0392B"; bx.style.background = ""; } }, 220);
       var hint = el.querySelector("#nmCHint"); if (!hint) { hint = document.createElement("div"); hint.id = "nmCHint"; hint.setAttribute("role", "alert"); hint.style.cssText = "color:#C0392B;font-size:14px;font-weight:700"; bx.appendChild(hint); }
       hint.textContent = ko ? "↑ 위 칸에 체크해 주세요 ('모두 동의합니다'를 누르면 한 번에 됩니다)" : "Please tick the box above.";
+      /* 휴대폰이 서툰 분을 위해: 버튼 하나로 모두 동의하고 하려던 일을 바로 이어서 */
+      if (again) { var go = document.createElement("button"); go.type = "button"; go.className = "nm-mail"; go.style.cssText = "margin-top:8px;width:100%";
+        go.textContent = ko ? "✔ 모두 동의하고 계속하기" : "Agree to all and continue";
+        go.onclick = function () { cs.forEach(function (c) { c.checked = true; }); if (call) call.checked = true; okC(); again(); };
+        hint.appendChild(document.createElement("br")); hint.appendChild(go); }
       return false;
     };
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
     el.querySelector("#nmKakao").onclick = function () {
-      if (!needC()) return;
+      if (!needC(function () { el.querySelector("#nmKakao").click(); })) return;
       say(t.goKakao); remember();
       sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: APP_URL } }).then(function (r) {
         if (r.error) say(t.noKakao, true);
