@@ -162,6 +162,20 @@ section[data-view]>*,.doc>*{min-width:0}
 body.noauc .tab.auc,body.noauc .bnav [data-tab=auction],body.noauc .hgroup.auc,body.noauc #aucStrip,body.noauc .hcard.auc,body.noauc [data-go="auction"],body.noauc #aucForm,body.noauc [data-wzmode="auc"],body.noauc #homeAucKinds,body.noauc .aucinfo,body.nosub .subinfo{display:none!important}
 @media (max-width:860px){body.noauc .bnav{grid-template-columns:repeat(4,1fr)}}
 .panel.flash{outline:3px solid var(--pine);outline-offset:3px;transition:outline-color .4s}
+#healthNote:empty{display:none}
+/* 검색어가 있으면 검색창 바로 아래에 상품부터, 분류·정렬은 상품 아래로 */
+section[data-view="shop"].searching>#shopCount{order:1}section[data-view="shop"].searching>#healthNote{order:2}section[data-view="shop"].searching>#shopGrid{order:3}
+section[data-view="shop"].searching>#cats,section[data-view="shop"].searching>#useBar,section[data-view="shop"].searching>#shopSort{order:4}
+/* 휴대폰 마켓: 검색하면 상품이 바로 보이도록 위쪽을 줄임 */
+@media (max-width:700px){
+  section[data-view="shop"]{gap:12px}
+  section[data-view="shop"] .sechead .eyebrow{display:none}
+  section[data-view="shop"] .sechead{gap:8px}
+  section[data-view="shop"] .toolbar{max-width:none!important;width:100%;flex-wrap:nowrap}
+  section[data-view="shop"] #shopQ{min-width:0;flex:1}section[data-view="shop"] #growF{flex:none;width:122px;padding-inline:8px}
+  #cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}#cats::-webkit-scrollbar{display:none}#cats .cat{flex:none}
+  section[data-view="shop"].searching #useBar{display:none}
+}
 input[type=file].nmf{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}.nmfb{display:inline-flex;align-items:center;gap:4px;min-height:42px;padding:0 14px;border:1.5px solid var(--pine);border-radius:10px;background:var(--surface);color:var(--pine);font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}.nmfb:hover{background:var(--pine-soft)}.nmfn{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 .oath{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:12px;cursor:pointer}.oath input{width:22px;height:22px;flex:none;margin-top:1px}
 #wz .oath{display:flex!important;flex-direction:row!important;grid-template-columns:none}#wz .oath input{width:22px!important;height:22px!important;min-height:0!important;padding:0!important;border-radius:4px;flex:none;box-shadow:none}#wz .oath span{flex:1;min-width:0}
@@ -2261,6 +2275,7 @@ function renderAuctions(){
 }
 function renderShop(){
   const q=$("#shopQ").value.trim(),gf=$("#growF").value;
+  {const sv=document.querySelector('[data-view="shop"]');if(sv)sv.classList.toggle("searching",!!q)}
   const gOk=p=>gf==="all"||(gf==="wild"?(p.grow||"").startsWith("자연산"):gf==="cert"?isCert(p):!(p.grow||"").startsWith("자연산"));
   const uf=USES.find(u=>u.k===S.use);renderUseBar();
   const hq=healthQ(q),qOk=hay=>hq.hit?(hq.herbs.length>0&&hq.herbs.some(h=>matchQ(h,hay))):matchQ(q,hay);
