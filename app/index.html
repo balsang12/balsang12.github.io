@@ -653,6 +653,7 @@ section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
 .drow .chip{font-size:10px;padding:0 6px}
 .dtool{display:flex;gap:8px;flex-wrap:wrap}
 .dtool input{flex:1 1 260px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.dtool .dsearch{flex:1 1 320px;max-width:none;margin:0;padding:4px 4px 4px 12px}.dtool .dsearch input{flex:1;border:0;padding:8px 0;background:none;min-width:0}.dtool .dsearch .btn{padding:8px 16px}
 .dtool select{flex:1 1 140px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .badges{display:flex;gap:4px;flex-wrap:wrap}
 .paper{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);display:grid;gap:4px;min-width:0}
@@ -982,7 +983,7 @@ label.btn{display:inline-block}
   </div>
   <div class="banner">옛 의서의 기록과 최근 연구를 소개하는 곳입니다. 효능을 보장하거나 치료를 권하는 글이 아닙니다. 연구 대부분은 세포·동물 실험이라 사람에게 같은 효과가 있다는 뜻이 아니며, 몸이 불편하면 한의사·의사와 상의하세요.</div>
   <div class="dtool">
-    <input id="clQ" placeholder="이름·다른 이름·한자로 찾기 (예: 딱주, 桔梗)" aria-label="산야초 사전 검색">
+    <form class="search dsearch" id="clForm" role="search"><input id="clQ" placeholder="이름·다른 이름·한자 (예: 딱주, 桔梗)" aria-label="산야초 사전 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form>
     <select id="dictF" aria-label="구분"><option value="">구분 전체</option><option value="ok">✅ 먹을 수 있어요</option><option value="caution">⚠️ 주의해서 먹어요</option><option value="limit">🍵 정해진 방법으로 먹어요</option><option value="check">🔍 확인 중이에요</option><option value="hanyak">💊 한약재 · 판매 안 해요</option><option value="ban">☠️ 독초 · 먹으면 안 돼요</option></select>
     <select id="dictH" aria-label="자료"><option value="">자료 전체</option><option value="classic">고서 기록 있음</option><option value="papers">최근 연구 있음</option><option value="video">영상 있음</option><option value="season">이번 달 제철</option><option value="look">구별법 있음</option></select>
   </div>
@@ -4320,7 +4321,7 @@ function watchPhotos(name){
     b.querySelectorAll("[data-phdel]").forEach(x=>x.onclick=async()=>{if(!x.dataset.armed){x.dataset.armed=1;x.textContent="한 번 더";setTimeout(()=>{x.textContent="삭제";delete x.dataset.armed},3000);return}await guard(()=>S.db.doc("herbphotos/"+x.dataset.phdel).delete(),"사진을 지웠습니다")})},()=>{const b=box();if(b)b.innerHTML='<div class="meta">사진을 불러오지 못했습니다.</div>'});
 }
 const openClassic=name=>openDict(name);
-$("#clQ").oninput=$("#dictF").onchange=$("#dictH").onchange=()=>{S.dictN=40;renderClassic();requestAnimationFrame(paintAll)};
+$("#clQ").oninput=$("#dictF").onchange=$("#dictH").onchange=()=>{S.dictN=40;renderClassic();requestAnimationFrame(paintAll)};$("#clForm").onsubmit=e=>{e.preventDefault();S.dictN=40;renderClassic();requestAnimationFrame(paintAll);$("#clQ").blur();const r=$("#clGrid");if(r&&window.innerWidth<861)r.scrollIntoView({behavior:"smooth",block:"start"})};
 $("#vList").onclick=()=>{S.dictView="list";renderClassic()};$("#vCard").onclick=()=>{S.dictView="card";renderClassic();requestAnimationFrame(paintAll)};
 $("#dictMore").onclick=()=>{S.dictN+=40;renderClassic();requestAnimationFrame(paintAll)};
 $("#ytForm").onsubmit=async e=>{e.preventDefault();const u=$("#ytUrl").value.trim();if(!YT.test(u)){toast("https://www.youtube.com/@채널이름 형식으로 넣어 주세요");return}
