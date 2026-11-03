@@ -647,14 +647,15 @@ section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
 .drow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:0 6px;align-items:center;width:100%;text-align:left;border:0;background:var(--surface);padding:7px 10px;cursor:pointer;min-width:0}
 .drow:hover{background:var(--bg)}
 .dgrid.few{grid-template-columns:1fr}
-.dfew{display:grid;grid-template-columns:180px minmax(0,1fr);gap:22px;padding:20px;background:var(--surface);align-items:center}
-.dfew>.dth{grid-row:auto;width:180px;height:180px;border:0;padding:0;cursor:pointer;border-radius:16px}
+.dfew{display:grid;grid-template-columns:200px minmax(0,1fr);gap:22px;padding:20px;background:var(--surface);align-items:center}
+.dfp>.dth{grid-row:auto;width:200px;height:200px;border:0;padding:0;cursor:pointer;border-radius:16px}
+.dfp{display:grid;gap:4px;min-width:0}.dcr{font-size:11px;color:var(--muted);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}.dcr a{color:inherit}
 .dfb{display:grid;gap:8px;min-width:0}
 .dfn{border:0;background:none;padding:0;text-align:left;font:inherit;font-size:28px;font-weight:800;line-height:1.25;color:var(--ink);cursor:pointer}.dfn .han{font-weight:400;font-size:20px;margin-left:8px;color:var(--muted)}
 .dfew .al{font-size:16px;color:var(--muted)}
 .dfew .badges{justify-content:flex-start;gap:6px}.dfew .chip{font-size:13px;padding:3px 10px}
 .dfa{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.dfa .btn{font-size:16px;padding:11px 20px;border-radius:12px}
-@media(max-width:600px){.dfew{grid-template-columns:1fr;gap:14px;padding:16px}.dfew>.dth{width:100%;height:auto;aspect-ratio:16/10}.dfn{font-size:26px}.dfa .btn{flex:1 1 0;text-align:center;justify-content:center}}
+@media(max-width:600px){.dfew{grid-template-columns:1fr;gap:14px;padding:16px}.dfp>.dth{width:100%;height:auto;aspect-ratio:4/3}.dfn{font-size:26px}.dfa .btn{flex:1 1 0;text-align:center;justify-content:center}}
 .drow .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .drow .nm .han{font-weight:400;font-size:13px;margin-left:4px}
 .drow .al{grid-column:2;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -4172,6 +4173,9 @@ $("#dictTags").onclick=e=>{const b=e.target.closest("[data-dtag]");if(!b)return;
 /* ---------- 사전 목록 작은 사진 ---------- */
 S.thumbs={};
 const thumbOf=n=>{const t=S.thumbs[hid(n)];return t&&/^data:image\//.test(t.data||"")?t.data:""};
+const bigOf=n=>{const t=S.thumbs[hid(n)];return t&&/^https:\/\/commons\.wikimedia\.org\/wiki\/Special:FilePath\//.test(t.big||"")?t.big:""};
+const dBig=n=>{const b=bigOf(n),t=thumbOf(n);return b?`<img src="${esc(b)}" alt="${esc(n)} 사진" loading="lazy" decoding="async"${t?` style="background:url('${esc(t)}') center/cover"`:""} onerror="this.onerror=null;this.removeAttribute('style');${t?`this.src='${esc(t)}'`:"this.remove()"}">`:dThumb(n)};
+const bigCredit=n=>{const t=S.thumbs[hid(n)];return bigOf(n)&&t.credit?`<div class="dcr">${/^https:\/\/commons\.wikimedia\.org\//.test(t.srcUrl||"")?`<a href="${esc(t.srcUrl)}" target="_blank" rel="noopener">사진 ${esc(t.credit)}</a>`:`사진 ${esc(t.credit)}`}</div>`:""};
 const dThumb=n=>{const t=thumbOf(n);return t?`<img src="${esc(t)}" alt="" loading="lazy">`:`<canvas data-dname="${esc(n)}" aria-hidden="true"></canvas>`};
 function makeThumb(data){return new Promise((res,rej)=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(im.width,im.height),c=document.createElement("canvas");c.width=c.height=120;c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,120,120);res(c.toDataURL("image/jpeg",.72))};im.src=data})}
 async function saveThumb(herb,data,force){if(!S.owner||!S.db||!herb||!/^data:image\//.test(data||""))return false;if(!force&&S.thumbs[hid(herb)]&&S.thumbs[hid(herb)].src!=="wiki")return false;
@@ -4211,7 +4215,7 @@ function renderClassic(){
   if(asList){const order=["ok","caution","limit","check","hanyak","ban"];const few=list.length<=3;
     $("#dList").innerHTML=list.length?order.map(st=>{const g=list.filter(x=>x.st===st);if(!g.length)return "";return `<div class="dgroup"><span>${ST_LABEL[st]}</span><span class="num">${g.length}가지</span></div><div class="dgrid${few?" few":""}">`+g.map(x=>{const c=classicOf(x.name),i=infoOf(x.name),np=i?.modern?.papers?.length||0,nv=vidsOf(x.name).length;
       if(few){const nm=esc(x.name),inS=(i?.id?.season?.collect||[]).includes(new Date().getMonth()+1);
-        return `<div class="dfew"><button type="button" class="dth" data-dict="${nm}" aria-label="${nm} 자세히">${dThumb(x.name)}</button><div class="dfb"><button type="button" class="dfn" data-dict="${nm}">${nm}${hanOf(x.name)?`<span class="han">${esc(hanOf(x.name))}</span>`:""}</button>${x.alias.length?`<div class="al">${esc(x.alias.join(", "))}</div>`:""}<div class="badges">${st==="ban"?'<span class="chip hot">독초</span>':""}${inS&&st!=="ban"?'<span class="chip ok">이번 달 제철</span>':""}${i?.lookalikes?.length?'<span class="chip hot">구별법</span>':""}${c&&st!=="ban"?'<span class="chip gold">고서</span>':""}${np?`<span class="chip ok">연구 ${np}</span>`:""}${nv?`<span class="chip hot">영상 ${nv}</span>`:""}</div><div class="dfa"><button type="button" class="btn sm primary" data-dict="${nm}">자세히 보기</button>${st==="ban"||st==="hanyak"?"":`<button type="button" class="btn sm" data-mkt="${nm}">마켓에서 찾기</button>`}</div></div></div>`}
+        return `<div class="dfew"><div class="dfp"><button type="button" class="dth" data-dict="${nm}" aria-label="${nm} 자세히">${dBig(x.name)}</button>${bigCredit(x.name)}</div><div class="dfb"><button type="button" class="dfn" data-dict="${nm}">${nm}${hanOf(x.name)?`<span class="han">${esc(hanOf(x.name))}</span>`:""}</button>${x.alias.length?`<div class="al">${esc(x.alias.join(", "))}</div>`:""}<div class="badges">${st==="ban"?'<span class="chip hot">독초</span>':""}${inS&&st!=="ban"?'<span class="chip ok">이번 달 제철</span>':""}${i?.lookalikes?.length?'<span class="chip hot">구별법</span>':""}${c&&st!=="ban"?'<span class="chip gold">고서</span>':""}${np?`<span class="chip ok">연구 ${np}</span>`:""}${nv?`<span class="chip hot">영상 ${nv}</span>`:""}</div><div class="dfa"><button type="button" class="btn sm primary" data-dict="${nm}">자세히 보기</button>${st==="ban"||st==="hanyak"?"":`<button type="button" class="btn sm" data-mkt="${nm}">마켓에서 찾기</button>`}</div></div></div>`}
       return `<button class="drow" type="button" data-dict="${esc(x.name)}"><span class="dth">${dThumb(x.name)}</span><span class="nm">${esc(x.name)}${hanOf(x.name)?`<span class="han">${esc(hanOf(x.name))}</span>`:""}</span><div class="badges">${st==="ban"?'<span class="chip hot">독초</span>':""}${S.hmeta[hid(x.name)]?.review?.length?'<span class="chip ok">검수</span>':""}${i?.lookalikes?.length?'<span class="chip hot">구별법</span>':""}${c&&st!=="ban"?'<span class="chip gold">고서</span>':""}${np?`<span class="chip ok">연구 ${np}</span>`:""}${nv?`<span class="chip hot">영상 ${nv}</span>`:""}</div><span class="al">${esc(x.alias.length?x.alias.join(", "):x.cat)}</span></button>`}).join("")+"</div>"}).join(""):`<div class="empty">${q?`"${esc(q)}"에 `:"고른 조건에 "}맞는 품목이 없습니다.</div>`;
     $("#dictMore").hidden=true;}
   const shown=asList?[]:list.slice(0,S.dictN);
