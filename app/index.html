@@ -646,6 +646,16 @@ section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
 .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
 .drow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:0 6px;align-items:center;width:100%;text-align:left;border:0;background:var(--surface);padding:7px 10px;cursor:pointer;min-width:0}
 .drow:hover{background:var(--bg)}
+.dgrid.few{grid-template-columns:1fr}
+.dfew{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;padding:14px;background:var(--surface);align-items:start}
+.dfew>.dth{grid-row:auto;width:96px;height:96px;border:0;padding:0;cursor:pointer;border-radius:12px}
+.dfb{display:grid;gap:5px;min-width:0}
+.dfn{border:0;background:none;padding:0;text-align:left;font:inherit;font-size:18px;font-weight:800;color:var(--ink);cursor:pointer}.dfn .han{font-weight:400;font-size:15px;margin-left:6px;color:var(--muted)}
+.dfew .al{font-size:13px;color:var(--muted)}
+.dfew .badges{justify-content:flex-start}
+.dsm{margin:2px 0 0;font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dfa{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+@media(max-width:480px){.dfew{grid-template-columns:72px minmax(0,1fr);gap:12px;padding:12px}.dfew>.dth{width:72px;height:72px}}
 .drow .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .drow .nm .han{font-weight:400;font-size:13px;margin-left:4px}
 .drow .al{grid-column:2;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -4199,8 +4209,10 @@ function renderClassic(){
   $("#dictSum").textContent=`${HERBS.length}가지 중 ${done}가지 자료 정리됨 · 고서 기록 ${HERBS.filter(x=>classicOf(x.name)).length}가지`;
   $("#dictCount").textContent=`${list.length}가지 표시 중`;
   const asList=true;$("#dList").hidden=false;$("#clGrid").hidden=true;
-  if(asList){const order=["ok","caution","limit","check","hanyak","ban"];
-    $("#dList").innerHTML=list.length?order.map(st=>{const g=list.filter(x=>x.st===st);if(!g.length)return "";return `<div class="dgroup"><span>${ST_LABEL[st]}</span><span class="num">${g.length}가지</span></div><div class="dgrid">`+g.map(x=>{const c=classicOf(x.name),i=infoOf(x.name),np=i?.modern?.papers?.length||0,nv=vidsOf(x.name).length;
+  if(asList){const order=["ok","caution","limit","check","hanyak","ban"];const few=list.length<=3;
+    $("#dList").innerHTML=list.length?order.map(st=>{const g=list.filter(x=>x.st===st);if(!g.length)return "";return `<div class="dgroup"><span>${ST_LABEL[st]}</span><span class="num">${g.length}가지</span></div><div class="dgrid${few?" few":""}">`+g.map(x=>{const c=classicOf(x.name),i=infoOf(x.name),np=i?.modern?.papers?.length||0,nv=vidsOf(x.name).length;
+      if(few){const nm=esc(x.name),inS=(i?.id?.season?.collect||[]).includes(new Date().getMonth()+1);
+        return `<div class="dfew"><button type="button" class="dth" data-dict="${nm}" aria-label="${nm} 자세히">${dThumb(x.name)}</button><div class="dfb"><button type="button" class="dfn" data-dict="${nm}">${nm}${hanOf(x.name)?`<span class="han">${esc(hanOf(x.name))}</span>`:""}</button>${x.alias.length?`<div class="al">${esc(x.alias.join(", "))}</div>`:""}<div class="badges">${st==="ban"?'<span class="chip hot">독초</span>':""}${inS&&st!=="ban"?'<span class="chip ok">이번 달 제철</span>':""}${i?.lookalikes?.length?'<span class="chip hot">구별법</span>':""}${c&&st!=="ban"?'<span class="chip gold">고서</span>':""}${np?`<span class="chip ok">연구 ${np}</span>`:""}${nv?`<span class="chip hot">영상 ${nv}</span>`:""}</div><div class="dfa"><button type="button" class="btn sm primary" data-dict="${nm}">자세히 보기</button>${st==="ban"||st==="hanyak"?"":`<button type="button" class="btn sm" data-mkt="${nm}">마켓에서 찾기</button>`}</div></div></div>`}
       return `<button class="drow" type="button" data-dict="${esc(x.name)}"><span class="dth">${dThumb(x.name)}</span><span class="nm">${esc(x.name)}${hanOf(x.name)?`<span class="han">${esc(hanOf(x.name))}</span>`:""}</span><div class="badges">${st==="ban"?'<span class="chip hot">독초</span>':""}${S.hmeta[hid(x.name)]?.review?.length?'<span class="chip ok">검수</span>':""}${i?.lookalikes?.length?'<span class="chip hot">구별법</span>':""}${c&&st!=="ban"?'<span class="chip gold">고서</span>':""}${np?`<span class="chip ok">연구 ${np}</span>`:""}${nv?`<span class="chip hot">영상 ${nv}</span>`:""}</div><span class="al">${esc(x.alias.length?x.alias.join(", "):x.cat)}</span></button>`}).join("")+"</div>"}).join(""):`<div class="empty">${q?`"${esc(q)}"에 `:"고른 조건에 "}맞는 품목이 없습니다.</div>`;
     $("#dictMore").hidden=true;}
   const shown=asList?[]:list.slice(0,S.dictN);
