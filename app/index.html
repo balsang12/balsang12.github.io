@@ -654,6 +654,7 @@ section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
 .dtool{display:flex;gap:8px;flex-wrap:wrap}
 .dtool input{flex:1 1 260px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .dtool .dsearch{flex:1 1 320px;max-width:none;margin:0;padding:4px 4px 4px 12px}.dtool .dsearch input{flex:1;border:0;padding:8px 0;background:none;min-width:0}.dtool .dsearch .btn{padding:8px 16px}
+.dhint{flex:1 1 100%;margin:-2px 2px 0;font-size:13px;color:var(--muted,#6b6b6b)}
 .dtool select{flex:1 1 140px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .badges{display:flex;gap:4px;flex-wrap:wrap}
 .paper{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);display:grid;gap:4px;min-width:0}
@@ -984,6 +985,7 @@ label.btn{display:inline-block}
   <div class="banner">옛 의서의 기록과 최근 연구를 소개하는 곳입니다. 효능을 보장하거나 치료를 권하는 글이 아닙니다. 연구 대부분은 세포·동물 실험이라 사람에게 같은 효과가 있다는 뜻이 아니며, 몸이 불편하면 한의사·의사와 상의하세요.</div>
   <div class="dtool">
     <form class="search dsearch" id="clForm" role="search"><input id="clQ" placeholder="이름·다른 이름·한자 (예: 딱주, 桔梗)" aria-label="산야초 사전 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form>
+    <p class="dhint">치는 대로 바로 찾아져요 · 초성도 돼요 (ㄷㄹㅈ→도라지)</p>
     <select id="dictF" aria-label="구분" hidden><option value="">구분 전체</option><option value="ok">✅ 먹을 수 있어요</option><option value="caution">⚠️ 주의해서 먹어요</option><option value="limit">🍵 정해진 방법으로 먹어요</option><option value="check">🔍 확인 중이에요</option><option value="hanyak">💊 한약재 · 판매 안 해요</option><option value="ban">☠️ 독초 · 먹으면 안 돼요</option></select>
     <select id="dictH" aria-label="자료" hidden><option value="">자료 전체</option><option value="classic">고서 기록 있음</option><option value="papers">최근 연구 있음</option><option value="video">영상 있음</option><option value="season">이번 달 제철</option><option value="look">구별법 있음</option></select>
   </div>
@@ -4183,9 +4185,11 @@ function fillClHome(){const el=$("#clHome");if(!el)return;
   const pick=HOME_PICK.filter(x=>HERBS.some(y=>y.name===x)).slice(0,n);
   el.innerHTML=pick.map(x=>`<button type="button" data-dict="${esc(x)}">${esc(x)}${hanOf(x)?`<span class="han">${esc(hanOf(x))}</span>`:""}</button>`).join("")+`<button type="button" class="clmore" data-go="herbs">더 보기<span class="num">${HERBS.length}가지</span></button>`}
 addEventListener("resize",()=>{clearTimeout(fillClHome.t);fillClHome.t=setTimeout(fillClHome,120)});
+const CHO="ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ",choOf=s=>[...s].map(c=>{const n=c.charCodeAt(0)-44032;return n>=0&&n<11172?CHO[Math.floor(n/588)]:c}).join("");
+function choHit(t,q){if(t.includes(q))return true;if(!/[ㄱ-ㅎ]/.test(q))return false;const a=choOf(t),b=choOf(q).replace(/\s+/g,"");return a.replace(/\s+/g,"").includes(b)}
 function renderClassic(){
   const q=($("#clQ").value||"").trim(),f=$("#dictF").value,hf=$("#dictH").value;
-  let list=HERBS.filter(x=>(!f||x.st===f)&&(!q||[x.name,...x.alias,x.cat,hanOf(x.name),"사삼"].filter(t=>t!=="사삼"||x.name==="잔대").some(t=>t&&t.includes(q)))&&(!hf||(hf==="classic"?!!classicOf(x.name):hf==="papers"?!!infoOf(x.name)?.modern?.papers?.length:hf==="season"?(infoOf(x.name)?.id?.season?.collect||[]).includes(new Date().getMonth()+1):hf==="look"?!!infoOf(x.name)?.lookalikes?.length:vidsOf(x.name).length>0)));
+  let list=HERBS.filter(x=>(!f||x.st===f)&&(!q||[x.name,...x.alias,x.cat,hanOf(x.name),"사삼"].filter(t=>t!=="사삼"||x.name==="잔대").some(t=>t&&choHit(t,q)))&&(!hf||(hf==="classic"?!!classicOf(x.name):hf==="papers"?!!infoOf(x.name)?.modern?.papers?.length:hf==="season"?(infoOf(x.name)?.id?.season?.collect||[]).includes(new Date().getMonth()+1):hf==="look"?!!infoOf(x.name)?.lookalikes?.length:vidsOf(x.name).length>0)));
   if(Object.values(S.dtag).some(Boolean)){for(let k=list.length-1;k>=0;k--)if(!tagHit(list[k]))list.splice(k,1)}
   renderDictTags();
   {const pi=n=>{const i=DICT_PIN.indexOf(n);return i<0?99:i};list.sort((a,b)=>pi(a.name)-pi(b.name))}
