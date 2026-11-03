@@ -4229,7 +4229,7 @@ function renderClassic(){
   const ch=S.site.ytChannel;$("#ytChannel").hidden=!ch;if(ch)$("#ytChannel").href=safeUrl(ch);
   $("#ytForm").hidden=!S.owner;if(S.owner&&document.activeElement?.id!=="ytUrl")$("#ytUrl").value=ch||"";
 }
-const srcList=a=>Array.isArray(a)&&a.length?`<ul class="srcs">${a.slice(0,6).map(s=>safeUrl(s.url)?`<li><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">${esc(s.title||s.url)}</a></li>`:`<li>${esc(s.title||"")}</li>`).join("")}</ul>`:"";
+const srcList=a0=>{const a=Array.isArray(a0)?a0.filter(s=>!/akorn\.bab2min\.pe\.kr/.test(s?.url||"")):[];return srcList0(a)};const srcList0=a=>Array.isArray(a)&&a.length?`<ul class="srcs">${a.slice(0,6).map(s=>safeUrl(s.url)?`<li><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">${esc(s.title||s.url)}</a></li>`:`<li>${esc(s.title||"")}</li>`).join("")}</ul>`:"";
 const TYPE_CLS={"리뷰":"ok","사람 대상":"ok","동물 실험":"gold","세포 실험":"gold"};
 function openDict(name){
   const x=HERBS.find(v=>v.name===name);if(!x)return;openA=null;S.openCl=name;
