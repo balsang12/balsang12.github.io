@@ -3599,7 +3599,8 @@ function renderSell(){
      <label class="oath"><input type="checkbox" id="wzOath" ${WZ.oath?"checked":""}><span>${oathText(WZ.grow)}</span></label>
      ${auc_?`<label class="fld"><span>캔 날짜</span><input id="wzDate" type="date" value="${WZ.date}"></label>`:""}
      <div class="fld"><span style="display:flex;justify-content:space-between;align-items:center">설명 (선택)<button type="button" class="mic" id="wzMic">🎤 말로 쓰기</button></span><textarea id="wzDesc" placeholder="${auc_?"캔 곳의 환경, 잔뿌리·뇌두 상태, 보관 방법":"키운 방법, 손질 상태, 보관법"}">${esc(WZ.desc)}</textarea></div>
-     <p class="meta" style="margin:0">“당뇨에 좋다” 같은 효능 표현은 법으로 쓸 수 없습니다. 크기·모양·캔 과정 위주로 적어 주세요.</p>`;
+     <p class="meta" style="margin:0">“당뇨에 좋다” 같은 효능 표현은 법으로 쓸 수 없습니다. 크기·모양·캔 과정 위주로 적어 주세요.</p>
+     ${findHerb(WZ.herb?.name||WZ.item)?`<label class="oath dictshare"><input type="checkbox" id="wzDict" ${WZ.dict!==false?"checked":""}><span>📖 대표 사진과 산지·${WZ.form==="생물"?"캔 달":"품목"}을 <b>산야초 사전</b>에도 올려요. 사진 아래에 상호가 함께 나가요.</span></label>`:""}`;
     foot=`<button class="bigbtn ${auc_?"gold":"pri"}" type="button" id="wzSubmit">${auc_?(feeFor(S.uid,s)?`등록료 ${won(feeFor(S.uid,s))} 테스트 결제하고 올리기`:"무료로 제안 판매에 올리기"):"올리기"}</button>`;
   }
   el.innerHTML=top+body+`<div class="wz-foot">${foot}</div>`;
@@ -3652,7 +3653,7 @@ function wzBind(){
   on("wzProofPh","change",async e=>{const f=e.target.files[0];if(!f)return;try{wzKeep();WZ.proofPh=await shrinkPhoto(f);renderSell()}catch(x){toast("사진을 읽지 못했습니다")}});
   on("wzTr","click",async()=>{wzKeep();const b=$("#wzTr");b.disabled=true;b.textContent="번역하는 중…";const r=await trTitle(WZ.name,WZ.herb?.name||WZ.item);if(r){WZ.titleEn=r.en;WZ.titleZh=r.zh;WZ.titleJa=r.ja;renderSell()}else{toast("번역하지 못했습니다. 직접 적어 주세요");b.disabled=false;b.textContent="상품 이름으로 자동 번역"}});
   on("wzProofDel","click",()=>{wzKeep();WZ.proofPh="";renderSell()});
-  on("wzOath","change",e=>{WZ.oath=e.target.checked});
+  on("wzOath","change",e=>{WZ.oath=e.target.checked});on("wzDict","change",e=>{WZ.dict=e.target.checked});
   on("wzMore","change",async e=>{WZ.more=(WZ.more||[]).concat(await pickMore(e.target,(WZ.more||[]).length));renderSell()});document.querySelectorAll("[data-wzxdel]").forEach(b=>b.onclick=()=>{WZ.more.splice(+b.dataset.wzxdel,1);renderSell()});
   on("wzPermit","change",()=>{wzKeep();renderSell()});
   on("wzSite","change",()=>{wzKeep();renderSell()});
@@ -3690,6 +3691,7 @@ async function wzSubmit(){if(suspended(S.uid)){toast("직거래 유도 신고로
     for(const m of WZ.more){const d={item:n,name:WZ.name.includes(WZ.unit)?WZ.name.replace(WZ.unit,m.unit):`${WZ.name} ${m.unit}`,cat:wzCat(),form:WZ.form,unit:m.unit,price:+m.price,stock:+m.stock,region:WZ.region,grow:WZ.grow,permit:WZ.permit,cert:WZ.certNo,desc:WZ.desc,proofRef:S.lastProofRef||"",siteRef:S.lastSite||"",later:true};
       const e=prodCheck(d);if(e){toast(`${m.unit}: ${e}`);continue}
       if(await prodAdd(d,WZ.photo))WZ.doneCount++}}
+  if(ok&&WZ.dict!==false&&!S.acting)dictShare(n,WZ.photo,WZ.region,WZ.grow,WZ.form);
   if(ok){if(!S.acting)guard(()=>S.db.doc("sellers/"+S.uid).update({last:{grow:WZ.grow,permit:WZ.permit,region:WZ.region.slice(0,40)}}));WZ.done=true;WZ.doneAuto=auto;renderSell();window.scrollTo(0,0)}
   else{btn.disabled=false;btn.textContent="다시 올리기"}
 }
@@ -4269,8 +4271,8 @@ function openDict(name){
   const prep=!ban&&(idn.prep||idn.store||idn.eat||idn.grade)?`<div class="sec"><h3>고르는 법·손질·보관</h3><dl class="facts">${idn.grade?`<dt>고르는 법</dt><dd>${esc(idn.grade)}</dd>`:""}${idn.prep?`<dt>손질</dt><dd>${esc(idn.prep)}</dd>`:""}${idn.store?`<dt>보관</dt><dd>${esc(idn.store)}</dd>`:""}${idn.eat?(x.st==="hanyak"?`<dt>전통적 쓰임</dt><dd>${esc(idn.eat)}<div class="meta" style="margin-top:4px">한약재로 분류되어 식품으로는 판매하지 않습니다. 드시려면 한의사와 상의하세요.</div></dd>`:`<dt>먹는 법</dt><dd>${esc(idn.eat)}</dd>`):""}</dl></div>`:"";
   const meta=S.hmeta[hid(name)]||{},rv=Array.isArray(meta.review)?meta.review:[],chg=Array.isArray(meta.changes)?meta.changes:[];
   const isSeller=!!S.sellers[S.uid];
-  const fieldHTML=`<div class="sec field-notes" id="fnSec" hidden><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">농부·심마니가 직접 남긴 자료</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
-    ${S.uid?`<details${isSeller?"":" hidden"}><summary class="meta" style="cursor:pointer">내 현장 기록 남기기</summary><form class="panel" id="fnForm" style="padding:12px;margin-top:8px">
+  const fieldHTML=`<div class="sec field-notes" id="fnSec" hidden><h3>현장 기록 <span class="meta" style="font-weight:400;font-size:13px">농마니 판매자들이 상품을 올리며 남긴 산지·캔 달</span></h3><div id="fnBox"><div class="meta">불러오는 중…</div></div>
+    ${S.uid?`<details hidden><summary class="meta" style="cursor:pointer">내 현장 기록 남기기</summary><form class="panel" id="fnForm" style="padding:12px;margin-top:8px">
       <div class="field"><label for="fnKind">무엇을 남길까요</label><select id="fnKind"><option value="name">우리 지역에서 부르는 이름</option><option value="harvest">우리 지역에서 실제로 캐는 달</option></select></div>
       <div class="field" id="fnNameWrap"><label for="fnName">부르는 이름</label><input id="fnName" maxlength="20" placeholder="예: 딱주"></div>
       <div class="field"><label for="fnRegion">지역</label><input id="fnRegion" maxlength="30" placeholder="예: 경북 봉화" value="${esc(S.sellers[S.uid]?.region||"")}"></div>
@@ -4317,6 +4319,16 @@ function openDict(name){
   if(!dlg.open)dlg.showModal();dlg.scrollTop=0;
 }
 let fnUnsub=null;
+/* 판매자가 상품을 올리면 사전에 사진·산지·캔 달이 자동으로 쌓입니다 (판매자당 품목별 사진 2장까지) */
+async function dictShare(herb,photo,region,grow,form){try{
+  if(!S.db||!S.uid||!findHerb(herb))return;const shop=shopName(S.uid),reg=String(region||"").trim().slice(0,30);
+  if(/^data:image\//.test(photo||"")){const s=await S.db.collection("herbphotos").where("herb","==",herb).limit(60).get();
+    if(s.docs.filter(d=>d.data().by===S.uid).length<2)await S.db.collection("herbphotos").add({herb,data:photo,part:"전체 모습",credit:shop.slice(0,40),caption:[reg,(grow||"").split(" ")[0]].filter(Boolean).join(" · ").slice(0,80),by:S.uid,shop,source:"농마니 판매자",consent:true,status:"approved",createdAt:Date.now()})}
+  if(reg&&form==="생물"){const m=new Date().getMonth()+1,s=await S.db.collection("fieldnotes").where("herb","==",herb).limit(200).get();
+    const mine=s.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.by===S.uid&&x.kind==="harvest"&&x.region===reg);
+    if(mine){if(!(mine.months||[]).includes(m))await S.db.doc("fieldnotes/"+mine.id).update({months:[...(mine.months||[]),m].sort((a,b)=>a-b)})}
+    else await S.db.collection("fieldnotes").add({herb,kind:"harvest",value:"",months:[m],region:reg,memo:(grow||"").split(" ")[0].slice(0,20),by:S.uid,shop,createdAt:Date.now()})}
+}catch(e){console.warn("dictShare",e)}}
 function watchField(name){
   try{fnUnsub&&fnUnsub()}catch(_){}fnUnsub=null;
   const box=()=>$("#fnBox");
@@ -4326,10 +4338,10 @@ function watchField(name){
     const l=s.docs.map(d=>({id:d.id,...d.data()}));
     const names={};l.filter(x=>x.kind==="name"&&x.value).forEach(x=>{(names[x.value]=names[x.value]||new Set()).add(x.region)});
     const hv=l.filter(x=>x.kind==="harvest"&&Array.isArray(x.months)).sort((a,b)=>a.region.localeCompare(b.region));
-    sec(Object.keys(names).length||hv.length||mine()||(S.owner&&l.length));
+    sec(Object.keys(names).length||hv.length||(S.owner&&l.length));
     b.innerHTML=(Object.keys(names).length?`<div><div class="eyebrow" style="margin-bottom:6px">지역에서 부르는 이름</div><div class="fn-names">${Object.entries(names).map(([n,rs])=>`<span>${esc(n)}<small>${esc([...rs].join(", "))}</small></span>`).join("")}</div></div>`:"")+
       (hv.length?`<div><div class="eyebrow" style="margin:8px 0 6px">지역별 실제 채취 달</div><div style="overflow-x:auto"><table class="fn-tbl num"><tr><th>지역 · 기록한 곳</th>${Array.from({length:12},(_,k)=>`<th>${k+1}</th>`).join("")}</tr>${hv.map(x=>`<tr><td>${esc(x.region)} · ${esc(x.shop||"")}${x.memo?`<div class="meta" style="font-size:11px">${esc(x.memo)}</div>`:""}</td>${Array.from({length:12},(_,k)=>`<td class="${x.months.includes(k+1)?"on":""}"></td>`).join("")}</tr>`).join("")}</table></div></div>`:"")||
-      '<div class="meta">아직 현장 기록이 없습니다. 이 약초를 캐시거나 기르신다면 지역 이름이나 실제로 캐는 달을 남겨 주세요. (손님에게는 기록이 생기면 보입니다)</div>';
+      '';
     if(S.owner){const del=l.map(x=>`<button class="btn sm danger" type="button" data-fndel="${esc(x.id)}">${esc(x.kind==="name"?x.value:x.region+" 채취")} 지우기</button>`).join("");if(del)b.insertAdjacentHTML("beforeend",`<details><summary class="meta" style="cursor:pointer">현장 기록 정리 (운영자)</summary><div class="actions" style="margin-top:6px">${del}</div></details>`);
       b.querySelectorAll("[data-fndel]").forEach(x=>x.onclick=()=>guard(()=>S.db.doc("fieldnotes/"+x.dataset.fndel).delete(),"현장 기록을 지웠습니다"))}
   },()=>sec(false));
