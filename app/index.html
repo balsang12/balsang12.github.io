@@ -631,6 +631,7 @@ section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
 .lk-card.bad{border:1.5px solid var(--berry);background:var(--berry-soft)}
 .lk-card ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14px}
 .sec{display:grid;gap:8px}
+.srcfold>summary{cursor:pointer;color:var(--muted);font-size:13px;padding:6px 0}.srcfold[open]>summary{margin-bottom:6px}
 .clh{font-size:18px;margin:0 0 4px}.clh .clsrc{font-size:13px;font-weight:400;color:var(--muted);margin-left:6px}
 .sec>h3{font-size:18px}
 .faq details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--surface)}
@@ -3600,7 +3601,7 @@ function renderSell(){
      ${auc_?`<label class="fld"><span>캔 날짜</span><input id="wzDate" type="date" value="${WZ.date}"></label>`:""}
      <div class="fld"><span style="display:flex;justify-content:space-between;align-items:center">설명 (선택)<button type="button" class="mic" id="wzMic">🎤 말로 쓰기</button></span><textarea id="wzDesc" placeholder="${auc_?"캔 곳의 환경, 잔뿌리·뇌두 상태, 보관 방법":"키운 방법, 손질 상태, 보관법"}">${esc(WZ.desc)}</textarea></div>
      <p class="meta" style="margin:0">“당뇨에 좋다” 같은 효능 표현은 법으로 쓸 수 없습니다. 크기·모양·캔 과정 위주로 적어 주세요.</p>
-     ${findHerb(WZ.herb?.name||WZ.item)?`<label class="oath dictshare"><input type="checkbox" id="wzDict" ${WZ.dict!==false?"checked":""}><span>📖 상품 사진(품목마다 4장까지)과 산지${WZ.form==="생물"?"·캔 달":""}을 <b>산야초 사전</b>에도 올려요. 사진 아래에 상호가 함께 나가요.</span></label>`:""}`;
+     ${findHerb(WZ.herb?.name||WZ.item)&&DICT_FORMS.includes(WZ.form)?`<label class="oath dictshare"><input type="checkbox" id="wzDict" ${WZ.dict!==false?"checked":""}><span>📖 상품 사진(품목마다 4장까지)과 산지${WZ.form==="생물"?"·캔 달":""}을 <b>산야초 사전</b>에도 올려요. 사진 아래에 상호가 함께 나가요.</span></label>`:""}`;
     foot=`<button class="bigbtn ${auc_?"gold":"pri"}" type="button" id="wzSubmit">${auc_?(feeFor(S.uid,s)?`등록료 ${won(feeFor(S.uid,s))} 테스트 결제하고 올리기`:"무료로 제안 판매에 올리기"):"올리기"}</button>`;
   }
   el.innerHTML=top+body+`<div class="wz-foot">${foot}</div>`;
@@ -3691,7 +3692,7 @@ async function wzSubmit(){if(suspended(S.uid)){toast("직거래 유도 신고로
     for(const m of WZ.more){const d={item:n,name:WZ.name.includes(WZ.unit)?WZ.name.replace(WZ.unit,m.unit):`${WZ.name} ${m.unit}`,cat:wzCat(),form:WZ.form,unit:m.unit,price:+m.price,stock:+m.stock,region:WZ.region,grow:WZ.grow,permit:WZ.permit,cert:WZ.certNo,desc:WZ.desc,proofRef:S.lastProofRef||"",siteRef:S.lastSite||"",later:true};
       const e=prodCheck(d);if(e){toast(`${m.unit}: ${e}`);continue}
       if(await prodAdd(d,WZ.photo))WZ.doneCount++}}
-  if(ok&&WZ.dict!==false&&!S.acting)dictShare(n,[WZ.photo,...(WZ.more||[])],WZ.region,WZ.grow,WZ.form);
+  if(ok&&WZ.dict!==false&&!S.acting&&DICT_FORMS.includes(WZ.form))dictShare(n,[WZ.photo,...(WZ.more||[])],WZ.region,WZ.grow,WZ.form);
   if(ok){if(!S.acting)guard(()=>S.db.doc("sellers/"+S.uid).update({last:{grow:WZ.grow,permit:WZ.permit,region:WZ.region.slice(0,40)}}));WZ.done=true;WZ.doneAuto=auto;renderSell();window.scrollTo(0,0)}
   else{btn.disabled=false;btn.textContent="다시 올리기"}
 }
@@ -4263,7 +4264,7 @@ function openDict(name){
   const q=encodeURIComponent(name),qs=encodeURIComponent((idn.sci||"").split(" ").slice(0,2).join(" "));
   const photos=`<div class="sec"><div class="gal" id="galBox"><div class="meta">사진을 불러오는 중…</div></div>
     <div class="extl"><a class="btn sm" href="https://www.google.com/search?tbm=isch&q=${q}${qs?"+"+qs:""}" target="_blank" rel="noopener">사진 더 보기 ↗</a><a class="btn sm" href="https://ko.wikipedia.org/wiki/${q}" target="_blank" rel="noopener">위키백과 ↗</a></div>
-    ${(S.owner||S.sellers[S.uid])?`<details><summary class="meta" style="cursor:pointer">사진 올리기 (판매자·운영자)</summary><form class="panel goldp" id="phForm" style="padding:12px;margin-top:8px"><div class="row2"><div class="field"><label for="phPart">무엇을 찍었나요</label><select id="phPart"><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option><option>비슷한 식물</option></select></div><div class="field"><label for="phCredit">찍은 사람</label><input id="phCredit" maxlength="40" placeholder="예: 지리산 박씨네" value="${esc(S.sellers[S.uid]?.shopName||"")}"></div></div><p class="meta" style="margin:0">잘 찍는 법: 손바닥이나 자를 함께 넣고, 잎 앞뒷면·줄기 단면을 따로, 헷갈리는 독초와는 같은 각도로 나란히 찍어 주세요.</p><div class="field"><label for="phFile">사진 (직접 찍은 것만)</label><input id="phFile" type="file" accept="image/*"></div><div class="field"><label for="phCap">설명 (선택)</label><input id="phCap" maxlength="80" placeholder="예: 잎 뒷면, 5월 강원 인제"></div><label style="display:flex;gap:8px;align-items:flex-start;font-size:13px"><input type="checkbox" id="phConsent" style="margin-top:4px"> <span>직접 찍은 사진이며, 운영자 확인 뒤 공개 산야초 사전에 이름과 함께 실리는 것에 동의합니다.</span></label><button class="btn primary" type="submit">사진 올리기</button></form></details>`:""}</div>`;
+    ${S.owner?`<details><summary class="meta" style="cursor:pointer">사진 올리기 (운영자)</summary><form class="panel goldp" id="phForm" style="padding:12px;margin-top:8px"><div class="row2"><div class="field"><label for="phPart">무엇을 찍었나요</label><select id="phPart"><option>전체 모습</option><option>잎</option><option>꽃</option><option>줄기</option><option>뿌리</option><option>열매</option><option>손질한 모습</option><option>비슷한 식물</option></select></div><div class="field"><label for="phCredit">찍은 사람</label><input id="phCredit" maxlength="40" placeholder="예: 지리산 박씨네" value="${esc(S.sellers[S.uid]?.shopName||"")}"></div></div><p class="meta" style="margin:0">잘 찍는 법: 손바닥이나 자를 함께 넣고, 잎 앞뒷면·줄기 단면을 따로, 헷갈리는 독초와는 같은 각도로 나란히 찍어 주세요.</p><div class="field"><label for="phFile">사진 (직접 찍은 것만)</label><input id="phFile" type="file" accept="image/*"></div><div class="field"><label for="phCap">설명 (선택)</label><input id="phCap" maxlength="80" placeholder="예: 잎 뒷면, 5월 강원 인제"></div><label style="display:flex;gap:8px;align-items:flex-start;font-size:13px"><input type="checkbox" id="phConsent" style="margin-top:4px"> <span>직접 찍은 사진이며, 운영자 확인 뒤 공개 산야초 사전에 이름과 함께 실리는 것에 동의합니다.</span></label><button class="btn primary" type="submit">사진 올리기</button></form></details>`:""}</div>`;
   const facts=(idn.sci||idn.family||idn.parts||idn.habitat||idn.season)?`<dl class="facts">${idn.sci?`<dt>학명</dt><dd><i>${esc(idn.sci)}</i></dd>`:""}${idn.family?`<dt>과</dt><dd>${esc(idn.family)}</dd>`:""}${idn.eng?`<dt>영어 이름</dt><dd>${esc(idn.eng)}</dd>`:""}${idn.parts&&!ban?`<dt>먹는 부위</dt><dd>${esc(idn.parts)}</dd>`:""}${idn.habitat?`<dt>자라는 곳</dt><dd>${esc(idn.habitat)}</dd>`:""}${idn.season?`<dt>${ban?"자라는 때":"제철"}</dt><dd><div class="months num">${mon(idn.season.collect,"on")}</div>${idn.season.flower?.length?`<div class="months num">${mon(idn.season.flower,"fl")}</div><div class="meta" style="font-size:11px">초록: ${ban?"싹이 나는 때":"채취 시기"} · 노랑: 꽃 피는 때</div>`:""}</dd>`:""}${idn.taste&&!ban?`<dt>맛과 향</dt><dd>${esc(idn.taste)}</dd>`:""}</dl>`:"";
   const lkFields=[["leaf","잎"],["stem","줄기"],["flower","꽃"],["root","뿌리"],["fruit","열매"],["smell","냄새"]];
   const look=idn.look&&lkFields.some(([k])=>idn.look[k])?`<div class="sec"><h3>생김새</h3><div class="looks">${lkFields.filter(([k])=>idn.look[k]).map(([k,l])=>`<div><b>${l}</b><span>${esc(idn.look[k])}</span></div>`).join("")}</div>${srcList(idn.sources)}</div>`:"";
@@ -4289,7 +4290,8 @@ function openDict(name){
   const faqHTML=faq.length?`<div class="sec faq"><h3>자주 묻는 질문</h3>${faq.map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div>`:"";
   dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button>
    <div style="padding-right:40px"><div class="eyebrow">${esc(x.cat)} · 산야초 사전</div><h2 style="font-size:26px">${esc(name)} ${hanOf(name)?`<span class="han" style="font-size:22px">${esc(hanOf(name))}</span>`:""}</h2>${x.alias.length?`<div class="meta">다른 이름: ${esc(x.alias.join(", "))}</div>`:""}${tagWords(name).length&&!isBlocked(x.st)?`<div class="taglist">${tagWords(name).map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}${c?.old?`<div class="meta">동의보감의 우리말 이름: ${esc(c.old)}</div>`:""}<div class="actions" style="margin-top:6px"><span class="chip ${x.st==="ok"?"ok":isBlocked(x.st)?"hot":"gold"}">${ST_LABEL[x.st]}</span></div></div>
-   ${photos}${trustHTML}${facts}${ban?body+look+lkHTML+fieldHTML:look+lkHTML+fieldHTML+prep+body}${faqHTML}
+   ${photos}${facts}${ban?body+look+lkHTML+fieldHTML:look+lkHTML+fieldHTML+prep+body}${faqHTML}
+   <details class="srcfold"><summary>자료 출처 · 틀린 곳 알려 주기</summary>${trustHTML}</details>
    ${ban?"":`<div><h3 style="font-size:18px;margin-bottom:8px">관련 영상</h3>
     <div class="vlist">${vids.length?vids.map(v=>`<div class="vcard"><span class="play" aria-hidden="true"><i></i></span><div>${safeUrl(v.url)?`<a href="${esc(safeUrl(v.url))}" target="_blank" rel="noopener">${esc(v.title||"유튜브 영상")}</a>`:esc(v.title||"")}<div class="meta">유튜브에서 열립니다</div></div>${S.owner?`<button class="btn sm danger" type="button" data-vdel="${esc(v.id)}">삭제</button>`:""}</div>`).join(""):'<div class="meta">아직 연결된 영상이 없습니다.</div>'}</div>
     ${S.owner?`<form class="panel goldp" id="vForm" style="margin-top:10px;padding:14px"><div class="field"><label for="vTitle">영상 제목</label><input id="vTitle" maxlength="80" placeholder="예: 동의보감 속 ${esc(name)} 이야기"></div><div class="field"><label for="vUrl">유튜브 주소</label><input id="vUrl" type="url" placeholder="https://youtu.be/..."></div><button class="btn primary" type="submit">영상 연결</button></form>`:""}</div>`}
@@ -4320,7 +4322,7 @@ function openDict(name){
 }
 let fnUnsub=null;
 /* 판매자가 상품을 올리면 사전에 사진·산지·캔 달이 자동으로 쌓입니다 (판매자당 품목별 사진 4장까지, 올린 순서대로 계속 쌓임) */
-const DICT_PH_MAX=4;
+const DICT_PH_MAX=4,DICT_FORMS=["생물","건조"];/* 가공품(즙·환·차 등) 사진은 사전에 넣지 않음 */
 async function dictShare(herb,photos,region,grow,form){try{
   if(!S.db||!S.uid||!findHerb(herb))return;const shop=shopName(S.uid),reg=String(region||"").trim().slice(0,30);
   const list=(Array.isArray(photos)?photos:[photos]).filter(x=>typeof x==="string"&&/^data:image\//.test(x));
