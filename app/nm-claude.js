@@ -129,7 +129,8 @@
     var q = sb.from("docs").select("id,data").eq("col", this.col);
     this.f.where.forEach(function (w) {
       var f = w[0], op = w[1], v = w[2], txt = "data->>" + f, js = "data->" + f;
-      if (op === "==") q = (v === null ? q.is(js, null) : q.eq(txt, String(v)));
+      if (op === "==" && f === "herb" && v !== null) q = q.eq("herb", String(v)); // 색인된 열(빠름)
+      else if (op === "==") q = (v === null ? q.is(js, null) : q.eq(txt, String(v)));
       else if (op === "!=") q = q.neq(txt, String(v));
       else if (op === "array-contains") q = q.filter(js, "cs", JSON.stringify([v]));
       else if (op === "in") q = q.in(txt, v.map(String));
