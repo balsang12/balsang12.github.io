@@ -163,6 +163,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .pgal{display:grid;gap:8px;align-content:start;min-width:0}
 .dlg .pgal .thumb{aspect-ratio:1/1;min-height:0}
 .dlg>.close{grid-column:1/-1;grid-row:1}
+#bulk[hidden],.bulk-m[hidden]{display:none!important}
 .dlg>.thumb,.dlg>.pgal{align-self:start}.dlg>div.thumb{min-height:0}.dlg>.thumb>img.ph{height:auto;max-height:80vh}.dlg>.thumb>img.bgf{display:none}
 .mytools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px}.ephoto{display:flex;gap:10px;align-items:center}.ephoto img{width:96px;height:96px;object-fit:cover;border-radius:8px}
 .pgal .thumb .xcnt{position:absolute;right:10px;bottom:10px;color:#fff;font-size:12px;font-weight:700;background:rgba(0,0,0,.5);border-radius:999px;padding:2px 9px}
@@ -1071,7 +1072,7 @@ label.btn{display:inline-block}
   <div class="actions"><button class="btn primary" type="button" data-sell="1" style="min-height:52px;font-size:17px;padding-inline:22px">+ 사진 찍어 쉽게 올리기</button><span class="meta">아래 양식은 가공품·자세한 등록용입니다</span></div>
   <div class="stats" id="sellerStats"></div>
   <div id="credBox"></div>
-  <details class="panel bulk" id="bulk">
+  <details class="panel bulk" id="bulk" hidden>
     <summary><b>엑셀로 여러 개 한꺼번에 올리기</b><span class="meta">상품이 많을 때 컴퓨터에서 쓰세요 · 가공품은 아래 양식으로 하나씩</span></summary>
     <div class="bulkb">
       <ol class="bksteps">
@@ -1101,7 +1102,7 @@ label.btn{display:inline-block}
       <div id="bkOut"></div>
     </div>
   </details>
-  <p class="notice bulk-m">상품이 많으면 컴퓨터로 이 화면을 열어 보세요. 엑셀로 한꺼번에 올릴 수 있습니다. 휴대폰에서는 위 ‘사진 찍어 쉽게 올리기’에서 전에 올린 상품을 불러와 빠르게 올릴 수 있어요.</p>
+  <p class="notice bulk-m" hidden>상품이 많으면 컴퓨터로 이 화면을 열어 보세요. 엑셀로 한꺼번에 올릴 수 있습니다. 휴대폰에서는 위 ‘사진 찍어 쉽게 올리기’에서 전에 올린 상품을 불러와 빠르게 올릴 수 있어요.</p>
   <div class="two">
     <div class="col">
       <form class="panel" id="shopForm">
