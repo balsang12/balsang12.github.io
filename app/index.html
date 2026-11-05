@@ -164,6 +164,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .dlg .pgal .thumb{aspect-ratio:1/1;min-height:0}
 .dlg>.close{grid-column:1/-1;grid-row:1}
 #bulk[hidden],.bulk-m[hidden]{display:none!important}
+.admall summary{cursor:pointer}.admrow{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:start}.admth{width:56px;height:56px;border-radius:8px;overflow:hidden;background:var(--sunk)}.admth img{width:100%;height:100%;object-fit:cover}
 @media (min-width:861px){.dlg>div.thumb{aspect-ratio:1/1}.dlg>div.thumb>img.ph{height:100%;max-height:none;object-fit:cover}.dlg .pgal .thumb>img.ph{object-fit:cover}.dlg .pgal .thumb>img.bgf{display:none}}
 .dlg>.thumb,.dlg>.pgal{align-self:start}.dlg>div.thumb{min-height:0}.dlg>.thumb>img.ph{height:auto;max-height:80vh}.dlg>.thumb>img.bgf{display:none}
 .mytools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px}.ephoto{display:flex;gap:10px;align-items:center}.ephoto img{width:96px;height:96px;object-fit:cover;border-radius:8px}
@@ -1291,6 +1292,7 @@ label.btn{display:inline-block}
         </ul></div>
       <div class="panel"><h3>고객 문의</h3><div class="list" id="inqQueue"></div></div>
       <div class="panel"><h3>직거래 유도 신고</h3><div class="list" id="flagQueue"></div></div>
+      <details class="panel admall" id="admAll"><summary><b>전체 상품 관리</b> <span class="meta num" id="admAllN"></span></summary><input id="admQ" type="search" placeholder="상품 이름이나 판매자로 찾기" aria-label="전체 상품 찾기" style="margin:8px 0"><div class="list" id="admAllList"></div></details>
       <div class="panel"><h3>새로 올라온 것 (사후 확인)</h3><p class="meta" style="margin:0 0 8px">바로 판매가 시작된 상품·제안 판매입니다. 위험한 것이 위에 옵니다. 문제가 있으면 내리세요.</p><div class="actions" style="margin-bottom:8px"><button class="btn sm" type="button" id="postAll">가공품 빼고 모두 확인함</button></div><div class="list" id="postQueue"></div></div>
       <div class="panel"><h3>채취지 확인</h3><p class="meta" style="margin:0 0 8px">판매자가 등록한 산입니다. 한 번 확인하면 그 산에서 캔 산삼은 근거가 자동으로 확인됩니다.</p><div class="list" id="siteQueue"></div></div>
       <div class="panel"><h3>채취 증빙 확인</h3><p class="meta" style="margin:0 0 8px">서류 사진은 운영자만 봅니다. 이름·지번이 등록 정보와 맞는지 보고 확인해 주세요.</p><div class="list" id="proofQueue"></div></div>
@@ -2476,7 +2478,7 @@ function renderSeller(){renderSites();
   const myP=S.products.filter(p=>p.sellerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
   $("#myItems").innerHTML=myP.length?myP.map(p=>`<div class="item sunk"><div class="itop"><b>${esc(p.name)}</b>${statusChip(p.status)}</div>
     <div class="meta num">${esc(p.cat)} · ${won(p.price)}/${esc(p.unit)} · 재고 ${p.stock}</div>
-    ${p.status==="반려"&&p.rejectReason?`<div class="meta" style="color:var(--berry)">반려 사유: ${esc(p.rejectReason)}</div>`:""}${proofMissing(p)?`<div class="notice" style="margin-top:6px">${p.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${p.proofDue?day(p.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${p.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(p.proofNote)}</span>`:""}
+    ${p.status==="반려"&&p.rejectReason?`<div class="meta" style="color:var(--berry)">반려 사유: ${esc(p.rejectReason)}</div>`:""}${p.adminNote?`<div class="meta" style="color:var(--gold-deep,var(--gold))">ℹ️ ${esc(p.adminNote)}</div>`:""}${proofMissing(p)?`<div class="notice" style="margin-top:6px">${p.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${p.proofDue?day(p.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${p.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(p.proofNote)}</span>`:""}
       <div class="actions" style="margin-top:6px"><input id="pl-${p.id}" type="file" accept="image/*" aria-label="근거 사진"><input id="pp-${p.id}" placeholder="본인 산 지번" aria-label="본인 산 지번" style="max-width:200px"><button class="btn sm primary" data-act="proofLater" data-id="products:${p.id}">근거 보내기</button></div>`}</div>`:""}
     <div class="actions pricerow"><label class="meta" for="pr-${p.id}">판매 가격</label><input id="pr-${p.id}" type="number" min="100" step="100" value="${p.price}" class="num"><span class="meta">원 / ${esc(p.unit)}</span><button class="btn sm" data-act="priceP" data-id="${p.id}">가격 변경</button></div>
     <div class="actions"><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 이름·설명·사진 고치기</button><button class="btn sm" type="button" data-xph="${p.id}">📷 사진 더 넣기</button></div><div class="actions"><input id="st-${p.id}" type="number" min="0" value="${p.stock}" aria-label="재고" style="max-width:90px" class="num"><button class="btn sm" data-act="stock" data-id="${p.id}">재고 변경</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}${p.cat!=="가공품"?`<button class="btn sm" data-act="dupP" data-id="${p.id}">이걸로 하나 더</button>`:""}<button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div>
@@ -2489,8 +2491,16 @@ function renderSeller(){renderSites();
   const n=myO.filter(o=>o.status==="결제완료").length+myA.filter(a=>a.deal==="결제완료").length;
   $("#dotSeller").innerHTML=n?`<span class="dot">${n}</span>`:"";
 }
+function renderAdmAll(){const el=$("#admAllList");if(!el||!S.owner)return;const q=($("#admQ")?.value||"").trim();
+  const all=S.products.filter(p=>p.status!=="반려").sort((a,b)=>b.createdAt-a.createdAt),list=all.filter(p=>!q||matchQ(q,p.name+(p.item||"")+shopName(p.sellerId)));
+  $("#admAllN").textContent=`${all.length}개`;
+  el.innerHTML=list.length?list.map(p=>`<div class="item sunk admrow"><div class="admth">${p.photo?`<img src="${esc(p.photo)}" alt="">`:""}</div><div><div class="itop"><b>${esc(p.name)}</b>${statusChip(p.status)}</div>
+    <div class="meta num">${esc(shopName(p.sellerId))} · ${won(p.price)}/${esc(p.unit)} · 재고 ${p.stock}${inGift(p)?' · <span class="chip gold">선물 코너</span>':""}</div>
+    <div class="actions"><button class="btn sm" type="button" data-xp="${p.id}">보기</button><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 고치기</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}<button class="btn sm gold" type="button" data-agift="${p.id}">${inGift(p)?"선물 코너 빼기":"🎁 선물 코너"}</button><button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div></div></div>`).join(""):`<div class="empty">${q?"찾는 상품이 없습니다.":"상품이 없습니다."}</div>`}
+document.addEventListener("input",e=>{if(e.target.id==="admQ")renderAdmAll()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-agift]");if(!b)return;const p=S.products.find(x=>x.id===b.dataset.agift);if(p)giftToggle(p)});
 function renderAdmin(){
-  if(!S.owner)return;
+  if(!S.owner)return;renderAdmAll();
   const pendA=S.auctions.filter(a=>a.status==="검수대기"),pendP=S.products.filter(p=>p.status==="검수대기");
   const listIncome=S.auctions.filter(a=>a.status!=="반려").reduce((s,a)=>s+(a.listFee||0),0);
   const aucDeals=S.auctions.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");
@@ -4496,7 +4506,7 @@ async function xphGallery(o){const box=$("#dlg .thumb");if(!box)return;const mor
   box.querySelector(".xp").onclick=e=>{e.stopPropagation();show(k-1)};box.querySelector(".xn").onclick=e=>{e.stopPropagation();show(k+1)};
   let x0=null;box.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});box.addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(k+(dx<0?1:-1));x0=null})}
 /* 판매자: 올린 상품의 이름·설명·대표 사진 고치기 */
-function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||p.sellerId!==S.uid)return;const dlg=$("#dlg");let ph=p.photo||"";
+function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||(p.sellerId!==S.uid&&!S.owner))return;const byAdmin=p.sellerId!==S.uid;const dlg=$("#dlg");let ph=p.photo||"";
   const draw=()=>{dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">✏️ 상품 고치기</h3>
    <div class="field"><label for="ePhoto">대표 사진</label><div class="ephoto">${ph?`<img src="${esc(ph)}" alt="대표 사진">`:'<span class="meta">사진 없음</span>'}<label class="btn sm">사진 바꾸기<input id="ePhoto" type="file" accept="image/*" hidden></label></div></div>
    <div class="field"><label for="eName">상품 이름</label><input id="eName" maxlength="40" value="${esc(p.name)}"></div>
@@ -4506,7 +4516,7 @@ function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||p.sellerId
    dlg.querySelector(".close").onclick=()=>dlg.close();
    $("#ePhoto").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const keep=[$("#eName").value,$("#eDesc").value];ph=await shrinkPhoto(f);draw();$("#eName").value=keep[0];$("#eDesc").value=keep[1]}catch(er){toast("사진을 읽지 못했습니다")}};
    $("#eSave").onclick=async()=>{const name=$("#eName").value.trim(),desc=$("#eDesc").value.trim();if(name.length<2){toast("상품 이름을 적어 주세요");return}
-     const v={name,desc};if(ph!==(p.photo||""))v.photo=ph;
+     const v={name,desc};if(ph!==(p.photo||""))v.photo=ph;if(byAdmin)v.adminNote=`운영자가 ${[name!==p.name&&"이름",desc!==(p.desc||"")&&"설명",v.photo&&"사진"].filter(Boolean).join("·")||"상품"}을 고쳤습니다 (${mdKo(isoDay(Date.now()))})`;
      if(await guard(()=>S.db.doc("products/"+id).update(v),"상품을 고쳤습니다")){Object.assign(p,v);dlg.close()}}};
   draw();if(!dlg.open)dlg.showModal()}
 /* 판매자: 올린 뒤에도 추가 사진 넣기·빼기 */
