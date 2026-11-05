@@ -164,6 +164,15 @@ section[data-view]>*,.doc>*{min-width:0}
 .dlg .pgal .thumb{aspect-ratio:1/1;min-height:0}
 .dlg>.close{grid-column:1/-1;grid-row:1}
 #bulk[hidden],.bulk-m[hidden]{display:none!important}
+#dlg:has(>.pview){width:100%;max-width:100%;height:100%;max-height:100%;margin:0;border-radius:0}
+.pview{max-width:1100px;margin:0 auto;width:100%}
+.ptop{grid-column:1/-1;grid-row:1;position:sticky;top:0;z-index:7;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.ptop .pback{position:static;float:none;margin:0;width:auto;height:38px;padding:0 14px;font-size:16px;font-weight:700;box-shadow:none;flex:none}
+.ptop .ptt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px}
+.pview .ptabs{top:55px}
+.dlg .pgal .thumb>img.ph{object-fit:cover}.dlg .pgal .thumb>img.bgf{display:none}
+@media (max-width:860px){.dlg .pgal .thumb{aspect-ratio:4/3}}
+@media (max-width:860px){.ptop .pback span{display:none}}
 .admall summary{cursor:pointer}.admrow{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:start}.admth{width:56px;height:56px;border-radius:8px;overflow:hidden;background:var(--sunk)}.admth img{width:100%;height:100%;object-fit:cover}
 @media (min-width:861px){.dlg>div.thumb{aspect-ratio:1/1}.dlg>div.thumb>img.ph{height:100%;max-height:none;object-fit:cover}.dlg .pgal .thumb>img.ph{object-fit:cover}.dlg .pgal .thumb>img.bgf{display:none}}
 .dlg>.thumb,.dlg>.pgal{align-self:start}.dlg>div.thumb{min-height:0}.dlg>.thumb>img.ph{height:auto;max-height:80vh}.dlg>.thumb>img.bgf{display:none}
@@ -2710,7 +2719,7 @@ function openProduct(id){
   let qty=1,ship=shipCalc(p,1,{}).ship;const own=p.sellerId===S.uid,dlg=$("#dlg");
   const backGift=S.fromGift?`<button class="btn sm" type="button" data-gift="${esc(S.fromGift)}" style="margin-bottom:8px">← 선물 코너로</button>`:"",gMode=!!S.fromGift;S.fromGift=null;
   const rs=S.reviews.filter(r=>r.productId===id).sort((a,b)=>b.createdAt-a.createdAt);
-  dlg.innerHTML=`<div class="dlg"><button class="close" aria-label="닫기" type="button">×</button>
+  dlg.innerHTML=`<div class="dlg pview"><div class="ptop"><button class="close pback" aria-label="뒤로" type="button">←<span> 뒤로</span></button><b class="ptt">${esc(p.name)}</b><button class="btn sm" type="button" id="pShare">공유</button></div>
    ${backGift}<div class="thumb">${thumbHTML(p,"pid")}</div>
    <div class="dinfo">
     <div class="meta">${esc(mcat(p.cat))} · ${esc(shopName(p.sellerId))}</div>
@@ -4505,6 +4514,16 @@ async function xphGallery(o){const box=$("#dlg .thumb");if(!box)return;const mor
   wrap.querySelectorAll("[data-xi]").forEach(b=>{b.onclick=e=>{e.stopPropagation();show(+b.dataset.xi)};b.onmouseenter=()=>{if(matchMedia("(hover:hover)").matches)show(+b.dataset.xi)}});
   box.querySelector(".xp").onclick=e=>{e.stopPropagation();show(k-1)};box.querySelector(".xn").onclick=e=>{e.stopPropagation();show(k+1)};
   let x0=null;box.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});box.addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(k+(dx<0?1:-1));x0=null})}
+/* 상품마다 주소(?p=상품번호): 상품을 열면 주소가 바뀌고, 공유한 주소로 들어오면 그 상품이 바로 열림 */
+var DEEP_P=null;try{DEEP_P=new URLSearchParams(location.search).get("p");if(DEEP_P){const u=new URL(location.href);u.searchParams.delete("p");history.replaceState(history.state,"",u.pathname+(u.search||"")+u.hash)}}catch(_){}
+function deepOpen(){if(!DEEP_P)return;const id=DEEP_P;if(!S.products.some(x=>x.id===id))return;DEEP_P=null;if(S.view!=="shop")go("shop");setTimeout(()=>openProduct(id),0)}
+setTimeout(deepOpen,0);
+const pLink=id=>{const u=new URL(location.href);u.search="?p="+encodeURIComponent(id);u.hash="";return u.href};
+{const op=openProduct;openProduct=function(id){op(id);const d=$("#dlg");if(!d.open||S.openPid!==id)return;
+  try{history.replaceState(history.state,"",pLink(id))}catch(_){}
+  const sh=$("#pShare");if(sh)sh.onclick=async()=>{const p=S.products.find(x=>x.id===id),url=pLink(id);
+    try{if(navigator.share){await navigator.share({title:"농마니 · "+(p?.name||""),url});return}}catch(e){if(e&&e.name==="AbortError")return}
+    try{await navigator.clipboard.writeText(url);toast("상품 주소를 복사했어요. 카톡에 붙여 넣어 보내세요")}catch(_){prompt("이 주소를 복사해 보내세요",url)}}}}
 /* 판매자: 올린 상품의 이름·설명·대표 사진 고치기 */
 function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||(p.sellerId!==S.uid&&!S.owner))return;const byAdmin=p.sellerId!==S.uid;const dlg=$("#dlg");let ph=p.photo||"";
   const draw=()=>{dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">✏️ 상품 고치기</h3>
@@ -4755,7 +4774,7 @@ try{const q0=(new URLSearchParams(location.search).get("q")||"").trim().slice(0,
   if(!S.uid){$("#who").innerHTML='<button type="button" class="btn sm primary" onclick="nmAuth.open()">로그인</button>'}
   else $("#who").insertAdjacentHTML("beforeend",' <button type="button" class="btn sm" onclick="nmAuth.askSignOut()" aria-label="로그아웃">로그아웃</button>');
   if(S.uid&&!S.canWrite){ban.hidden=false;ban.textContent="이 계정은 지금 거래를 할 수 없습니다. 운영자에게 문의해 주세요."}
-  const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
+  const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render();if(key==="products")deepOpen()},()=>{});
   ["products","orders","requests","quotes","reviews","auctions","bids","subs"].forEach(c=>sub(c,c));
   db.collection("pqna").limit(1000).onSnapshot(sn=>{S.pqna=sn.docs.map(d=>({id:d.id,...d.data()}));renderChat();renderTodo();qnaRefresh()},()=>{});
   db.collection("videos").limit(500).onSnapshot(s=>{const vk=()=>S.openCl?JSON.stringify(vidsOf(S.openCl).map(v=>[v.id,v.url,v.title])):"",was=vk();S.videos=s.docs.map(d=>({id:d.id,...d.data()}));renderClassic();const dl=$("#dlg");if(dl.open&&S.openCl&&vk()!==was){const st=dl.scrollTop;openDict(S.openCl);dl.scrollTop=st}requestAnimationFrame(paintAll)},()=>{});
