@@ -1080,7 +1080,7 @@ label.btn{display:inline-block}
   <div class="sechead"><h2>판매자 센터</h2><span class="meta" id="shopLabel"></span></div>
   <div id="sellInst" hidden></div>
   <div id="todoSeller"></div>
-  <div class="actions"><button class="btn primary" type="button" data-sell="1" style="min-height:52px;font-size:17px;padding-inline:22px">+ 사진 찍어 쉽게 올리기</button><span class="meta">아래 양식은 가공품·자세한 등록용입니다</span></div>
+  <div class="actions"><button class="btn primary" type="button" data-sell="1" style="min-height:52px;font-size:17px;padding-inline:22px">+ 사진 찍어 쉽게 올리기</button><button class="btn" type="button" id="goMyItems" style="min-height:52px;font-size:17px;padding-inline:18px">📦 내 상품 관리 <span class="num" id="myItemsN"></span></button></div>
   <div class="stats" id="sellerStats"></div>
   <div id="credBox"></div>
   <details class="panel bulk" id="bulk" hidden>
@@ -1246,7 +1246,7 @@ label.btn{display:inline-block}
       <div class="panel"><h3>받은 주문</h3><div class="list" id="sellerOrders"></div></div>
       <div class="panel"><h3>손님이 기다리는 품목</h3><div class="meta">입고 알림을 신청한 손님 수입니다. 이 품목을 올리면 신청한 손님 홈 화면에 바로 알려집니다.</div><div class="list" id="waitList"></div></div>
       <div class="panel"><h3>견적 보낼 의뢰</h3><div class="list" id="openReqs"></div></div>
-      <div class="panel"><h3>내 마켓 상품</h3><div class="list" id="myItems"></div></div>
+      <div class="panel" id="myItemsP"><h3>내 마켓 상품</h3><div class="list" id="myItems"></div></div>
       <div class="panel goldp"><h3>내 제안 판매</h3><div class="list" id="sellerAucs"></div></div>
     </div>
   </div>
@@ -2485,6 +2485,7 @@ function renderSeller(){renderSites();
     const wl=[...w.values()].sort((a,b)=>b.u.size-a.u.size).slice(0,10),el=$("#waitList");
     if(el)el.innerHTML=wl.length?wl.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.key)}</b><span class="chip gold num">${o.u.size}명 기다림 · ${o.kind==="auction"?"제안 판매":"마켓"}</span></div><div class="actions"><button class="btn sm primary" type="button" data-sell="1">올리기</button></div></div>`).join(""):`<div class="empty">아직 입고 알림을 신청한 손님이 없습니다.</div>`}
   const myP=S.products.filter(p=>p.sellerId===S.uid).sort((a,b)=>b.createdAt-a.createdAt);
+  if($("#myItemsN"))$("#myItemsN").textContent=myP.length?`(${myP.length})`:"";
   $("#myItems").innerHTML=myP.length?myP.map(p=>`<div class="item sunk"><div class="itop"><b>${esc(p.name)}</b>${statusChip(p.status)}</div>
     <div class="meta num">${esc(p.cat)} · ${won(p.price)}/${esc(p.unit)} · 재고 ${p.stock}</div>
     ${p.status==="반려"&&p.rejectReason?`<div class="meta" style="color:var(--berry)">반려 사유: ${esc(p.rejectReason)}</div>`:""}${p.adminNote?`<div class="meta" style="color:var(--gold-deep,var(--gold))">ℹ️ ${esc(p.adminNote)}</div>`:""}${proofMissing(p)?`<div class="notice" style="margin-top:6px">${p.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${p.proofDue?day(p.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${p.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(p.proofNote)}</span>`:""}
@@ -4524,6 +4525,7 @@ const pLink=id=>{const u=new URL(location.href);u.search="?p="+encodeURIComponen
   const sh=$("#pShare");if(sh)sh.onclick=async()=>{const p=S.products.find(x=>x.id===id),url=pLink(id);
     try{if(navigator.share){await navigator.share({title:"농마니 · "+(p?.name||""),url});return}}catch(e){if(e&&e.name==="AbortError")return}
     try{await navigator.clipboard.writeText(url);toast("상품 주소를 복사했어요. 카톡에 붙여 넣어 보내세요")}catch(_){prompt("이 주소를 복사해 보내세요",url)}}}}
+document.addEventListener("click",e=>{if(!e.target.closest("#goMyItems"))return;const el=$("#myItemsP");if(!el)return;el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.add("jumpflash");setTimeout(()=>el.classList.remove("jumpflash"),1600)});
 /* 판매자: 올린 상품의 이름·설명·대표 사진 고치기 */
 function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||(p.sellerId!==S.uid&&!S.owner))return;const byAdmin=p.sellerId!==S.uid;const dlg=$("#dlg");let ph=p.photo||"";
   const draw=()=>{dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">✏️ 상품 고치기</h3>
