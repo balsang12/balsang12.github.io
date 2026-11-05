@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="description" content="농마니 · 농부와 심마니 직거래 장터. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 제안 판매로.">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="description" content="농마니 · 귀한 분께, 산야에서 자란 것을. 심마니와 농부가 이름을 걸고 보내는 산야초 선물. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 제안 판매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
 <link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
@@ -9,8 +9,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-title" content="농마니">
-<meta property="og:title" content="농마니 · 농부와 심마니가 직접 판매하는 산야초">
-<meta property="og:description" content="산에서 캔 약초, 밭에서 키운 산나물을 직접 사고파는 장터">
+<meta property="og:title" content="농마니 · 귀한 분께, 산야에서 자란 것을">
+<meta property="og:description" content="산에서 캔 심마니, 정직하게 기른 농부가 이름을 걸고 보내는 산야초 선물">
 <meta property="og:image" content="https://nongmani.com/og.png">
 </head><body>
 <script src="vendor/supabase.js"></script>
@@ -236,6 +236,7 @@ td.r,th.r{text-align:right}
 /* ---------- 앱 화면 (숨고식 하단 메뉴·검색·질문형 의뢰·프로필·대화) ---------- */
 .hhead{display:grid;gap:12px}
 .hhead h1{font-size:clamp(26px,5.6vw,38px);font-weight:800;letter-spacing:-.045em;line-height:1.28;color:var(--ink)}.hhead h1 em{font-style:normal;color:var(--hl)}
+.hhead .hgift{display:block;margin:8px 0 14px;font-size:16px;line-height:1.5;color:var(--muted);word-break:keep-all;letter-spacing:-.02em}
 .search{display:flex;gap:8px;background:var(--surface);border:1.5px solid var(--pine);border-radius:14px;padding:6px 6px 6px 14px;max-width:640px}
 .search input{flex:1;min-width:0;border:0;background:none;font-size:16px;padding:8px 0}
 .search input:focus{outline:none}
@@ -874,8 +875,9 @@ label.btn{display:inline-block}
 <section data-view="home">
   <div class="htop"><div class="hmain">
   <div class="hhead">
-    <div class="eyebrow hdirect">산지 <b>직거래</b> · 안전결제</div>
-    <h1>농부와 심마니가 <br>직접 판매하는 <em>산야초</em></h1>
+    <div class="eyebrow hdirect">산야초 <b>선물</b> · 산지 직거래 · 안전결제</div>
+    <h1>귀한 분께, <br><em>산야</em>에서 자란 것을</h1>
+    <p class="hgift">산에서 캔 심마니, 정직하게 기른 농부가<br>이름을 걸고 보냅니다</p>
     <div class="srow2"><form class="search" id="homeSearch" role="search"><input id="homeQ" placeholder="예: 잔대, 천문동, 황기, 산삼" aria-label="산야초 검색" enterkeyhint="search"><button class="btn primary" type="submit">찾기</button></form></div>
     <p class="herblink"><button type="button" data-reco="1">🧺 쇼핑도우미</button><button type="button" data-go="herbs">🌿 산야초 사전</button></p>
     <section class="hnews" id="homeNews" hidden aria-labelledby="hnewsH"></section>
