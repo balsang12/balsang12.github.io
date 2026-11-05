@@ -164,6 +164,9 @@ section[data-view]>*,.doc>*{min-width:0}
 .dlg .pgal .thumb{aspect-ratio:1/1;min-height:0}
 .dlg>.close{grid-column:1/-1;grid-row:1}
 #bulk[hidden],.bulk-m[hidden]{display:none!important}
+.dlg .thumb img.ph{cursor:zoom-in}
+@media (min-width:861px){.dlg>div.thumb,.dlg>.pgal{position:sticky;top:0;z-index:1}.dlg>div.thumb{aspect-ratio:1/1}.dlg>div.thumb>img.ph{height:100%;max-height:none;object-fit:cover}.dlg .pgal .thumb>img.ph{object-fit:cover}.dlg .pgal .thumb>img.bgf{display:none}}
+.lbx{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.92);display:grid;place-items:center;cursor:zoom-out}.lbx img{max-width:96vw;max-height:92vh;object-fit:contain}.lbx span{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-size:13px;opacity:.8}
 .dlg>.thumb,.dlg>.pgal{align-self:start}.dlg>div.thumb{min-height:0}.dlg>.thumb>img.ph{height:auto;max-height:80vh}.dlg>.thumb>img.bgf{display:none}
 .mytools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px}.ephoto{display:flex;gap:10px;align-items:center}.ephoto img{width:96px;height:96px;object-fit:cover;border-radius:8px}
 .pgal .thumb .xcnt{position:absolute;right:10px;bottom:10px;color:#fff;font-size:12px;font-weight:700;background:rgba(0,0,0,.5);border-radius:999px;padding:2px 9px}
@@ -4494,6 +4497,8 @@ async function xphGallery(o){const box=$("#dlg .thumb");if(!box)return;const mor
   wrap.querySelectorAll("[data-xi]").forEach(b=>{b.onclick=e=>{e.stopPropagation();show(+b.dataset.xi)};b.onmouseenter=()=>{if(matchMedia("(hover:hover)").matches)show(+b.dataset.xi)}});
   box.querySelector(".xp").onclick=e=>{e.stopPropagation();show(k-1)};box.querySelector(".xn").onclick=e=>{e.stopPropagation();show(k+1)};
   let x0=null;box.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});box.addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(k+(dx<0?1:-1));x0=null})}
+/* 상품 사진 누르면 원본 비율로 크게 보기 */
+document.addEventListener("click",e=>{const im=e.target.closest("#dlg .thumb img.ph");if(!im)return;const d=$("#dlg"),o=document.createElement("div");o.className="lbx";o.innerHTML=`<img src="${im.src}" alt="사진 크게 보기"><span>아무 곳이나 누르면 닫혀요</span>`;o.onclick=ev=>{ev.stopPropagation();o.remove()};(d.open?d:document.body).append(o)});
 /* 판매자: 올린 상품의 이름·설명·대표 사진 고치기 */
 function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||p.sellerId!==S.uid)return;const dlg=$("#dlg");let ph=p.photo||"";
   const draw=()=>{dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">✏️ 상품 고치기</h3>
