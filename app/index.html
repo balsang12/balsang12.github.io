@@ -195,7 +195,7 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .dlg{display:grid;grid-template-columns:1fr 1fr;min-width:0;position:relative}
 .dlg .thumb{aspect-ratio:auto;min-height:280px}
 .dinfo{padding:22px;display:grid;gap:12px;align-content:start;min-width:0}
-.close{position:sticky;top:10px;float:right;justify-self:end;align-self:start;display:block;margin:10px 10px -46px auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.close{position:sticky;top:10px;float:right;justify-self:end;align-self:start;display:block;margin:10px 10px -46px auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:6;box-shadow:0 2px 10px rgba(0,0,0,.12)}
 .board{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .board div{background:var(--bg);border-radius:10px;padding:10px 12px}
 .board b{display:block;font-size:22px}
@@ -365,6 +365,8 @@ td.r,th.r{text-align:right}
 .bnav .sellb i{display:grid;place-items:center;width:52px;height:52px;margin-top:-22px;border-radius:50%;background:var(--pine);box-shadow:0 4px 14px rgb(0 0 0 / .18);border:3px solid var(--surface)}
 .bnav .sellb i svg{stroke:var(--pine-ink);stroke-width:2.4}
 .bnav .sellb span{color:var(--pine);font-weight:700}
+.hchat[hidden],.tab[hidden]{display:none!important}
+.qnainbox{display:grid;gap:6px;margin:0 0 14px}
 .hchat{display:none;border:0;background:none;position:relative;padding:6px;color:var(--ink);cursor:pointer}
 .hchat .hl{display:block;font-size:11.5px;font-weight:600;line-height:1.1;margin-top:1px}
 .hchat svg{display:block;margin:0 auto;width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
@@ -631,6 +633,18 @@ section[data-view="herbs"] .askbox{margin:6px 0 12px;scroll-margin-top:96px}
 .lk-card.bad{border:1.5px solid var(--berry);background:var(--berry-soft)}
 .lk-card ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14px}
 .sec{display:grid;gap:8px}
+.ptabs{grid-column:1/-1;position:sticky;top:0;z-index:4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--surface);border-bottom:1px solid var(--line);margin:8px 0 0;padding:0 56px 0 22px}
+.ptabs button{border:0;background:none;padding:12px 4px;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.ptabs button[aria-current="true"]{color:var(--ink);border-bottom-color:var(--pine)}.ptabs .num{font-weight:400;color:var(--muted)}
+.psec{grid-column:1/-1;min-width:0;scroll-margin-top:52px;padding:16px 22px 8px;border-bottom:1px solid var(--line);display:grid;gap:10px}.psec>h3{font-size:18px;margin:0}
+.qnaform{display:grid;gap:6px}.qnaform textarea,.qnaans textarea{width:100%;box-sizing:border-box;font:inherit;font-size:15px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg,#fff);color:var(--ink)}
+.qnarow{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.qnarow label{display:flex;gap:6px;align-items:center}
+.qnalist{display:grid;gap:10px}.qna{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px}.qna.off{opacity:.55}
+.qna p{margin:4px 0}.qa{background:var(--bg);border-radius:10px;padding:10px}.qnaans{display:grid;gap:6px}
+.shipnote{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14.5px;line-height:1.55}
+@media (max-width:860px){.ptabs{padding:0 48px 0 8px}.psec{padding:16px 16px 8px}}
+@media (max-width:480px){.ptabs button{font-size:12.5px;padding:11px 1px;letter-spacing:-.02em}}
+
 .srcfold>summary{cursor:pointer;color:var(--muted);font-size:13px;padding:6px 0}.srcfold[open]>summary{margin-bottom:6px}
 .clh{font-size:18px;margin:0 0 4px}.clh .clsrc{font-size:13px;font-weight:400;color:var(--muted);margin-left:6px}
 .sec>h3{font-size:18px}
@@ -983,7 +997,8 @@ label.btn{display:inline-block}
 
 <!-- CHAT -->
 <section data-view="chat" hidden>
-  <div class="sechead"><h2>대화</h2><span class="meta">판매자·구매자와 1:1로 묻고 답합니다</span></div>
+  <div class="sechead"><h2>대화</h2><span class="meta">상품 문의와 판매자·구매자 1:1 대화</span></div>
+  <div class="qnainbox" id="qnaInbox" hidden></div>
   <div class="chatwrap" id="chatwrap">
     <div class="threads" id="threads"></div>
     <div class="chatbox" id="chatbox" hidden></div>
@@ -2644,7 +2659,7 @@ function fillAuction(id,refresh){
 
 /* ---------- 마켓 상세 ---------- */
 function openProduct(id){
-  const p=S.products.find(x=>x.id===id);if(!p)return;openA=null;
+  const p=S.products.find(x=>x.id===id);if(!p)return;openA=null;S.openPid=id;
   let qty=1,ship=shipCalc(p,1,{}).ship;const own=p.sellerId===S.uid,dlg=$("#dlg");
   const backGift=S.fromGift?`<button class="btn sm" type="button" data-gift="${esc(S.fromGift)}" style="margin-bottom:8px">← 선물 코너로</button>`:"",gMode=!!S.fromGift;S.fromGift=null;
   const rs=S.reviews.filter(r=>r.productId===id).sort((a,b)=>b.createdAt-a.createdAt);
@@ -2654,22 +2669,29 @@ function openProduct(id){
     <div class="meta">${esc(mcat(p.cat))} · ${esc(shopName(p.sellerId))}</div>
     <h2 style="font-size:24px">${esc(p.name)}</h2>
     ${sellerRow(p.sellerId,p.name+" 문의")}
-    ${p.desc?`<p style="margin:0">${esc(p.desc)}</p>`:""}
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
-    <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${shipSpec(p)}</dd>${subOn()&&p.sub?.on?`<dt>정기배송</dt><dd>🔁 매달 ${p.sub.day}일 발송${p.sub.pct?` · <b>${p.sub.pct}% 할인</b>`:""}</dd>`:""}${p.qd?.length?`<dt>수량 할인</dt><dd><b>${esc(qdText(p))}</b></dd>`:""}${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
-    ${setHTML(p)}${faqHTML(p)}
     ${S.owner?`<div class="actions"><button class="btn sm gold" type="button" id="gPick">${inGift(p)?"🎁 선물 코너에서 빼기":"🎁 선물 코너에 넣기"}</button></div>`:""}
     ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p)+subOptHTML(p)+`<label class="meta" style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13.5px;line-height:1.5;cursor:pointer"><input type="checkbox" id="oAgree"><span>[필수] 배송을 위해 이 상품의 판매자(${esc(shopName(p.sellerId))})에게 받는 분 이름·연락처·주소·요청 사항을 제공하는 데 동의합니다. 거래 완료 후 3개월 보관 · <a href="https://nongmani.com/privacy/" target="_blank" rel="noopener">자세히</a></span></label><p class="meta" style="font-size:12.5px;margin:0 0 8px">농마니는 통신판매중개자로서 거래 당사자가 아니며, 상품 정보와 거래에 대한 책임은 판매자에게 있습니다.</p>`:own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
    </div>
+   <nav class="ptabs" id="ptabs" aria-label="상품 정보"><button type="button" data-pt="pdDetail" aria-current="true">상품상세</button><button type="button" data-pt="pdRev">상품후기 <span class="num">${rs.length}</span></button><button type="button" data-pt="pdQna">상품문의 <span class="num" id="qnaN">${qnaOf(p.id).length}</span></button><button type="button" data-pt="pdShip">배송·교환·반품</button></nav>
+   <section class="psec" id="pdDetail"><h3>상품상세</h3>
+    ${p.desc?`<p style="margin:0">${esc(p.desc)}</p>`:""}
+    <dl class="spec num"><dt>품목</dt><dd>${esc(p.item||(guessHerb(p.name)?.name)||"-")}</dd><dt>원산지</dt><dd>국내산 (${esc(p.region)})</dd><dt>형태</dt><dd>${esc(p.form)}</dd>${p.proc?`<dt>원재료</dt><dd>${esc(p.proc.ingr)}</dd><dt>내용량</dt><dd>${esc(p.proc.vol)}</dd><dt>소비기한</dt><dd>${esc(p.proc.shelf)}</dd><dt>제조</dt><dd>${esc(p.proc.biz)}${p.proc.maker?" · "+esc(p.proc.maker):""} · 신고번호 ${esc(p.proc.bizNo)}</dd>`:""}<dt>${p.proc?"원료 생산":"생산 방식"}</dt><dd>${esc(p.grow)}${p.cert?" · 인증번호 "+esc(p.cert):""}</dd><dt>채취 근거</dt><dd>${esc(p.permit)} · 운영자 확인</dd><dt>배송</dt><dd>${shipSpec(p)}</dd>${subOn()&&p.sub?.on?`<dt>정기배송</dt><dd>🔁 매달 ${p.sub.day}일 발송${p.sub.pct?` · <b>${p.sub.pct}% 할인</b>`:""}</dd>`:""}${p.qd?.length?`<dt>수량 할인</dt><dd><b>${esc(qdText(p))}</b></dd>`:""}${p.gift?`<dt>선물 포장</dt><dd>가능 · ${p.giftWrap?won(p.giftWrap):"무료"}</dd>`:""}<dt>재고</dt><dd>${p.stock} × ${esc(p.unit)}</dd></dl>
+    ${setHTML(p)}${faqHTML(p)}
+   </section>
    ${(()=>{const key=p.item||guessHerb(p.name)?.name;if(!key)return "";const sib=live().filter(x=>x.id!==p.id&&(x.item||guessHerb(x.name)?.name)===key&&x.stock>0);
       const proc=sib.filter(isProc),raw=sib.filter(x=>!isProc(x));if(!sib.length)return "";
       const row=(t,l)=>l.length?`<div><div class="meta" style="margin:6px 0">${t}</div><div class="actions">${l.slice(0,6).map(x=>`<button class="btn sm" type="button" data-xp="${esc(x.id)}">${esc(x.name)} · ${won(x.price)}</button>`).join("")}</div></div>`:"";
       return `<div class="bids"><h3 style="font-size:17px">${esc(key)} 다른 상품</h3>${isProc(p)?row("원료 그대로 사기",raw)+row("다른 가공품",proc):row("이 원료로 만든 가공품",proc)+row("다른 농가의 "+esc(key),raw)}</div>`})()}
-   <div class="bids" id="revBox">${revBoxHTML(rs,"all")}</div>
+   <section class="psec" id="pdRev"><h3>상품후기</h3><div class="bids" id="revBox">${revBoxHTML(rs,"all")}</div></section>
+   <section class="psec" id="pdQna"><h3>상품문의</h3><div id="qnaBox">${qnaHTML(p)}</div></section>
+   <section class="psec" id="pdShip"><h3>배송·교환·반품 안내</h3>${shipInfoHTML(p)}</section>
    ${p.stock>0&&!own?`<div class="buybar"><div class="meta qdlbl" id="qdLbl" hidden></div><div class="qty"><span style="display:flex;align-items:center;gap:8px"><button type="button" id="minus" aria-label="줄이기">−</button><b class="num" id="qv">1</b><button type="button" id="plus" aria-label="늘리기">+</button><span style="white-space:nowrap">× ${esc(p.unit)}</span></span><span class="meta" style="white-space:nowrap" id="shipLbl">배송비 ${won(ship)} 포함</span></div>
-    <div class="bbrow"><button class="btn" type="button" data-chat="${esc(p.sellerId)}" data-ctx="${esc(p.name)} 문의">문의</button><button class="btn primary needWrite" id="buy" type="button"><b class="num" id="tot"></b>&nbsp;${BETA()?"오픈 알림":"구매하기"}</button></div></div>`:""}</div>`;
+    <div class="bbrow"><button class="btn" type="button" id="qnaGo">문의</button><button class="btn primary needWrite" id="buy" type="button"><b class="num" id="tot"></b>&nbsp;${BETA()?"오픈 알림":"구매하기"}</button></div></div>`:""}</div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
+  ptabsBind(dlg);qnaBind(p);
+  if($("#qnaGo"))$("#qnaGo").onclick=()=>{$("#pdQna")?.scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>$("#qnaQ")?.focus({preventScroll:true}),450)};
   if($("#gPick"))$("#gPick").onclick=()=>giftToggle(p);
   subBind(p);
   $("#revBox")?.addEventListener("click",ev=>{const f=ev.target.closest("[data-rvf]");if(f){$("#revBox").innerHTML=revBoxHTML(rs,f.dataset.rvf)}});
@@ -2695,6 +2717,46 @@ function openProduct(id){
   }
   applyWrite();if(!dlg.open)dlg.showModal();dlg.scrollTop=0;requestAnimationFrame(paintAll);xphGallery(p);
 }
+/* ---------- 상품 탭(상품상세·후기·문의·배송) · 상품 문의(공개/비밀글) ---------- */
+const qnaOf=pid=>(S.pqna||[]).filter(q=>q.productId===pid).sort((a,b)=>b.createdAt-a.createdAt);
+const QNA_PII=/(01[016789][-\s.]?\d{3,4}[-\s.]?\d{4})|(\d{2,3}-\d{3,4}-\d{4})|([가-힣]+(시|군|구)\s+[가-힣0-9]+(동|읍|면|로|길))|아파트|번지|호수|주문\s?번호|계좌/;
+const maskName=n=>{n=String(n||"구매자");return n.length<=1?n+"*":n[0]+"*".repeat(Math.min(3,n.length-1))};
+function qnaHTML(p){
+  const l=qnaOf(p.id),own=p.sellerId===S.uid,canSee=q=>!q.secret||q.by===S.uid||own||S.owner;
+  const form=!own?`<form class="qnaform" id="qnaForm"><textarea id="qnaQ" maxlength="500" rows="3" placeholder="상품에 대해 궁금한 점을 적어 주세요. 주소·전화번호는 적지 마세요."></textarea>
+    <div class="qnarow"><label class="meta"><input type="checkbox" id="qnaSecret"> 🔒 비밀글로 문의하기 (판매자만 볼 수 있어요)</label><button class="btn sm primary" type="submit">문의 등록</button></div></form>`:"";
+  const items=l.length?l.map(q=>{const see=canSee(q),mine=q.by===S.uid;
+    return `<div class="qna${q.hidden?" off":""}"><div class="qq"><span class="chip ${q.answer?"ok":""}">${q.answer?"답변 완료":"답변 대기"}</span>${q.secret?' <span class="chip">🔒 비밀글</span>':""}
+      <p>${see?esc(q.q):"비밀글입니다. 문의한 분과 판매자만 볼 수 있어요."}</p><div class="meta">${esc(mine?"내 문의":maskName(q.name))} · ${new Date(q.createdAt).toLocaleDateString("ko-KR")}</div></div>
+      ${q.answer&&see?`<div class="qa"><b>판매자 답변</b><p>${esc(q.answer)}</p><div class="meta">${esc(shopName(p.sellerId))} · ${new Date(q.answeredAt||q.createdAt).toLocaleDateString("ko-KR")}</div></div>`:""}
+      ${own&&!q.answer?`<form class="qnaans" data-qa="${esc(q.id)}"><textarea maxlength="800" rows="2" placeholder="답변을 적어 주세요"></textarea><button class="btn sm primary" type="submit">답변 등록</button></form>`:""}
+      ${S.owner?`<button class="btn sm" type="button" data-qhide="${esc(q.id)}">${q.hidden?"다시 보이기":"숨기기 (운영자)"}</button>`:""}</div>`}).join(""):'<div class="meta">아직 문의가 없습니다.</div>';
+  return form+`<div class="qnalist">${items}</div>`;
+}
+function qnaBind(p){
+  const box=$("#qnaBox");if(!box)return;
+  const f=$("#qnaForm");if(f)f.onsubmit=async e=>{e.preventDefault();if(!S.uid){toast("로그인하면 문의할 수 있어요");window.nmAuth?.open?.();return}
+    const q=$("#qnaQ").value.trim();if(q.length<2){toast("문의 내용을 적어 주세요");return}
+    let secret=$("#qnaSecret").checked;if(!secret&&QNA_PII.test(q)){secret=true;toast("주소·전화번호 같은 개인정보가 있어 비밀글로 올렸어요")}
+    if(await guard(()=>S.db.collection("pqna").add({productId:p.id,productName:p.name.slice(0,60),sellerId:p.sellerId,by:S.uid,name:(S.names?.[S.uid]||$("#who span")?.textContent||"구매자").replace(/ · 운영자$/,"").slice(0,20),q:q.slice(0,500),secret,createdAt:Date.now()}),secret?"비밀글로 문의했어요. 답변이 오면 '대화'에 알려 드려요":"문의를 올렸어요. 답변이 오면 '대화'에 알려 드려요")){$("#qnaQ").value="";$("#qnaSecret").checked=false}};
+  box.querySelectorAll("[data-qa]").forEach(fm=>fm.onsubmit=async e=>{e.preventDefault();const a=fm.querySelector("textarea").value.trim();if(!a){toast("답변을 적어 주세요");return}
+    await guard(()=>S.db.doc("pqna/"+fm.dataset.qa).update({answer:a.slice(0,800),answeredAt:Date.now()}),"답변을 올렸어요")});
+  box.querySelectorAll("[data-qhide]").forEach(b=>b.onclick=()=>{const q=(S.pqna||[]).find(x=>x.id===b.dataset.qhide);if(q)guard(()=>S.db.doc("pqna/"+q.id).update({hidden:!q.hidden}),q.hidden?"다시 보이게 했어요":"숨겼어요")});
+}
+function qnaRefresh(){const d=$("#dlg"),b=$("#qnaBox");if(!d?.open||!b||!S.openPid)return;const p=S.products.find(x=>x.id===S.openPid);if(!p)return;
+  b.innerHTML=qnaHTML(p);const n=$("#qnaN");if(n)n.textContent=qnaOf(p.id).length;qnaBind(p)}
+function shipInfoHTML(p){const c=shipCfg(p.sellerId),base=p.form==="생물"?c.fresh:c.dry,fresh=p.form==="생물";
+  return `<dl class="spec num"><dt>배송비</dt><dd>${base?won(base):"무료"}${c.free>0?` · ${won(c.free)} 이상 사면 무료`:""}</dd><dt>제주·도서산간</dt><dd>${won(c.island)} 추가</dd><dt>발송</dt><dd>판매자가 직접 보냅니다. 결제 후 보통 1~3일 안에 발송${fresh?" (생물은 캔 뒤 바로 보내요)":""}</dd><dt>묶음 배송</dt><dd>이틀 안에 같은 판매자 상품을 사면 한 상자로 보내고 배송비를 덜 내요</dd></dl>
+   <ul class="shipnote"><li><b>보내기 전 취소:</b> '마이 → 내 거래'에서 바로 취소, 전액 환불</li>
+   <li><b>단순 변심:</b> 받은 날부터 7일 안에 반품 요청 (반품 배송비는 구매자 부담)${fresh?". <b>생물 상품</b>은 시간이 지나면 다시 팔 수 없어 단순 변심 반품이 제한될 수 있어요":""}</li>
+   <li><b>상했거나 설명과 다를 때:</b> '마이 → 내 거래 → 문제 신고'에 받은 상태 사진을 올려 주세요. 비용은 판매자가 냅니다${fresh?" (생물은 받은 날 알려 주시면 더 빨리 확인돼요)":""}</li>
+   <li><b>환불:</b> 반품 상품이 판매자에게 도착한 날부터 3영업일 안에</li></ul>
+   <a class="meta" href="https://nongmani.com/refund/" target="_blank" rel="noopener">교환·환불 정책 전체 보기 ↗</a>`}
+function ptabsBind(dlg){const nav=dlg.querySelector("#ptabs");if(!nav)return;
+  nav.querySelectorAll("[data-pt]").forEach(b=>b.onclick=()=>{const t=dlg.querySelector("#"+b.dataset.pt);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
+  const secs=[...dlg.querySelectorAll(".psec")];const io=new IntersectionObserver(es=>{const top=secs.filter(x=>x.getBoundingClientRect().top<180).pop()||secs[0];nav.querySelectorAll("[data-pt]").forEach(b=>b.setAttribute("aria-current",b.dataset.pt===top.id))},{root:dlg,threshold:[0,.2,.6,1]});
+  secs.forEach(x=>io.observe(x));dlg.addEventListener("scroll",()=>{const top=secs.filter(x=>x.getBoundingClientRect().top<180).pop()||secs[0];nav.querySelectorAll("[data-pt]").forEach(b=>b.setAttribute("aria-current",b.dataset.pt===top.id))},{passive:true})}
+
 function openReview(o){
   let rating=5,photos=[];const dlg=$("#dlg");openA=null;
   dlg.innerHTML=`<form class="dinfo" id="revForm" style="position:relative"><button class="close" aria-label="닫기" type="button">×</button>
@@ -2863,7 +2925,7 @@ document.addEventListener("click",e=>{
   const cd=e.target.closest(".card");if(cd)openProduct(cd.dataset.pid);
 });
 $("#dlg").addEventListener("click",e=>{if(e.target.id==="dlg")$("#dlg").close()});
-$("#dlg").addEventListener("close",()=>{openA=null;S.openCl=null;try{phUnsub&&phUnsub()}catch(_){}phUnsub=null;try{fnUnsub&&fnUnsub()}catch(_){}fnUnsub=null});
+$("#dlg").addEventListener("close",()=>{openA=null;S.openCl=null;S.openPid=null;try{phUnsub&&phUnsub()}catch(_){}phUnsub=null;try{fnUnsub&&fnUnsub()}catch(_){}fnUnsub=null});
 
 /* 바로가기 링크: nongmani.com/app/?go=seller 처럼 열면 그 화면으로 */
 function startView(){try{const g=new URLSearchParams(location.search).get("go")||location.hash.replace(/^#/,"");return ["seller","shop","auction","request","help","herbs","my","admin"].includes(g)?g:"home"}catch(e){return "home"}}
@@ -3720,10 +3782,11 @@ function renderTodo(){
   if(d.ship)rows.push(`<div class="ti"><span>보낼 주문 <b>${d.ship}건</b></span><button type="button" data-go="seller" data-jump="sellerOrders">발송하기</button></div>`);
   if(d.rej)rows.push(`<div class="ti"><span>반려된 상품 <b>${d.rej}건</b> · 사유 확인</span><button type="button" data-go="seller" data-jump="myItems">보기</button></div>`);
   if(d.out)rows.push(`<div class="ti"><span>품절된 상품 <b>${d.out}건</b></span><button type="button" data-go="seller" data-jump="myItems">재고 채우기</button></div>`);
+  {const qn=(S.pqna||[]).filter(q=>q.sellerId===S.uid&&!q.answer&&!q.hidden).length;if(qn){d.qna=qn;rows.push(`<div class="ti"><span>답변 안 한 상품 문의 <b>${qn}건</b></span><button type="button" data-go="chat">답변하기</button></div>`)}}
   if(d.reqs)rows.push(`<div class="ti"><span>견적 기다리는 의뢰 <b>${d.reqs}건</b></span><button type="button" data-go="seller" data-jump="openReqs">견적 보내기</button></div>`);
   if(d.liveA)rows.push(`<div class="ti"><span>진행 중 제안 판매 ${d.liveA}건 · 제안 ${d.bids}번${d.top&&d.top.x.count?` · ${esc(d.top.a.title)} 현재 ${won(d.top.x.cur)}`:""}</span><button type="button" data-go="seller">보기</button></div>`);
   if(d.pend)rows.push(`<div class="ti"><span>운영자 확인 기다리는 중 ${d.pend}건</span></div>`);
-  const urgent=d.ship+d.rej+d.out+d.reqs;
+  const urgent=d.ship+d.rej+d.out+d.reqs+(d.qna||0);
   const box=`<div class="todo"><h3>오늘 할 일 <span class="meta" style="font-weight:400">${urgent?`${urgent}건`:"급한 일 없음"}</span></h3>${rows.join("")||`<div class="ti"><span>오늘은 할 일이 없습니다.</span></div>`}
     <div class="ti"><span>정산 예정 (수수료 뺀 금액)</span><span class="money num">${won(d.pay)}</span></div>
     <button class="addb" type="button" data-sell="1">+ 사진 찍어 상품 올리기</button></div>`;
@@ -4455,9 +4518,19 @@ function resolveNames(){
   need.forEach(id=>S.names[id]="");
   Promise.resolve(S.userApi.profiles(need)).then(ps=>{need.forEach(id=>{S.names[id]=ps?.[id]?.name||""});renderChat()}).catch(()=>{});
 }
+function qnaMine(){const all=S.pqna||[],my=S.uid?all.filter(q=>q.by===S.uid):[],seen=(()=>{try{return JSON.parse(localStorage.getItem("nm_qseen")||"{}")}catch(e){return {}}})();
+  const pend=S.uid?all.filter(q=>q.sellerId===S.uid&&!q.answer&&!q.hidden):[];
+  return {mine:my.sort((a,b)=>(b.answeredAt||b.createdAt)-(a.answeredAt||a.createdAt)),pend,fresh:my.filter(q=>q.answer&&!seen[q.id]),any:my.length>0||all.some(q=>q.sellerId===S.uid)}}
+function qnaInboxHTML(qs){const row=(q,lab)=>`<button class="thread" type="button" data-qopen="${esc(q.productId)}" data-qid="${esc(q.id)}"><span class="chip ${lab[1]}">${lab[0]}</span><div><b>${esc(q.productName||"상품")}</b><div class="last">${esc(q.q)}</div></div></button>`;
+  return `<h3 style="font-size:16px;margin:0 0 6px">상품 문의</h3>`+(qs.pend.length?qs.pend.map(q=>row(q,["답변해 주세요","hot"])).join(""):"")+qs.mine.slice(0,20).map(q=>row(q,q.answer?(qs.fresh.includes(q)?["새 답변","hot"]:["답변 완료","ok"]):["답변 대기",""])).join("")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-qopen]");if(!b)return;
+  try{const sn=JSON.parse(localStorage.getItem("nm_qseen")||"{}");sn[b.dataset.qid]=1;localStorage.setItem("nm_qseen",JSON.stringify(sn))}catch(_){}
+  openProduct(b.dataset.qopen);setTimeout(()=>{$("#pdQna")?.scrollIntoView({block:"start"})},150);renderChat()});
 function renderChat(){
   if(S.chatWith&&S.view==="chat")renderMsgs();
-  const ts=threadsList(),total=ts.reduce((s,t)=>s+(t.unread?1:0),0);
+  const ts=threadsList(),qs=qnaMine(),total=ts.reduce((s,t)=>s+(t.unread?1:0),0)+qs.pend.length+qs.fresh.length;
+  {const show=!!S.uid&&(ts.length>0||qs.any);const hc=document.querySelector(".hchat");if(hc)hc.hidden=!show;document.querySelectorAll('.tab[data-go="chat"]').forEach(t=>t.hidden=!show)}
+  {const qb=$("#qnaInbox");if(qb){qb.hidden=!(qs.pend.length||qs.mine.length);qb.innerHTML=qnaInboxHTML(qs)}}
   $("#dotChat").innerHTML=total?`<span class="dot">${total}</span>`:"";
   $("#bdChat").hidden=!total;$("#bdChat").textContent=total;
   const el=$("#threads");
@@ -4617,6 +4690,7 @@ try{const q0=(new URLSearchParams(location.search).get("q")||"").trim().slice(0,
   if(S.uid&&!S.canWrite){ban.hidden=false;ban.textContent="이 계정은 지금 거래를 할 수 없습니다. 운영자에게 문의해 주세요."}
   const sub=(col,key)=>db.collection(col).limit(1000).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{});
   ["products","orders","requests","quotes","reviews","auctions","bids","subs"].forEach(c=>sub(c,c));
+  db.collection("pqna").limit(1000).onSnapshot(sn=>{S.pqna=sn.docs.map(d=>({id:d.id,...d.data()}));renderChat();renderTodo();qnaRefresh()},()=>{});
   db.collection("videos").limit(500).onSnapshot(s=>{const vk=()=>S.openCl?JSON.stringify(vidsOf(S.openCl).map(v=>[v.id,v.url,v.title])):"",was=vk();S.videos=s.docs.map(d=>({id:d.id,...d.data()}));renderClassic();const dl=$("#dlg");if(dl.open&&S.openCl&&vk()!==was){const st=dl.scrollTop;openDict(S.openCl);dl.scrollTop=st}requestAnimationFrame(paintAll)},()=>{});
   /* 목록 사진(약 2.5MB)은 첫 화면이 뜬 뒤에 받기 */
   setTimeout(()=>db.collection("herbthumbs").limit(1000).onSnapshot(s=>{S.thumbs=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderClassic();requestAnimationFrame(paintAll)},()=>{}),S.view==="herbs"?0:1500);
