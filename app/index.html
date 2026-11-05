@@ -163,6 +163,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .pgal{display:grid;gap:8px;align-content:start;min-width:0}
 .dlg .pgal .thumb{aspect-ratio:1/1;min-height:0}
 .dlg>.close{grid-column:1/-1;grid-row:1}
+.mytools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px}.ephoto{display:flex;gap:10px;align-items:center}.ephoto img{width:96px;height:96px;object-fit:cover;border-radius:8px}
 .pgal .thumb .xcnt{position:absolute;right:10px;bottom:10px;color:#fff;font-size:12px;font-weight:700;background:rgba(0,0,0,.5);border-radius:999px;padding:2px 9px}
 .pstrip{order:2;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 12px 4px}
 .pstrip button{flex:none;width:58px;height:58px;padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--sunk)}
@@ -2475,7 +2476,7 @@ function renderSeller(){renderSites();
     ${p.status==="반려"&&p.rejectReason?`<div class="meta" style="color:var(--berry)">반려 사유: ${esc(p.rejectReason)}</div>`:""}${proofMissing(p)?`<div class="notice" style="margin-top:6px">${p.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${p.proofDue?day(p.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${p.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(p.proofNote)}</span>`:""}
       <div class="actions" style="margin-top:6px"><input id="pl-${p.id}" type="file" accept="image/*" aria-label="근거 사진"><input id="pp-${p.id}" placeholder="본인 산 지번" aria-label="본인 산 지번" style="max-width:200px"><button class="btn sm primary" data-act="proofLater" data-id="products:${p.id}">근거 보내기</button></div>`}</div>`:""}
     <div class="actions pricerow"><label class="meta" for="pr-${p.id}">판매 가격</label><input id="pr-${p.id}" type="number" min="100" step="100" value="${p.price}" class="num"><span class="meta">원 / ${esc(p.unit)}</span><button class="btn sm" data-act="priceP" data-id="${p.id}">가격 변경</button></div>
-    <div class="actions"><button class="btn sm" type="button" data-xph="${p.id}">📷 사진 더 넣기</button></div><div class="actions"><input id="st-${p.id}" type="number" min="0" value="${p.stock}" aria-label="재고" style="max-width:90px" class="num"><button class="btn sm" data-act="stock" data-id="${p.id}">재고 변경</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}${p.cat!=="가공품"?`<button class="btn sm" data-act="dupP" data-id="${p.id}">이걸로 하나 더</button>`:""}<button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div>
+    <div class="actions"><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 이름·설명·사진 고치기</button><button class="btn sm" type="button" data-xph="${p.id}">📷 사진 더 넣기</button></div><div class="actions"><input id="st-${p.id}" type="number" min="0" value="${p.stock}" aria-label="재고" style="max-width:90px" class="num"><button class="btn sm" data-act="stock" data-id="${p.id}">재고 변경</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}${p.cat!=="가공품"?`<button class="btn sm" data-act="dupP" data-id="${p.id}">이걸로 하나 더</button>`:""}<button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div>
     <details class="faqform subinfo"><summary>🔁 정기배송 ${p.sub?.on?`<span class="chip ok">매달 ${p.sub.day}일 · ${p.sub.pct||0}% 할인</span>`:'<span class="meta">약초차·청처럼 오래 두는 상품에 좋아요</span>'}</summary>${p.form==="생물"?'<p class="meta" style="margin:6px 0">생물은 날짜를 맞춰 보내기 어려워 정기배송을 열 수 없어요. 건조·가공품으로 열어 주세요.</p>':`<div class="qdrow"><label class="ochk"><input type="checkbox" id="sbOn-${p.id}" ${p.sub?.on?"checked":""}> 정기배송 받기</label><span>매달</span><input id="sbDay-${p.id}" type="number" min="1" max="28" value="${p.sub?.day||10}" class="num" aria-label="발송일"><span>일 발송 ·</span><input id="sbPct-${p.id}" type="number" min="0" max="30" value="${p.sub?.pct??5}" class="num" aria-label="정기배송 할인"><span>% 할인</span></div><div class="actions"><button class="btn sm primary" data-act="subP" data-id="${p.id}">저장</button></div>`}</details>
     <details class="faqform"><summary>📦 수량 할인 ${p.qd?.length?`<span class="chip ok">${esc(qdText(p))}</span>`:'<span class="meta">많이 사면 깎아 주기</span>'}</summary><div class="qdrow">${[0,1].map(i=>`<input id="mq${i+1}n-${p.id}" type="number" min="2" placeholder="${i?30:10}" value="${p.qd?.[i]?.n||""}" class="num" aria-label="개 이상"><span>개 이상</span><input id="mq${i+1}p-${p.id}" type="number" min="1" max="50" placeholder="${i?10:5}" value="${p.qd?.[i]?.pct||""}" class="num" aria-label="% 할인"><span>%</span>`).join("<br>")}</div><div class="actions"><button class="btn sm primary" data-act="qdP" data-id="${p.id}">저장</button></div></details>
     <details class="faqform"><summary>🎁 선물세트 ${p.set?`<span class="chip gold">구성 ${p.set.items.length}가지</span>`:'<span class="meta">구성품을 적으면 선물세트가 돼요</span>'}</summary><div class="field"><label for="msItems-${p.id}">구성품 (한 줄에 하나)</label><textarea id="msItems-${p.id}" rows="3">${esc((p.set?.items||[]).join("\n"))}</textarea></div><div class="field"><label for="msIntro-${p.id}">받는 분께 드리는 소개</label><input id="msIntro-${p.id}" maxlength="120" value="${esc(p.set?.intro||"")}"></div><div class="actions"><button class="btn sm primary" data-act="setP" data-id="${p.id}">저장</button></div></details>
@@ -2704,6 +2705,7 @@ function openProduct(id){
     ${sellerRow(p.sellerId,p.name+" 문의")}
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
+    ${p.sellerId===S.uid?`<div class="mytools"><span class="meta">내 상품</span><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 고치기</button><button class="btn sm" type="button" data-xph="${p.id}">📷 사진</button><button class="btn sm danger" type="button" data-act="delP" data-id="${p.id}">삭제</button></div>`:""}
     ${S.owner?`<div class="actions"><button class="btn sm gold" type="button" id="gPick">${inGift(p)?"🎁 선물 코너에서 빼기":"🎁 선물 코너에 넣기"}</button></div>`:""}
     ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p)+subOptHTML(p)+`<label class="meta" style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13.5px;line-height:1.5;cursor:pointer"><input type="checkbox" id="oAgree"><span>[필수] 배송을 위해 이 상품의 판매자(${esc(shopName(p.sellerId))})에게 받는 분 이름·연락처·주소·요청 사항을 제공하는 데 동의합니다. 거래 완료 후 3개월 보관 · <a href="https://nongmani.com/privacy/" target="_blank" rel="noopener">자세히</a></span></label><p class="meta" style="font-size:12.5px;margin:0 0 8px">농마니는 통신판매중개자로서 거래 당사자가 아니며, 상품 정보와 거래에 대한 책임은 판매자에게 있습니다.</p>`:own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
    </div>
@@ -2905,6 +2907,7 @@ const ACT={
   async subEvery(id){const x=S.subs.find(y=>y.id===id),e=(x.every||1)===1?2:1;await guard(()=>S.db.doc("subs/"+id).update({every:e}),e===1?"매달 받도록 바꿨어요":"2개월마다 받도록 바꿨어요")},
   subEnd(id){const b=document.querySelector(`[data-act="subEnd"][data-id="${id}"]`);if(!b.dataset.armed){b.dataset.armed=1;b.textContent="한 번 더 누르면 해지";setTimeout(()=>{b.textContent="해지";delete b.dataset.armed},3000);return}
     guard(()=>S.db.doc("subs/"+id).update({status:"해지",endAt:Date.now()}),"정기배송을 해지했어요. 더는 결제·발송되지 않아요")},
+  editP(id){editProduct(id)},
   async priceP(id){const x=S.products.find(y=>y.id===id);if(!x)return;const v=Math.round(+($("#pr-"+id)?.value||0)/10)*10;
     if(!(v>=100&&v<=100000000)){toast("가격은 100원 이상으로 적어 주세요");return}
     if(v===x.price){toast("지금 가격과 같아요");return}
@@ -2922,7 +2925,7 @@ const ACT={
   async giftOff(id){await guard(()=>S.db.doc("products/"+id).update({gift:false}),"선물 포장 표시를 껐습니다")},
   async pause(id){await guard(()=>S.db.doc("products/"+id).update({status:"판매중지"}),"판매를 멈췄습니다")},
   async resume(id){await guard(()=>S.db.doc("products/"+id).update({status:"판매중"}),"판매를 다시 시작했습니다")},
-  delP(id){const b=document.querySelector(`[data-act="delP"][data-id="${id}"]`);if(b.dataset.armed){guard(()=>S.db.doc("products/"+id).delete(),"상품을 삭제했습니다")}else{b.dataset.armed=1;b.textContent="한 번 더 누르면 삭제";setTimeout(()=>{b.textContent="삭제";delete b.dataset.armed},3000)}},
+  delP(id){const bs=[...document.querySelectorAll(`[data-act="delP"][data-id="${id}"]`)],b=bs.find(x=>x.closest("dialog[open]"))||bs[0];if(b.dataset.armed){guard(()=>S.db.doc("products/"+id).delete(),"상품을 삭제했습니다").then(ok=>{if(ok&&b.closest("dialog[open]"))$("#dlg").close()})}else{b.dataset.armed=1;b.textContent="한 번 더 누르면 삭제";setTimeout(()=>{b.textContent="삭제";delete b.dataset.armed},3000)}},
   async approve(id){await guard(()=>S.db.doc("products/"+id).update({status:"판매중",reviewedAt:Date.now()}),"승인했습니다")},
   async reject(id){const why=$("#rj-"+id).value.trim();if(!why){toast("반려 사유를 적어 주세요");return}await guard(()=>S.db.doc("products/"+id).update({status:"반려",rejectReason:why.slice(0,200)}),"반려했습니다")},
   async payout(id){const o=S.orders.find(x=>x.id===id),pp=o&&S.products.find(x=>x.id===o.productId);if(pp&&pp.cat==="가공품"&&!pp.bizOk){toast("가공품은 영업 신고 번호를 확인한 뒤 정산할 수 있습니다 (위 ‘새로 올라온 것’)");return}if(proofMissing(pp)){toast("채취 근거가 확인되지 않아 정산할 수 없습니다. 증빙을 확인하거나 환불해 주세요");return}await guard(()=>S.db.doc("orders/"+id).update({status:"정산완료",paidAt:Date.now()}),"정산 완료로 바꿨습니다")}
@@ -4489,6 +4492,20 @@ async function xphGallery(o){const box=$("#dlg .thumb");if(!box)return;const mor
   wrap.querySelectorAll("[data-xi]").forEach(b=>{b.onclick=e=>{e.stopPropagation();show(+b.dataset.xi)};b.onmouseenter=()=>{if(matchMedia("(hover:hover)").matches)show(+b.dataset.xi)}});
   box.querySelector(".xp").onclick=e=>{e.stopPropagation();show(k-1)};box.querySelector(".xn").onclick=e=>{e.stopPropagation();show(k+1)};
   let x0=null;box.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});box.addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(k+(dx<0?1:-1));x0=null})}
+/* 판매자: 올린 상품의 이름·설명·대표 사진 고치기 */
+function editProduct(id){const p=S.products.find(x=>x.id===id);if(!p||p.sellerId!==S.uid)return;const dlg=$("#dlg");let ph=p.photo||"";
+  const draw=()=>{dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">✏️ 상품 고치기</h3>
+   <div class="field"><label for="ePhoto">대표 사진</label><div class="ephoto">${ph?`<img src="${esc(ph)}" alt="대표 사진">`:'<span class="meta">사진 없음</span>'}<label class="btn sm">사진 바꾸기<input id="ePhoto" type="file" accept="image/*" hidden></label></div></div>
+   <div class="field"><label for="eName">상품 이름</label><input id="eName" maxlength="40" value="${esc(p.name)}"></div>
+   <div class="field"><label for="eDesc">설명</label><textarea id="eDesc" rows="5" maxlength="1000">${esc(p.desc||"")}</textarea></div>
+   <p class="meta" style="margin:0">가격·재고는 내 상품 관리에서 바로 바꿀 수 있어요. 품목·산지·채취 방식을 바꾸려면 삭제하고 새로 올려 주세요.</p>
+   <div class="actions"><button class="btn primary" type="button" id="eSave">저장</button><button class="btn" type="button" data-xph="${p.id}">📷 사진 더 넣기</button></div></div>`;
+   dlg.querySelector(".close").onclick=()=>dlg.close();
+   $("#ePhoto").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const keep=[$("#eName").value,$("#eDesc").value];ph=await shrinkPhoto(f);draw();$("#eName").value=keep[0];$("#eDesc").value=keep[1]}catch(er){toast("사진을 읽지 못했습니다")}};
+   $("#eSave").onclick=async()=>{const name=$("#eName").value.trim(),desc=$("#eDesc").value.trim();if(name.length<2){toast("상품 이름을 적어 주세요");return}
+     const v={name,desc};if(ph!==(p.photo||""))v.photo=ph;
+     if(await guard(()=>S.db.doc("products/"+id).update(v),"상품을 고쳤습니다")){Object.assign(p,v);dlg.close()}}};
+  draw();if(!dlg.open)dlg.showModal()}
 /* 판매자: 올린 뒤에도 추가 사진 넣기·빼기 */
 async function manageXph(id){const p=S.products.find(x=>x.id===id)||S.auctions.find(x=>x.id===id);if(!p||p.sellerId!==S.uid)return;let arr=(await loadXph(id)).slice();const dlg=$("#dlg");
   const draw=()=>{dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">📷 ${esc(p.name||p.title)} 사진</h3>
