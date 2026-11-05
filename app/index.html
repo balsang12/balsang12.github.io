@@ -4522,7 +4522,7 @@ setTimeout(deepOpen,0);
 const pLink=id=>{const u=new URL(location.href);u.search="?p="+encodeURIComponent(id);u.hash="";return u.href};
 {const op=openProduct;openProduct=function(id){op(id);const d=$("#dlg");if(!d.open||S.openPid!==id)return;
   try{history.replaceState(history.state,"",pLink(id))}catch(_){}
-  const sh=$("#pShare");if(sh)sh.onclick=async()=>{const p=S.products.find(x=>x.id===id),url=pLink(id);
+  const sh=$("#pShare");if(sh)sh.onclick=async()=>{const p=S.products.find(x=>x.id===id),url=/(^|\.)nongmani\.com$/.test(location.hostname)?"https://nongmani.com/p/"+encodeURIComponent(id)+"/":pLink(id);
     try{if(navigator.share){await navigator.share({title:"농마니 · "+(p?.name||""),url});return}}catch(e){if(e&&e.name==="AbortError")return}
     try{await navigator.clipboard.writeText(url);toast("상품 주소를 복사했어요. 카톡에 붙여 넣어 보내세요")}catch(_){prompt("이 주소를 복사해 보내세요",url)}}}}
 document.addEventListener("click",e=>{if(!e.target.closest("#goMyItems"))return;const el=$("#myItemsP");if(!el)return;el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.add("jumpflash");setTimeout(()=>el.classList.remove("jumpflash"),1600)});
