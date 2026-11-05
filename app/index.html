@@ -175,6 +175,7 @@ section[data-view="shop"].searching>#cats,section[data-view="shop"].searching>#u
   section[data-view="shop"] #shopQ{min-width:0;flex:1}section[data-view="shop"] #growF{flex:none;width:122px;padding-inline:8px}
   #cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}#cats::-webkit-scrollbar{display:none}#cats .cat{flex:none}
   section[data-view="shop"].searching #useBar{display:none}
+.fewbox{border:1px dashed var(--line,#ccc);border-radius:14px;padding:14px;margin-top:6px;display:grid;gap:10px}.fewalert{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.fewh{margin:6px 0 0;font-size:16px}.fewchips{display:flex;flex-wrap:wrap;gap:6px}.fewchips .chip{cursor:pointer;font-size:14px;padding:6px 12px}
 }
 input[type=file].nmf{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}.nmfb{display:inline-flex;align-items:center;gap:4px;min-height:42px;padding:0 14px;border:1.5px solid var(--pine);border-radius:10px;background:var(--surface);color:var(--pine);font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}.nmfb:hover{background:var(--pine-soft)}.nmfn{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 .oath{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.5;background:var(--sunk);border-radius:10px;padding:12px;cursor:pointer}.oath input{width:22px;height:22px;flex:none;margin-top:1px}
@@ -2023,6 +2024,20 @@ function card(p){
 }
 const suspended=id=>!!S.checks?.[id]?.suspended;
 const live=()=>S.products.filter(p=>p.status==="판매중"&&!suspended(p.sellerId));
+const SIMILAR={잔대:["더덕","도라지"],더덕:["도라지","잔대"],도라지:["더덕","잔대"],산삼:["장뇌삼","인삼"],장뇌삼:["산삼","인삼"],인삼:["장뇌삼","산삼"],곰취:["참취","곤달비"],참취:["곰취","미역취"],두릅:["엄나무순","땅두릅"],엄나무순:["두릅","땅두릅"],땅두릅:["두릅","엄나무순"],고사리:["고비"],고비:["고사리"],산마늘:["달래","부추"],곤드레:["곤달비","참취"]};
+function fewHTML(q,list){
+  if(list.length>3)return "";
+  const h=findHerb(q),key=h?h.name:q,inL=new Set(list.map(p=>p.id)),av=p=>p.stock>0&&!inL.has(p.id);
+  const has=n=>live().filter(p=>av(p)&&!isProc(p)&&(p.item?(findHerb(p.item)?.name||p.item)===n:matchQ(n,p.name)));
+  let names=(SIMILAR[key]||[]).filter(n=>n!==key);
+  if(h)names=names.concat(HERBS.filter(x=>x.cat===h.cat&&x.name!==key&&!names.includes(x.name)).map(x=>x.name));
+  const sim=names.map(n=>({n,ps:has(n)})).filter(o=>o.ps.length).slice(0,3);
+  const proc=live().filter(p=>av(p)&&isProc(p)&&matchQ(key,(p.item||"")+p.name+(p.proc?.ingr||""))).slice(0,4);
+  const simCards=[...new Map(sim.flatMap(o=>o.ps.slice(0,2)).map(p=>[p.id,p])).values()].slice(0,4);
+  return `<div class="fewbox" style="grid-column:1/-1"><div class="fewalert"><span>‘${esc(key)}’ 상품이 더 들어오면 바로 알려 드릴게요.</span>${alertBtn(key,"shop","새 상품이 올라오면 알려 주세요")}</div>${sim.length?`<h4 class="fewh">비슷한 품목도 둘러보세요</h4><div class="fewchips">${sim.map(o=>`<button type="button" class="chip" data-simq="${esc(o.n)}">${esc(o.n)} <span class="num">${o.ps.length}개</span></button>`).join("")}</div>`:""}</div>`
+   +simCards.map(card).join("")
+   +(proc.length?`<h4 class="fewh" style="grid-column:1/-1">‘${esc(key)}’ 가공품</h4>`+proc.map(card).join(""):"");
+}
 function emptyBox(msg,btns){return `<div class="empty" style="grid-column:1/-1">${msg}${btns?`<div class="actions" style="justify-content:center;margin-top:10px">${btns}</div>`:""}</div>`}
 const ST_SHOW={낙찰:"판매 확정",유찰:"미판매",패찰:"다른 분께 판매",판매자확인:"판매자 확인 중"};
 function statusChip(s){const ok=["정산완료","판매중","선택됨","진행중","낙찰"],bad=["취소","반려","유찰","패찰"];return `<span class="chip ${ok.includes(s)?"ok":bad.includes(s)?"hot":"gold"}">${esc(ST_SHOW[s]||s)}</span>`}
@@ -2317,12 +2332,13 @@ function renderShop(){
   const pop=p=>soldOf(p.id)*3+ratingOf(p.id).n*2+ratingOf(p.id).avg;
   const cmp={pop:(a,b)=>pop(b)-pop(a)||byNew(a,b),new:byNew,low:(a,b)=>a.price-b.price,high:(a,b)=>b.price-a.price,unit:(a,b)=>kg(a)-kg(b)||a.price-b.price,
     rating:(a,b)=>ratingOf(b.id).avg-ratingOf(a.id).avg||ratingOf(b.id).n-ratingOf(a.id).n,reviews:(a,b)=>ratingOf(b.id).n-ratingOf(a.id).n||byNew(a,b)}[s]||byNew;
-  list.sort((a,b)=>(a.stock<=0)-(b.stock<=0)||cmp(a,b));
+  list.sort((a,b)=>(a.stock<=0)-(b.stock<=0)||(!a.photo)-(!b.photo)||cmp(a,b));
   sortBar($("#shopSort"),SHOP_SORTS,s,"s");
   $("#shopCount").innerHTML=(list.length?`상품 ${list.length}개${s==="unit"?" · 단위가 다른 상품은 1kg 기준으로 바꿔 비교":""}${s==="pop"?" · 판매량과 후기로 정렬":""} · `:"")+`<button type="button" class="helplink" data-reco="1">🧺 뭘 살지 모르겠다면 쇼핑도우미</button>`;
   $("#cats").innerHTML=CATS.map(c=>`<button class="cat" aria-pressed="${c===S.cat}" data-cat="${c}">${c}</button>`).join("");
   const ak=q||(S.cat!=="전체"?S.cat:"");
   $("#shopGrid").innerHTML=list.length?list.map(card).join(""):hq.hit?"":emptyBox(q?`"${esc(q)}"에 맞는 상품이 아직 없습니다. 들어오면 알려 드리거나, 채취 의뢰를 올리면 농부·심마니가 견적을 보냅니다.`:uf&&S.cat==="전체"?`‘${esc(uf.t)}’에 맞는 상품을 준비하고 있습니다. 다른 방법도 둘러보세요.`:"이 분류에 판매 중인 상품이 아직 없습니다. 들어오면 알려 드릴까요?",alertBtn(ak,"shop")+(q?'<button class="btn" type="button" data-askgo="1">이름이 맞는지 모르겠으면 생김새로 찾기</button>':"")+'<button class="btn" data-go="request">채취 의뢰하기</button>');
+  if(list.length&&q&&!hq.hit)$("#shopGrid").insertAdjacentHTML("beforeend",fewHTML(q,list));
 }
 function renderRequests(){
   if(!S.uid){$("#myReqs").innerHTML=`<div class="empty">로그인하면 내 요청서가 보입니다.</div>`;return}
@@ -2899,6 +2915,7 @@ document.addEventListener("click",e=>{
   const slb=e.target.closest("[data-sell]");if(slb){openSell();return}
   const mkb=e.target.closest("[data-mkt]");if(mkb){S.cat="전체";S.use="";$("#shopQ").value=mkb.dataset.mkt;go("shop");return}
   const usb=e.target.closest("[data-use]");if(usb){const k=usb.dataset.use;S.use=S.view==="shop"&&S.use===k?"":k;S.cat="전체";$("#shopQ").value="";if(S.view!=="shop")go("shop");else{renderShop();requestAnimationFrame(paintAll)}return}
+  const smq=e.target.closest("[data-simq]");if(smq){$("#shopQ").value=smq.dataset.simq;renderShop();window.scrollTo({top:0,behavior:"smooth"});return}
   const alb=e.target.closest("[data-alert]");if(alb){toggleAlert(alb.dataset.alert,alb.dataset.ak||"shop");return}
   const alg=e.target.closest("[data-alertgo]");if(alg){const a=S.alerts.find(x=>x.id===alg.dataset.alertgo);if(!a)return;
     if(a.kind==="auction"){S.acat=ACATS.includes(a.key)?a.key:"전체";go("auction")}else{const isC=CATS.includes(a.key);S.cat=isC?a.key:"전체";S.use="";$("#shopQ").value=isC?"":a.key;go("shop")}return}
@@ -3306,7 +3323,7 @@ function renderUses(){const el=$("#homeUses");if(!el)return;el.innerHTML=USES.ma
 function renderUseBar(){const el=$("#useBar");if(!el)return;el.innerHTML=`<span class="lbl">용도별</span>`+USES.map(u=>`<button type="button" data-use="${u.k}" aria-pressed="${S.use===u.k}">${u.t}</button>`).join("")}
 const soonIco=(h,soon)=>soon?h.replace('class="ico"','class="ico soon"').replace(/<\/button>$/,"<small>준비 중</small></button>"):h;
 const myAlert=(key,kind)=>S.alerts.find(a=>a.uid===S.uid&&a.key===key&&a.kind===kind);
-const alertBtn=(key,kind)=>!key?"":myAlert(key,kind)?`<button class="btn" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 알림 신청됨 · 끄기</button>`:`<button class="btn primary" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 들어오면 알려 주세요</button>`;
+const alertBtn=(key,kind,t)=>!key?"":myAlert(key,kind)?`<button class="btn" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ 알림 신청됨 · 끄기</button>`:`<button class="btn primary" type="button" data-alert="${esc(key)}" data-ak="${kind}">‘${esc(key)}’ ${t||"들어오면 알려 주세요"}</button>`;
 async function toggleAlert(key,kind){
   if(!S.uid){toast("로그인하면 입고 알림을 받을 수 있습니다");return}
   const a=myAlert(key,kind);
