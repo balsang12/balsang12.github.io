@@ -40,6 +40,35 @@
     if (!s) return null;
     return sb.rpc("whoami").then(function (r) { who = r.data || { id: s.user.id }; return who; }, function () { who = { id: s.user.id }; return who; });
   });
+  /* 동의 기록은 계정(서버)에 남겨서 다른 기기·브라우저에서 다시 묻지 않음.
+     기록이 없는 계정: 이 기기에 동의 기록이 있거나 가입한 지 오래된 계정이면 조용히 기록만 남기고,
+     방금 카카오로 처음 가입한 계정이면 그때 한 번만 동의 창을 보여 줌 */
+  sessionReady.then(function (s) {
+    if (!s || recovering) return;
+    var u = s.user || {}, md = u.user_metadata || {};
+    if (md.nm_consent) { try { localStorage.setItem("nm_consent", md.nm_consent); } catch (e) {} return; }
+    var loc = null; try { loc = localStorage.getItem("nm_consent"); } catch (e) {}
+    var fresh = u.created_at && (Date.now() - Date.parse(u.created_at) < 30 * 60 * 1000);
+    if (loc || !fresh) { try { sb.auth.updateUser({ data: { nm_consent: loc || u.created_at || new Date().toISOString() } }).catch(function () {}); } catch (e) {} return; }
+    var ask = function () { askConsent(function () { var now = new Date().toISOString(); try { localStorage.setItem("nm_consent", now); } catch (e) {} try { sb.auth.updateUser({ data: { nm_consent: now } }).catch(function () {}); } catch (e) {} }); };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ask); else ask();
+  });
+  function askConsent(done) {
+    var ko = !window.NM_LANG || window.NM_LANG === "ko", T = "https://nongmani.com/terms/", P = "https://nongmani.com/privacy/";
+    if (!document.getElementById("nmAuthCss")) { var st = document.createElement("style"); st.id = "nmAuthCss"; st.textContent = css; document.head.appendChild(st); }
+    var w = document.createElement("div"); w.className = "nmauth"; w.setAttribute("role", "dialog"); w.setAttribute("aria-modal", "true");
+    var row = function (txt) { return '<label style="display:flex;gap:8px;align-items:flex-start;font-size:15px;line-height:1.5;cursor:pointer"><input type="checkbox" class="nmK" style="width:20px;height:20px;flex:none;margin:2px 0 0">' + txt + '</label>'; };
+    w.innerHTML = '<div class="box"><h2>' + (ko ? "가입을 마무리해 주세요" : "One last step") + '</h2><p>' + (ko ? "처음 한 번만 확인합니다. 다음부터는 묻지 않아요." : "We ask only once.") + '</p>' +
+      '<div style="border:1px solid var(--line,#D3DCCD);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;margin:10px 0">' +
+      row(ko ? "<span>[필수] 만 14세 이상입니다</span>" : "<span>I am 14 or older</span>") +
+      row(ko ? '<span>[필수] <a href="' + T + '" target="_blank" rel="noopener">이용약관</a>에 동의합니다</span>' : '<span>I agree to the <a href="' + T + '" target="_blank" rel="noopener">Terms</a></span>') +
+      row(ko ? '<span>[필수] <a href="' + P + '" target="_blank" rel="noopener">개인정보 수집·이용</a>에 동의합니다</span>' : '<span>I agree to the <a href="' + P + '" target="_blank" rel="noopener">Privacy policy</a></span>') + '</div>' +
+      '<button type="button" class="nm-kakao" id="nmKOk" style="background:var(--pine,#2B5B41);color:#fff">' + (ko ? "✔ 모두 동의하고 시작하기" : "Agree and continue") + '</button>' +
+      '<button type="button" class="nm-close" id="nmKNo" style="margin-top:8px">' + (ko ? "동의하지 않고 나가기 (로그아웃)" : "Decline and sign out") + '</button></div>';
+    document.body.appendChild(w);
+    w.querySelector("#nmKOk").onclick = function () { w.querySelectorAll(".nmK").forEach(function (c) { c.checked = true; }); w.remove(); done(); };
+    w.querySelector("#nmKNo").onclick = function () { w.remove(); signOut(); };
+  }
   // reload once when someone signs in or out in another tab, so the app restarts with the right account
   sb.auth.onAuthStateChange(function (ev) {
     if (ev === "PASSWORD_RECOVERY") { recovering = true; setTimeout(function () { openReset(); }, 50); return; }
@@ -353,7 +382,7 @@
     el.addEventListener("click", function (e) { if (e.target === el) close(); });
     el.querySelector("#nmClose").onclick = close;
     el.querySelector("#nmKakao").onclick = function () {
-      if (!needC(function () { el.querySelector("#nmKakao").click(); })) return;
+      /* 카카오는 먼저 로그인하고, 처음 가입한 계정만 로그인 뒤에 동의를 받음(아래 consentCheck) */
       say(t.goKakao); remember();
       sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: APP_URL } }).then(function (r) {
         if (r.error) say(t.noKakao, true);
@@ -412,13 +441,14 @@
     return el;
   }
   /* 이메일 칸은 접어 두고 카카오를 먼저 보여 줌. 한국어가 아니면(해외 손님은 카카오가 없는 경우가 많음) 처음부터 펼침 */
-  function showMail(on) { var b = el.querySelector("#nmEmailBox"), m = el.querySelector("#nmMore"); b.hidden = !on; m.hidden = on; m.setAttribute("aria-expanded", on ? "true" : "false"); }
+  function showMail(on) { var b = el.querySelector("#nmEmailBox"), m = el.querySelector("#nmMore"); b.hidden = !on; m.hidden = on; m.setAttribute("aria-expanded", on ? "true" : "false");
+    var cb = el.querySelector("#nmConsent"), back = false; try { back = !!localStorage.getItem("nm_consent"); } catch (e) {} if (cb) cb.hidden = back || !on; }
   function say(t, bad) { var m = el.querySelector("#nmMsg"); m.textContent = t; m.className = "nm-msg" + (bad ? " nm-err" : ""); }
   function open(reason, o) { build(); o = o || {}; var t = L(), ko = !window.NM_LANG || window.NM_LANG === "ko";
     /* 이 기기에서 전에 동의·로그인한 적이 있으면 '가입'처럼 보이지 않게: 동의 칸을 접고 '다시 로그인'으로 */
     var back = false; try { back = !!localStorage.getItem("nm_consent"); } catch (e) {}
-    var cb = el.querySelector("#nmConsent"); if (cb) cb.hidden = back && ko;
-    el.querySelector("#nmKakao").textContent = back && ko ? "카카오로 로그인" : t.kakao;
+    var cb = el.querySelector("#nmConsent"); if (cb) cb.hidden = back || (ko && !o.email);
+    el.querySelector("#nmKakao").textContent = ko ? "카카오로 로그인 · 가입" : t.kakao;
     el.querySelector("#nmAuthH").textContent = back && ko ? (o.seller ? "판매자 다시 로그인" : "다시 로그인") : o.seller && ko ? "판매자 로그인" : t.h;
     el.querySelector("#nmAuthP").textContent = back && ko ? "전에 쓰시던 카카오(또는 이메일)로 로그인하시면 그대로 이어집니다. 다시 가입하실 필요 없어요." : o.seller && ko ? "가입하면 바로 내 가게를 열 수 있어요. 처음이면 자동으로 가입됩니다." : t.p;
     document.querySelectorAll("dialog[open]").forEach(function (d) { try { d.close(); } catch (e) {} }); showMail(!ko || !!o.email); el.hidden = false; say(reason || "");
