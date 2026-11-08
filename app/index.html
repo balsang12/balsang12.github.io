@@ -14,7 +14,7 @@
 <meta property="og:image" content="https://nongmani.com/og.png">
 </head><body>
 <script src="vendor/supabase.js"></script>
-<script src="nm-claude.js?v=d3923498"></script>
+<script src="nm-claude.js?v=e06b18fd"></script>
 <title>농마니</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
@@ -173,7 +173,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .dlg .pgal .thumb>img.ph{object-fit:cover}.dlg .pgal .thumb>img.bgf{display:none}
 @media (max-width:860px){.dlg .pgal .thumb{aspect-ratio:4/3}}
 @media (max-width:860px){.ptop .pback span{display:none}}
-.admall summary{cursor:pointer}.admrow{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:start}.admth{width:56px;height:56px;border-radius:8px;overflow:hidden;background:var(--sunk)}.admth img{width:100%;height:100%;object-fit:cover}
+.admall summary{cursor:pointer}.memrow summary{cursor:pointer;list-style:none}.memrow summary::-webkit-details-marker{display:none}.memd{display:grid;gap:4px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.memps{display:flex;flex-wrap:wrap;gap:6px}.admrow{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:start}.admth{width:56px;height:56px;border-radius:8px;overflow:hidden;background:var(--sunk)}.admth img{width:100%;height:100%;object-fit:cover}
 @media (min-width:861px){.dlg>div.thumb{aspect-ratio:1/1}.dlg>div.thumb>img.ph{height:100%;max-height:none;object-fit:cover}.dlg .pgal .thumb>img.ph{object-fit:cover}.dlg .pgal .thumb>img.bgf{display:none}}
 .dlg>.thumb,.dlg>.pgal{align-self:start}.dlg>div.thumb{min-height:0}.dlg>.thumb>img.ph{height:auto;max-height:80vh}.dlg>.thumb>img.bgf{display:none}
 .mytools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border:1px dashed var(--line);border-radius:10px}.ephoto{display:flex;gap:10px;align-items:center}.ephoto img{width:96px;height:96px;object-fit:cover;border-radius:8px}
@@ -1301,6 +1301,7 @@ label.btn{display:inline-block}
         </ul></div>
       <div class="panel"><h3>고객 문의</h3><div class="list" id="inqQueue"></div></div>
       <div class="panel"><h3>직거래 유도 신고</h3><div class="list" id="flagQueue"></div></div>
+      <details class="panel admall" id="admMem"><summary><b>회원 관리</b> <span class="meta num" id="admMemN"></span></summary><p class="meta" style="margin:6px 0">운영 목적으로만 확인하세요. 전화번호·주소는 저장하지 않습니다.</p><input id="admMQ" type="search" placeholder="닉네임·이메일·가게 이름으로 찾기" aria-label="회원 찾기" style="margin:4px 0 8px"><div class="list" id="admMemList"><div class="empty">펼치면 불러옵니다.</div></div></details>
       <details class="panel admall" id="admAll"><summary><b>전체 상품 관리</b> <span class="meta num" id="admAllN"></span></summary><input id="admQ" type="search" placeholder="상품 이름이나 판매자로 찾기" aria-label="전체 상품 찾기" style="margin:8px 0"><div class="list" id="admAllList"></div></details>
       <div class="panel"><h3>새로 올라온 것 (사후 확인)</h3><p class="meta" style="margin:0 0 8px">바로 판매가 시작된 상품·제안 판매입니다. 위험한 것이 위에 옵니다. 문제가 있으면 내리세요.</p><div class="actions" style="margin-bottom:8px"><button class="btn sm" type="button" id="postAll">가공품 빼고 모두 확인함</button></div><div class="list" id="postQueue"></div></div>
       <div class="panel"><h3>채취지 확인</h3><p class="meta" style="margin:0 0 8px">판매자가 등록한 산입니다. 한 번 확인하면 그 산에서 캔 산삼은 근거가 자동으로 확인됩니다.</p><div class="list" id="siteQueue"></div></div>
@@ -2509,8 +2510,26 @@ function renderAdmAll(){const el=$("#admAllList");if(!el||!S.owner)return;const 
     <div class="actions"><button class="btn sm" type="button" data-xp="${p.id}">보기</button><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 고치기</button>${p.status==="판매중"?`<button class="btn sm" data-act="pause" data-id="${p.id}">판매 중지</button>`:p.status==="판매중지"?`<button class="btn sm" data-act="resume" data-id="${p.id}">판매 재개</button>`:""}<button class="btn sm gold" type="button" data-agift="${p.id}">${inGift(p)?"선물 코너 빼기":"🎁 선물 코너"}</button><button class="btn sm danger" data-act="delP" data-id="${p.id}">삭제</button></div></div></div>`).join(""):`<div class="empty">${q?"찾는 상품이 없습니다.":"상품이 없습니다."}</div>`}
 document.addEventListener("input",e=>{if(e.target.id==="admQ")renderAdmAll()});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-agift]");if(!b)return;const p=S.products.find(x=>x.id===b.dataset.agift);if(p)giftToggle(p)});
+/* 운영자: 회원 관리 (서버에서 운영자만 열람 가능) */
+let MEMS=null,MEMLOAD=false;
+async function loadMembers(){if(MEMLOAD)return;MEMLOAD=true;try{MEMS=window.nmAuth?.members?await window.nmAuth.members():null}catch(_){MEMS=null}MEMLOAD=false;renderMembers()}
+const kDay=t=>t?mdKo(isoDay(new Date(t).getTime())):"—";
+function memStats(id){const P=S.products.filter(p=>p.sellerId===id),ob=(S.orders||[]).filter(o=>o.buyerId===id),os=(S.orders||[]).filter(o=>o.sellerId===id),rq=(S.requests||[]).filter(r=>r.buyerId===id),qa=(S.pqna||[]).filter(q=>q.by===id);return {P,ob,os,rq,qa}}
+function renderMembers(){const el=$("#admMemList");if(!el||!S.owner)return;
+  if(MEMS===null){el.innerHTML=`<div class="empty">${MEMLOAD?"불러오는 중…":"회원 정보는 nongmani.com에서 운영자로 로그인했을 때만 볼 수 있어요."}</div>`;return}
+  const q=($("#admMQ")?.value||"").trim().toLowerCase();
+  const rows=MEMS.map(m=>({...m,sl:S.sellers[m.id]})).filter(m=>!q||[m.name,m.email,m.sl?.shopName,m.sl?.region].join(" ").toLowerCase().includes(q));
+  $("#admMemN").textContent=`${MEMS.length}명 · 판매자 ${MEMS.filter(m=>S.sellers[m.id]).length}명`;
+  el.innerHTML=rows.length?rows.map(m=>{const st=memStats(m.id),sl=m.sl;
+   return `<details class="item sunk memrow"><summary><div class="itop"><b>${esc(m.name||"(이름 없음)")}</b>${sl?`<span class="chip pine">판매자 · ${esc(sl.shopName||"")}</span>`:'<span class="chip">손님</span>'}</div>
+    <div class="meta num">${esc(m.email||"이메일 없음")} · ${m.provider==="kakao"?"카카오":esc(m.provider||"")} · 가입 ${kDay(m.created_at)} · 마지막 접속 ${kDay(m.last_sign_in_at)}</div></summary>
+    <div class="memd">${sl?`<div class="meta">가게: ${esc(sl.shopName||"")} · ${esc(sl.region||"")} · ${esc(sl.role||"")}${sl.biz||sl.regNo?` · 사업자 ${esc(sl.regNo||"있음")}`:""}</div>${sl.bio?`<div class="meta">소개: ${esc(sl.bio)}</div>`:""}`:""}
+     <div class="meta num">올린 상품 ${st.P.length} · 판매 주문 ${st.os.length} · 구매 주문 ${st.ob.length} · 채취 의뢰 ${st.rq.length} · 상품 문의 ${st.qa.length}</div>
+     ${st.P.length?`<div class="memps">${st.P.map(p=>`<button type="button" class="chip" data-xp="${p.id}">${esc(p.name)} · ${esc(p.status)}</button>`).join("")}</div>`:""}</div></details>`}).join(""):`<div class="empty">찾는 회원이 없습니다.</div>`}
+document.addEventListener("toggle",e=>{if(e.target.id==="admMem"&&e.target.open){if(MEMS===null)loadMembers();else renderMembers()}},true);
+document.addEventListener("input",e=>{if(e.target.id==="admMQ")renderMembers()});
 function renderAdmin(){
-  if(!S.owner)return;renderAdmAll();
+  if(!S.owner)return;renderAdmAll();if(MEMS)renderMembers();
   const pendA=S.auctions.filter(a=>a.status==="검수대기"),pendP=S.products.filter(p=>p.status==="검수대기");
   const listIncome=S.auctions.filter(a=>a.status!=="반려").reduce((s,a)=>s+(a.listFee||0),0);
   const aucDeals=S.auctions.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");

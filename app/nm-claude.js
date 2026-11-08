@@ -487,6 +487,7 @@
     open: open, close: close,
     signOut: signOut, askSignOut: askSignOut,
     session: function () { return sessionReady; },
-    mgrFind: function (hash) { return sb.rpc("mgr_find", { p_hash: hash }).then(function (r) { return r.data || null; }, function () { return null; }); }
+    mgrFind: function (hash) { return sb.rpc("mgr_find", { p_hash: hash }).then(function (r) { return r.data || null; }, function () { return null; }); },
+    members: function () { return sb.rpc("admin_members").then(function (r) { return r.error ? null : (r.data || []); }, function () { return null; }); }
   });
 })();
