@@ -164,6 +164,7 @@ section[data-view]>*,.doc>*{min-width:0}
 .dlg .pgal .thumb{aspect-ratio:1/1;min-height:0}
 .dlg>.close{grid-column:1/-1;grid-row:1}
 #bulk[hidden],.bulk-m[hidden]{display:none!important}
+.bankbox{border:1.5px solid var(--hl);border-radius:12px;padding:12px 14px;display:grid;gap:6px;background:var(--surface);margin:8px 0;width:100%}.bkrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.bkrow>span,.bkrow>label{min-width:86px;color:var(--muted);font-size:14px}
 #dlg:has(>.pview){width:100%;max-width:100%;height:100%;max-height:100%;margin:0;border-radius:0}
 .pview{max-width:1100px;margin:0 auto;width:100%}
 .ptop{grid-column:1/-1;grid-row:1;position:sticky;top:0;z-index:7;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
@@ -1139,6 +1140,12 @@ label.btn{display:inline-block}
         <div class="notice">농업경영체(농관원)·임업경영체(산림청) 등록번호를 넣으면 운영자 확인 뒤 <b>인증 판매자</b> 배지와 등록 표시가 붙습니다. 온라인에서 꾸준히 파시려면 세무서에 사업자등록이 필요합니다. 생물·말린 약초는 부가세 면세라 <b>면세사업자</b>로 등록하면 되고, 청·즙·가루 같은 가공품은 과세사업자와 식품 영업신고가 필요합니다. 자세한 내용은 이용 안내의 판매자 안내서를 보세요.</div>
         <button class="btn needWrite" type="submit">상점 정보 저장</button>
       </form>
+      <div class="panel" id="payAcctP"><h3>정산 받을 계좌 · 위탁판매 동의</h3>
+        <p class="meta" style="margin:0 0 8px">농마니는 판매자님의 상품을 맡아 농마니 이름으로 팝니다(위탁판매). 손님이 받은 뒤 7일이 지나면 수수료(상품 금액의 <span class="feeNow">10</span>%, 부가세 포함)를 뺀 금액을 매주 목요일에 아래 계좌로 보내 드립니다. 계좌는 운영자만 볼 수 있어요.</p>
+        <div class="row2"><div class="field"><label for="paBank">은행</label><input id="paBank" placeholder="예: 농협은행" maxlength="20"></div><div class="field"><label for="paAcct">계좌번호</label><input id="paAcct" inputmode="numeric" placeholder="숫자만" maxlength="30"></div></div>
+        <div class="field"><label for="paHolder">예금주 (판매자 본인 명의)</label><input id="paHolder" maxlength="20"></div>
+        <label class="consent" style="display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:6px 0"><input type="checkbox" id="paAgree"> <span>위탁판매 조건에 동의합니다: 상품의 품질·원산지·적법한 채취는 판매자가 책임지고, 판매자 잘못으로 생긴 환불·손해는 정산금에서 빼거나 판매자가 부담합니다. 정산은 손님 수령 후 7일 뒤 매주 목요일입니다.</span></label>
+        <div class="actions"><button class="btn primary" type="button" id="paSave">저장</button><span class="meta" id="paState"></span></div></div>
       <div class="panel" id="mgrPanel"></div>
 
       <form class="panel" id="sellForm">
@@ -1265,6 +1272,10 @@ label.btn{display:inline-block}
       <div class="field"><label for="cfgReview">제안 판매 직접 승인·감정서 기준 (원)</label><input id="cfgReview" type="number" min="10000" step="10000" class="num"></div></div>
     <div class="row2"><div class="field"><label for="cfgPhone">고객센터 전화 (고객센터에 표시)</label><input id="cfgPhone" inputmode="tel" placeholder="예: 010-0000-0000"></div>
       <div class="field"><label for="cfgHours">전화 받는 시간</label><input id="cfgHours" placeholder="예: 평일 오전 10시~오후 6시"></div></div>
+    <div class="row2"><div class="field"><label for="cfgBankName">입금 받을 은행</label><input id="cfgBankName" placeholder="예: 농협은행"></div>
+      <div class="field"><label for="cfgBankAcct">계좌번호 (에스크로 연결 계좌)</label><input id="cfgBankAcct" inputmode="numeric" placeholder="예: 301-0000-0000-00"></div></div>
+    <div class="row2"><div class="field"><label for="cfgBankHolder">예금주</label><input id="cfgBankHolder" placeholder="예: 농마니(권영철)"></div>
+      <div class="field"><label for="cfgFee">위탁 수수료 % (상품 금액 기준, 부가세 포함)</label><input id="cfgFee" type="number" min="0" max="30" step="0.5" class="num"></div></div>
     <div class="field"><label for="cfgProof">채취 근거 기준 (원, 제안 판매·마켓 공통 · 자연산 산삼은 금액과 상관없이 필요)</label><input id="cfgProof" type="number" min="10000" step="10000" class="num"></div>
     <div class="giftcfg"><h3 style="margin:14px 0 6px">🎁 명절 선물 코너</h3>
       <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="cfgGift"> 선물 코너 열기 (아래 기간에만 손님 첫 화면에 보입니다)</label>
@@ -1293,7 +1304,7 @@ label.btn{display:inline-block}
         <ul style="margin:0;padding-left:18px;display:grid;gap:4px">
           <li><s>상표 출원</s> · ‘농마니’ 35류·31류 출원 완료 (제40-2026-0219569호), 심사 진행 중</li>
           <li><b>사업자등록·통신판매업 신고:</b> 전자상거래 소매 중개업(525103)으로 등록 후 통신판매업 신고</li>
-          <li><b>결제:</b> 지금은 테스트 결제. PG 에스크로와 지급대행(판매자·산주 정산), 해외 카드 결제</li>
+          <li><b>결제:</b> 위탁판매 · 계좌이체(무통장입금)로 받고, 운영자가 입금을 확인합니다. 카드 결제와 해외 결제는 아직 없습니다</li>
           <li><b>제안 검증:</b> 지금은 브라우저에서 계산. 정식 오픈 전 서버 시간 기준 검증으로 바꾸기</li>
           <li><b>본인 확인:</b> 제안 전 휴대폰 본인 인증, 미결제 횟수에 따른 제안 제한</li>
           <li><b>카카오 로그인:</b> 카카오 개발자 앱 등록 후 Supabase에 연결</li>
@@ -1310,7 +1321,8 @@ label.btn{display:inline-block}
       <div class="panel"><h3>채취 증빙 확인</h3><p class="meta" style="margin:0 0 8px">서류 사진은 운영자만 봅니다. 이름·지번이 등록 정보와 맞는지 보고 확인해 주세요.</p><div class="list" id="proofQueue"></div></div>
       <div class="panel"><h3>산주 찾기 요청</h3><p class="meta" style="margin:0 0 8px">산림조합에 지번으로 산주를 문의하고, 동의서를 받도록 연결합니다.</p><div class="list" id="landQueue"></div></div>
       <div class="panel"><h3>산야초 사전 오류 신고</h3><div class="list" id="herbReports"></div></div>
-      <div class="panel"><h3>정산 대기 (수령 확인 완료)</h3><div class="list" id="payouts"></div></div>
+      <div class="panel"><h3>입금 확인 · 환불 요청</h3><p class="meta" style="margin:0 0 8px">통장에 들어온 금액과 입금자명을 보고 [입금 확인]을 누르세요. 확인해야 판매자에게 발송 요청이 갑니다. 기한이 지난 주문은 자동으로 취소됩니다.</p><div class="list" id="deposits"></div></div>
+      <div class="panel"><h3>위탁 대금 지급 (매주 목요일)</h3><p class="meta" style="margin:0 0 8px">손님이 받은 뒤 7일이 지난 주문만 나옵니다. 판매자 계좌로 보낸 뒤 [지급 완료]를 누르세요.</p><div class="list" id="payouts"></div></div>
       <div class="panel"><h3>손님이 찾은 몸 상태 낱말</h3><div class="meta">검색창에 증상이나 질병 낱말을 넣은 횟수입니다(최근 90일). 누가 찾았는지는 저장하지 않습니다. 한의원 제휴나 기능성 원료 사업을 정할 때 참고하세요.</div><div class="hq-list" id="hqList"></div></div>
       <div class="panel"><h3>견적 이용료</h3>
         <form class="list" id="credCfg">
@@ -1338,9 +1350,9 @@ label.btn{display:inline-block}
   <p class="meta" style="margin:0 0 10px">먼저 자주 묻는 질문을 확인해 보세요. 답이 없으면 아래 1:1 문의로 남겨 주세요.</p>
   <div class="faqs">
       <div class="faqg"><h3>주문·배송</h3><details class="faq"><summary>언제 받을 수 있나요?</summary><p>판매자가 직접 택배로 보냅니다. 보통 결제 뒤 1~3일 안에 보내고, 송장번호는 ‘마이 → 내 거래’에서 볼 수 있습니다. 생물은 신선도 때문에 주말 도착을 피해 보내기도 합니다.</p></details><details class="faq"><summary>배송비는 얼마인가요?</summary><p>생물(생 나물·생 뿌리 등)은 5,000원, 말린 것과 가공품은 3,500원입니다. 상품 화면의 결제 금액에 배송비가 포함되어 있습니다.</p></details><details class="faq"><summary>물건을 받았어요. 무엇을 해야 하나요?</summary><p>‘마이 → 내 거래’에서 <b>수령 확인</b>을 눌러 주세요. 그래야 판매자에게 대금이 정산됩니다. 발송 후 8일 동안 아무것도 하지 않으면 자동으로 수령 확인됩니다.</p></details><details class="faq"><summary>주문을 취소할 수 있나요?</summary><p>판매자가 발송하기 전에는 ‘내 거래’에서 바로 취소할 수 있습니다. 발송한 뒤에는 1:1 문의로 알려 주세요.</p></details></div>
-      <div class="faqg"><h3>결제·환불</h3><details class="faq"><summary>결제한 돈은 어디로 가나요?</summary><p>결제한 돈은 농마니가 아니라 <b>결제대행사(PG)</b>가 보관합니다. 구매자가 수령 확인을 하면 결제대행사가 판매자에게 바로 지급합니다. 물건이 오지 않으면 판매자에게 돈이 가지 않습니다.</p></details><details class="faq"><summary>물건이 안 오거나 상했어요.</summary><p>‘내 거래’에서 <b>문제 신고</b>를 눌러 사진과 함께 알려 주세요. 운영자가 확인하고, 판매자 책임이면 환불합니다.</p></details><details class="faq"><summary>판매자가 계좌로 따로 입금하라고 해요.</summary><p>절대 보내지 마세요. 농마니 밖에서 거래하면 환불 보호를 받을 수 없습니다. 대화창 위의 <b>직거래 유도 신고</b>를 눌러 주세요.</p></details></div>
+      <div class="faqg"><h3>결제·환불</h3><details class="faq"><summary>결제는 어떻게 하나요?</summary><p>주문하면 농마니 계좌(구매안전서비스 연결)와 금액이 나옵니다. 24시간 안에 계좌이체로 입금해 주세요. 입금이 확인되면 판매자가 보내고, 물건을 받으신 뒤에 판매자에게 정산됩니다. 물건이 오지 않으면 전액 환불해 드립니다.</p></details><details class="faq"><summary>물건이 안 오거나 상했어요.</summary><p>‘내 거래’에서 <b>문제 신고</b>를 눌러 사진과 함께 알려 주세요. 운영자가 확인하고, 판매자 책임이면 환불합니다.</p></details><details class="faq"><summary>판매자가 계좌로 따로 입금하라고 해요.</summary><p>절대 보내지 마세요. 농마니 밖에서 거래하면 환불 보호를 받을 수 없습니다. 대화창 위의 <b>직거래 유도 신고</b>를 눌러 주세요.</p></details></div>
       <div class="faqg aucinfo"><h3>제안 판매</h3><details class="faq"><summary>제안 판매는 언제 끝나요?</summary><p>물건마다 다릅니다. 판매자가 3일·5일·7일 중에서 고르고, 운영자 확인을 마친 날부터 그 기간 동안 제안을 받아 마지막 날 저녁 8시에 끝납니다. 끝나는 시각은 물건마다 표시되며 늦춰지지 않습니다.</p></details><details class="faq"><summary>판매가 확정되면 어떻게 하나요?</summary><p>24시간 안에 결제해 주세요. 결제하지 않으면 판매자가 다음 순위 제안자에게 넘길 수 있습니다.</p></details><details class="faq"><summary>진짜 자연산인지 어떻게 믿나요?</summary><p>‘채취 증빙 확인’ 배지는 운영자가 채취 근거를 확인한 물건입니다. 시작가가 높은 제안 판매는 인증 영상과 감정서를 함께 받습니다. 받은 물건이 설명과 다르면 문제 신고로 환불받을 수 있습니다.</p></details></div>
-      <div class="faqg"><h3>판매</h3><details class="faq"><summary>누구나 팔 수 있나요?</summary><p>로그인한 뒤 ‘판매자 센터’에서 가게 정보를 저장하면 바로 팔 수 있습니다. 직접 기르거나 캔 농산물·임산물은 개인도 팔 수 있고, 청·즙 같은 가공품은 영업 신고를 한 곳에서 만든 것만 팔 수 있습니다.</p></details><details class="faq"><summary>집에서 담근 청·즙도 팔 수 있나요?</summary><p>아니요. 청·즙·차·환 같은 가공품은 식품 영업 신고를 한 곳에서 만든 것만 팔 수 있습니다. 직접 키운 원물을 식품 공장이나 농업기술센터 공동 가공시설에 맡겨 만들면 팔 수 있습니다(위탁 제조). 판매자 화면 ‘상품 올리기’에서 분류를 ‘가공품’으로 고르고 영업 신고 번호, 원재료, 내용량, 소비기한을 적어 주세요.</p></details><details class="faq"><summary>수수료는 얼마인가요?</summary><p>마켓 판매와 제안 판매 모두 <b>10%</b>이고 부가세(수수료의 10%)가 붙습니다. 카드·계좌 결제 수수료(약 3.4%)는 따로 빠집니다. 할인은 판매자가 상품 값으로 직접 정합니다. 제안 판매는 등록료가 따로 있고 첫 등록 3번은 무료입니다. 채취 의뢰 견적은 무료입니다. 정식 결제가 열리기 전 시범 운영 기간에는 판매 수수료를 받지 않습니다.</p></details><details class="faq"><summary>정산은 언제 되나요?</summary><p>구매자가 수령 확인을 하면 운영자가 정산합니다. 채취 근거가 필요한 상품은 근거를 확인한 뒤, 가공품은 영업 신고 번호를 확인한 뒤 정산됩니다.</p></details></div>
+      <div class="faqg"><h3>판매</h3><details class="faq"><summary>누구나 팔 수 있나요?</summary><p>로그인한 뒤 ‘판매자 센터’에서 가게 정보를 저장하면 바로 팔 수 있습니다. 직접 기르거나 캔 농산물·임산물은 개인도 팔 수 있고, 청·즙 같은 가공품은 영업 신고를 한 곳에서 만든 것만 팔 수 있습니다.</p></details><details class="faq"><summary>집에서 담근 청·즙도 팔 수 있나요?</summary><p>아니요. 청·즙·차·환 같은 가공품은 식품 영업 신고를 한 곳에서 만든 것만 팔 수 있습니다. 직접 키운 원물을 식품 공장이나 농업기술센터 공동 가공시설에 맡겨 만들면 팔 수 있습니다(위탁 제조). 판매자 화면 ‘상품 올리기’에서 분류를 ‘가공품’으로 고르고 영업 신고 번호, 원재료, 내용량, 소비기한을 적어 주세요.</p></details><details class="faq"><summary>수수료는 얼마인가요?</summary><p>농마니는 판매자의 상품을 맡아 파는 위탁판매 방식이고, 수수료는 상품 금액(배송비 제외)의 <b>10%</b>입니다(부가세 포함, 결제 수수료 없음). 시범 기간에는 5%만 받습니다. 할인은 판매자가 상품 값으로 직접 정합니다. 제안 판매는 등록료가 따로 있고 첫 등록 3번은 무료입니다. 채취 의뢰 견적은 무료입니다.</p></details><details class="faq"><summary>정산은 언제 되나요?</summary><p>구매자가 받은 뒤 7일이 지나면, 매주 목요일에 판매자 계좌로 보내 드립니다. 판매자 센터의 ‘정산 받을 계좌’를 꼭 적어 주세요. 채취 근거가 필요한 상품은 근거를 확인한 뒤, 가공품은 영업 신고 번호를 확인한 뒤 정산됩니다.</p></details></div>
       <div class="faqg"><h3>채취 근거</h3><details class="faq"><summary>어떤 상품에 근거가 필요한가요?</summary><p>자연산 산삼과 비싼 상품(기본 100만 원 이상)입니다. 먼저 올리고 정산 전 14일 안에 근거를 내면 됩니다.</p></details><details class="faq"><summary>무엇을 내면 되나요?</summary><p>허가증·동의서 사진, 산주가 보낸 동의 문자·카톡 캡처, 본인 산이면 지번 중 하나면 됩니다. 자주 가는 산은 판매자 센터의 ‘내 채취지’에 한 번 등록해 두면 다음부터 고르기만 하면 됩니다.</p></details><details class="faq"><summary>산주가 누군지 몰라요.</summary><p>등록 화면의 ‘산주 찾기’로 산의 위치를 알려 주세요. 산림조합을 통해 산주를 찾아 연결해 드립니다.</p></details></div>
       <div class="faqg"><h3>계정</h3><details class="faq"><summary>로그인 링크를 눌렀는데 로그인이 안 돼요.</summary><p>링크는 요청한 <b>같은 기기, 같은 브라우저</b>에서 눌러야 합니다. 메일이 안 오면 스팸함을 확인해 주세요.</p></details><details class="faq"><summary>탈퇴하고 싶어요.</summary><p>1:1 문의로 ‘탈퇴’를 남겨 주세요. 진행 중인 거래가 없으면 처리해 드립니다.</p></details></div>
   </div>
@@ -1416,7 +1428,7 @@ label.btn{display:inline-block}
     <div>
       <h3>수수료</h3>
       <div class="tbl"><table><thead><tr><th>구분</th><th>누가</th><th>금액</th></tr></thead><tbody id="feeTable"></tbody></table></div>
-      <p class="meta" style="margin-top:8px">플랫폼 수수료에는 부가세 10%가 붙습니다. 결제 수수료는 카드·계좌 결제 대행사 비용입니다.</p>
+      <p class="meta" style="margin-top:8px">농마니는 판매자의 상품을 맡아 파는 위탁판매 방식입니다. 수수료에는 부가세가 포함되어 있고, 손님이 받은 뒤 7일이 지나면 매주 목요일에 판매자 계좌로 보내 드립니다.</p>
     </div>
     <div>
       <h3>판매자가 실제로 받는 돈</h3>
@@ -1440,7 +1452,7 @@ label.btn{display:inline-block}
 <script>
 const NOW_M=new Date().getMonth()+1;
 /* ---------- 수수료 ---------- */
-const FEE=0.10, PG=0.034, VAT=0.10, EXT=3*60*1000, PAY_LIMIT=24*3600*1000;
+const FEE=0.10, PG=0, VAT=0, EXT=3*60*1000, PAY_LIMIT=24*3600*1000;
 function listFee(start){return start>=1000000?20000:start>=100000?5000:3000}
 const FREE_N=3;
 function freeLeft(uid){try{return uid?Math.max(0,FREE_N-S.auctions.filter(a=>a.sellerId===uid&&!a.demo).length):0}catch(e){return 0}}
@@ -1487,12 +1499,31 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-mgr]");if(
 const feeFor=(uid,st)=>BETA()||freeLeft(uid)>0?0:listFee(st);
 async function betaStop(key,kind){toast("지금은 베타 기간이라 실제 주문·제안은 아직 받지 않습니다. 정식 오픈 때 알려 드릴게요");if(S.uid&&key&&!myAlert(key,kind))await guard(()=>S.db.collection("alerts").add({key:String(key).slice(0,30),kind,uid:S.uid,beta:true,createdAt:Date.now()}))}
 const WIN_TIERS=[[1000000,0.08],[5000000,0.05],[Infinity,0.03]];
-function winFee(h){return Math.round(h*FEE)} /* 제안 판매 수수료: 마켓과 같은 10% 고정 */
+function winFee(h){return Math.round(h*feeR())} /* 제안 판매 수수료: 마켓과 같은 10% 고정 */
 function aucNet(h){const wf=winFee(h),vat=Math.round(wf*VAT),pg=Math.round(h*PG);return {wf,vat,pg,net:h-wf-vat-pg}}
 const REPEAT_FEE=0.07,REPEAT_FROM=3;
+/* 위탁판매 · 무통장입금 (PG 없음). 수수료는 상품 금액(배송비 제외)에만, 부가세 포함. 주문할 때의 수수료율을 주문에 적어 둠 */
+const feeR=()=>{const v=+(S.site||{}).feePct;return (Number.isFinite(v)&&v>=0&&v<=30?v:10)/100};
+const PAY_MS=24*3600e3,HOLD_MS=7*864e5;
+const BANK=()=>{const s=S.site||{};return s.bankAcct?{bank:s.bankName||"",acct:s.bankAcct,holder:s.bankHolder||"농마니"}:null};
+const holdUntil=o=>(o.receivedAt||(o.shippedAt?o.shippedAt+CONFIRM_MS:Date.now()))+HOLD_MS;
+const nextThu=t=>{const d=new Date(t+9*3600e3);const add=(4-d.getUTCDay()+7)%7;return t+add*864e5};
+function bankBoxHTML(x){const b=BANK();if(!b)return `<div class="notice">입금 계좌를 준비하고 있습니다. 운영자에게 문의해 주세요.</div>`;
+  return `<div class="bankbox"><div class="bkrow"><span>입금 계좌</span><b class="num">${esc(b.bank)} ${esc(b.acct)}</b><button type="button" class="btn sm" data-copy="${esc(b.acct.replace(/[^0-9-]/g,""))}">복사</button></div><div class="bkrow"><span>예금주</span><b>${esc(b.holder)}</b></div><div class="bkrow"><span>입금할 금액</span><b class="num price">${won(x.amount)}</b></div><div class="bkrow"><span>입금 기한</span><b class="num">${new Date(x.payBy+9*3600e3).toISOString().slice(5,16).replace("-","월 ").replace("T","일 ")}까지</b></div>
+   <div class="bkrow"><label for="pyr-${x.id}${x.dlg?"-d":""}">입금자명</label><input id="pyr-${x.id}${x.dlg?"-d":""}" value="${esc(x.payer||"")}" placeholder="입금하실 분 이름" maxlength="20" style="max-width:160px"><button type="button" class="btn sm" data-payer="${x.id}" data-pk="${x.kind}">저장</button></div>
+   <p class="meta" style="margin:4px 0 0">기한 안에 입금이 확인되지 않으면 주문이 자동으로 취소됩니다. 입금이 확인되면 판매자가 발송을 준비합니다. 돈은 받으신 뒤에 판매자에게 정산됩니다.</p></div>`}
+function bankDlg(x){const dlg=$("#dlg");dlg.innerHTML=`<div class="dsingle"><button class="close" aria-label="닫기" type="button">×</button><h3 style="margin:0">주문이 접수됐어요 · 입금해 주세요</h3>${bankBoxHTML({...x,dlg:true})}<div class="actions"><button class="btn primary" type="button" id="bkGo">내 거래에서 보기</button></div></div>`;
+  dlg.querySelector(".close").onclick=()=>dlg.close();$("#bkGo").onclick=()=>{dlg.close();go("my")};if(!dlg.open)dlg.showModal()}
+document.addEventListener("click",async e=>{const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);toast("계좌번호를 복사했어요")}catch(_){prompt("계좌번호",c.dataset.copy)}return}
+  const py=e.target.closest("[data-payer]");if(py){const id=py.dataset.payer,v=(py.closest(".bkrow")?.querySelector("input")?.value||"").trim().slice(0,20);if(!v){toast("입금자명을 적어 주세요");return}
+    await guard(()=>S.db.doc((py.dataset.pk==="a"?"auctions/":"orders/")+id).update({payer:v}),"입금자명을 저장했어요")}});
+/* 입금 기한이 지난 주문은 자동 취소 (구매자 본인 또는 운영자 화면에서 처리) */
+const EXPIRING=new Set();
+function expireUnpaid(){(S.orders||[]).forEach(o=>{if(o.status!=="입금대기"||!o.payBy||Date.now()<=o.payBy||EXPIRING.has(o.id))return;if(!(S.owner||o.buyerId===S.uid))return;EXPIRING.add(o.id);
+  Promise.resolve().then(async()=>{try{await S.db.doc("orders/"+o.id).update({status:"취소",cancelReason:"입금 기한 지남"});const p=o.productId&&S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})}catch(_){}})})}
 /* 같은 손님이 같은 판매자에게 3번째 주문부터 판매 수수료 7% (주문 기록으로 계산하므로 누가 고칠 수 없음) */
-function ordRate(o){if(!o)return FEE;const prior=S.orders.filter(x=>x.id!==o.id&&x.buyerId===o.buyerId&&x.sellerId===o.sellerId&&(x.createdAt||0)<(o.createdAt||0)&&!["취소","환불"].includes(x.status)).length;return FEE} /* 단골 할인 없음: 할인은 판매자가 상품 값으로 직접 */
-function shopNet(total,rate){const f=Math.round(total*(rate??FEE)),vat=Math.round(f*VAT),pg=Math.round(total*PG);return {f,vat,pg,net:total-f-vat-pg}}
+function ordRate(o){if(!o)return FEE;const prior=S.orders.filter(x=>x.id!==o.id&&x.buyerId===o.buyerId&&x.sellerId===o.sellerId&&(x.createdAt||0)<(o.createdAt||0)&&!["취소","환불"].includes(x.status)).length;return o.feePct!=null?(+o.feePct)/100:feeR()} /* 단골 할인 없음: 할인은 판매자가 상품 값으로 직접 */
+function shopNet(total,rate,ship=0){const f=Math.round(Math.max(0,total-ship)*(rate??feeR())),vat=Math.round(f*VAT),pg=Math.round(total*PG);return {f,vat,pg,net:total-f-vat-pg}}
 const AUC_DOW=6,AUC_HOUR=20,MIN_LEAD=6*3600*1000;
 const DEF_ANCHOR=Date.parse("2026-10-31T20:00:00+09:00");
 function aucCfg(){let s={};try{s=S.site||{}}catch(e){}return {cycle:s.aucCycle==="weekly"?"weekly":"biweekly",anchor:+s.aucAnchor||DEF_ANCHOR}}
@@ -2108,7 +2139,7 @@ function qrBind(){const q=$("#qr");if(!q)return;q.hidden=!q.children.length;q.qu
 /* ---------- 배송: 판매자 배송비 · 묶음 배송 · 발송 기한 ---------- */
 function shipCfg(uid){const c=(S.sellers[uid]||{}).ship||{},n=(v,d)=>Number.isFinite(+v)&&v!==""&&v!=null?+v:d;return {dry:n(c.dry,3500),fresh:n(c.fresh,5000),free:n(c.free,0),island:n(c.island,3000)}}
 const BUNDLE_MS=48*3600e3;
-function bundleRoot(p){if(!S.uid)return null;return S.orders.filter(o=>o.buyerId===S.uid&&o.sellerId===p.sellerId&&o.status==="결제완료"&&!o.gift&&Date.now()-o.createdAt<BUNDLE_MS).sort((a,b)=>a.createdAt-b.createdAt)[0]||null}
+function bundleRoot(p){if(!S.uid)return null;return S.orders.filter(o=>o.buyerId===S.uid&&o.sellerId===p.sellerId&&["입금대기","결제완료"].includes(o.status)&&!o.gift&&Date.now()-o.createdAt<BUNDLE_MS).sort((a,b)=>a.createdAt-b.createdAt)[0]||null}
 function shipCalc(p,qty,o){const c=shipCfg(p.sellerId),base=p.form==="생물"?c.fresh:c.dry,sub=p.price*qty;
   const free=c.free>0&&sub>=c.free,freeLeft=c.free>0&&!free?c.free-sub:0;let ship=free?0:base,bundle=null;
   if(!o.gift){const r=bundleRoot(p);if(r){const root=r.bundleWith?S.orders.find(x=>x.id===r.bundleWith)||r:r,grp=S.orders.filter(x=>x.id===root.id||x.bundleWith===root.id);
@@ -2151,7 +2182,7 @@ function openBulk(){const dlg=$("#dlg");openA=null;const tm=new Date(Date.now()+
    <label class="ochk"><input type="checkbox" id="bkWrap" checked> 선물 포장</label><label class="ochk"><input type="checkbox" id="bkPc" checked> 생산자 카드 넣기</label><label class="ochk"><input type="checkbox" id="bkInv"> 계산서가 필요해요 (사업자 판매자만 발행할 수 있어요)</label>
    <div class="field"><label for="bkMemo">더 바라는 점 (선택)</label><textarea id="bkMemo" rows="2" maxlength="300" placeholder="예: 로고 스티커를 붙이고 싶어요. 받는 분 명단은 견적이 정해지면 보낼게요"></textarea></div>
    <p class="meta" style="margin:0 0 8px">받는 분 이름·주소는 판매자를 고른 뒤 안전하게 따로 받습니다. 여기엔 전화번호·주소를 적지 마세요.</p>
-   <p class="meta" style="margin:0 0 8px"><b>결제:</b> 견적을 고르면 3일 안에 카드나 계좌이체로 결제합니다. 돈은 결제대행사가 보관했다가 물건을 받으신 뒤 판매자에게 지급되니 안심하세요.</p>
+   <p class="meta" style="margin:0 0 8px"><b>결제:</b> 견적을 고르면 3일 안에 계좌이체로 결제합니다. 돈은 농마니가 보관했다가 물건을 받으신 뒤 판매자에게 정산되니 안심하세요.</p>
    <div class="actions"><button class="btn primary needWrite" type="submit">무료로 견적 받기</button></div></form></div>`;
   dlg.querySelector(".close").onclick=()=>dlg.close();
   $("#bulkForm").onsubmit=async e=>{e.preventDefault();if(!S.uid){toast("로그인하면 요청서를 올릴 수 있어요");return}
@@ -2400,7 +2431,8 @@ function myBidsHTML(){
     if(!x.ended)st=lead?"최고 제안 중":"더 높은 제안이 들어옴";
     else if(won_&&x.phase==="판매자확인"){st="판매자확인";act=`<div class="meta">최고 제안입니다. 판매자가 ${day(x.acceptBy)}까지 확인하고, 수락하면 결제 안내를 드려요. 아직 돈은 나가지 않았어요.</div>`}
     else if(won_){const dd=dealEff(a);st=dd||"결제대기";
-      if(!dd)act=`<div class="meta num">결제 기한 ${day(x.payBy)} · 확정가 ${won(x.winner.amount)} + 배송비 ${won(a.ship||5000)}</div><div class="actions"><button class="btn sm gold needWrite" data-act="payAuc" data-id="${a.id}">테스트 결제하기</button><button class="btn sm danger" data-act="giveUp" data-id="${a.id}">구매 포기</button></div>`;
+      if(!dd)act=`<div class="meta num">결제 기한 ${day(x.payBy)} · 확정가 ${won(x.winner.amount)} + 배송비 ${won(a.ship||5000)}</div><div class="actions"><button class="btn sm gold needWrite" data-act="payAuc" data-id="${a.id}">입금하고 구매하기</button><button class="btn sm danger" data-act="giveUp" data-id="${a.id}">구매 포기</button></div>`;
+      else if(dd==="입금대기")act=bankBoxHTML({id:a.id,kind:"a",amount:(a.hammer||x.winner.amount)+(a.ship||5000),payBy:a.payBy||Date.now(),payer:a.payer});
       else if(dd==="발송완료")act=`<div class="meta">송장: ${esc(a.courier)} ${esc(a.tracking)} · ${day(a.shippedAt+CONFIRM_MS)}까지 확인이 없으면 자동 수령 확인</div><div class="actions"><button class="btn sm primary" data-act="recvAuc" data-id="${a.id}">물건 받았어요</button></div><div class="actions"><input id="dp-${a.id}" placeholder="설명과 다른 점 (사진·중량·상태)" aria-label="문제 내용"><button class="btn sm danger" data-act="disputeA" data-id="${a.id}">문제 신고</button></div>`;
       else if(dd==="분쟁")act=`<div class="meta">문제 신고 접수: ${esc(a.disputeReason)} · 운영자가 확인 중이며 대금은 보관 중입니다.</div>`;
       else if(dd==="환불")act=`<div class="meta">판매자 책임으로 환불 처리되었습니다.</div>`;
@@ -2423,9 +2455,11 @@ function renderMy(){
     ${o.tracking?`<div class="meta">송장: ${esc(o.courier||"")} ${esc(o.tracking)}</div>`:""}
     <div class="actions">
       ${o.status==="채취중"?`<span class="meta">채취인이 캐러 갔습니다. 채취가 끝나 사진이 올라오면 그때 결제합니다. 아직 돈은 나가지 않았어요.</span><button class="btn sm danger" data-act="cancel" data-id="${o.id}">의뢰 취소</button>`:""}
-      ${o.status==="결제대기"&&o.bulk?`<span class="meta num">견적 확정 · ${won(o.total)} · ${day(o.payBy)}까지 결제 · 결제하면 판매자가 준비를 시작합니다. 돈은 결제대행사가 보관했다가 받으신 뒤 판매자에게 지급됩니다.</span><button class="btn sm primary needWrite" data-act="payQ" data-id="${o.id}">결제하기</button><button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
+      ${o.status==="결제대기"&&o.bulk?`<span class="meta num">견적 확정 · ${won(o.total)} · ${day(o.payBy)}까지 결제 · 결제하면 판매자가 준비를 시작합니다. 돈은 농마니가 보관했다가 받으신 뒤 판매자에게 정산됩니다.</span><button class="btn sm primary needWrite" data-act="payQ" data-id="${o.id}">결제하기</button><button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
       ${o.status==="결제대기"&&!o.bulk?`${o.harvestPhoto?`<img src="${esc(o.harvestPhoto)}" alt="채취한 ${esc(o.productName)} 사진" style="max-width:220px;border-radius:10px;display:block;margin:6px 0">`:""}<span class="meta num">채취 완료${o.harvestNote?" · "+esc(o.harvestNote):""} · 최종 ${won(o.total)}${o.quoted&&o.quoted!==o.total?` (견적 ${won(o.quoted)})`:""} · ${day(o.payBy)}까지 결제</span><button class="btn sm primary needWrite" data-act="payQ" data-id="${o.id}">사진 확인했어요 · 결제하기</button><button class="btn sm danger" data-act="cancel" data-id="${o.id}">사지 않을게요</button>`:""}
-      ${o.status==="결제완료"?`<button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
+      ${o.status==="입금대기"?`${bankBoxHTML({id:o.id,kind:"o",amount:o.total,payBy:o.payBy||o.createdAt+PAY_MS,payer:o.payer})}<button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소</button>`:""}
+      ${o.status==="결제완료"?`<span class="meta">입금이 확인됐어요. 판매자가 발송을 준비합니다.</span><button class="btn sm danger" data-act="cancel" data-id="${o.id}">주문 취소 (환불 요청)</button>`:""}
+      ${o.status==="환불요청"?`<span class="meta">환불 요청을 받았습니다. 운영자가 연락드려 환불 계좌를 확인한 뒤 3영업일 안에 보내 드려요.</span>`:""}
       ${ordEff(o)==="발송완료"?`<button class="btn sm primary" data-act="receive" data-id="${o.id}">상품 받았어요</button><input id="dp-${o.id}" placeholder="설명과 다른 점" aria-label="문제 내용"><button class="btn sm danger" data-act="disputeO" data-id="${o.id}">문제 신고</button><span class="meta">${day(o.shippedAt+CONFIRM_MS)}까지 확인이 없으면 자동 수령 확인</span>`:""}
       ${["수령확인","정산완료"].includes(ordEff(o))&&o.productId&&!reviewed?`<button class="btn sm" data-act="review" data-id="${o.id}">후기 쓰기</button>`:""}
     </div></div>`}).join(""):`<div class="empty">아직 주문이 없습니다. <button class="btn sm" data-go="shop">마켓 둘러보기</button></div>`);
@@ -2451,7 +2485,21 @@ function sellerAucHTML(){
     return `<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b>${statusChip(x.phase==="결제대기"?"낙찰":x.phase)}</div><div class="meta num">${esc(a.cat)} · 시작가 ${won(a.start)}${a.buyNow?" · 즉시 "+won(a.buyNow):""}</div>${body}${proofMissing(a)?`<div class="notice" style="margin-top:6px">${a.proofRef?"채취 근거를 운영자가 확인하고 있습니다.":`<b>채취 근거가 필요합니다</b> · ${a.proofDue?day(a.proofDue)+"까지 · ":""}허가증·동의서 사진, 산주 동의 문자 캡처, 본인 산이면 지번 중 하나${a.proofNote?`<br><span style="color:var(--berry)">운영자: ${esc(a.proofNote)}</span>`:""}
       <div class="actions" style="margin-top:6px"><input id="pl-${a.id}" type="file" accept="image/*" aria-label="근거 사진"><input id="pp-${a.id}" placeholder="본인 산 지번" aria-label="본인 산 지번" style="max-width:200px"><button class="btn sm primary" data-act="proofLater" data-id="auctions:${a.id}">근거 보내기</button></div>`}</div>`:""}</div>`}).join("");
 }
-function renderSeller(){renderSites();
+let PA=null,PALOAD=false;
+function renderPayAcct(){const el=$("#payAcctP");if(!el)return;el.hidden=!S.uid||!!S.acting;if(el.hidden)return;
+  el.querySelectorAll(".feeNow").forEach(x=>x.textContent=Math.round(feeR()*1000)/10);
+  if(PA===null&&!PALOAD){PALOAD=true;S.db.doc("payacct/"+S.uid).get().then(d=>{PA=d.exists?d.data():{};PALOAD=false;renderPayAcct()}).catch(()=>{PA={};PALOAD=false});return}
+  if(!PA)return;const me=S.sellers[S.uid]||{};
+  if(document.activeElement?.closest?.("#payAcctP"))return;
+  $("#paBank").value=PA.bank||"";$("#paAcct").value=PA.acct||"";$("#paHolder").value=PA.holder||"";$("#paAgree").checked=!!me.consignAt;
+  $("#paState").textContent=PA.acct&&me.consignAt?"✓ 저장됨":"아직 저장 전이에요";}
+document.addEventListener("click",async e=>{if(e.target.id!=="paSave")return;const v={bank:$("#paBank").value.trim(),acct:$("#paAcct").value.trim(),holder:$("#paHolder").value.trim()};
+  if(!v.bank||!/\d{6,}/.test(v.acct.replace(/[^0-9]/g,""))||!v.holder){toast("은행, 계좌번호, 예금주를 모두 적어 주세요");return}
+  if(!$("#paAgree").checked){toast("위탁판매 조건에 동의해 주세요");return}
+  if(!S.sellers[S.uid]){toast("먼저 위쪽에서 가게 정보를 저장해 주세요");return}
+  const ok=await guard(async()=>{await S.db.doc("payacct/"+S.uid).set({...v,uid:S.uid,updatedAt:Date.now()});await S.db.doc("sellers/"+S.uid).update({consignAt:Date.now(),consignVer:1})},"정산 계좌와 위탁판매 동의를 저장했어요");
+  if(ok){PA={...v};renderPayAcct()}});
+function renderSeller(){renderSites();renderPayAcct();
   const me=S.sellers[S.uid];
   $("#shopLabel").textContent=me?`${me.shopName} · ${me.role||""} · ${me.region} · ${trust(S.uid).cert?"인증 판매자":"일반 판매자 (문제없는 거래 3건이면 인증)"}`:"상점 정보를 먼저 저장해 주세요";aucUI();
   if(me&&document.activeElement?.form?.id!=="shopForm"){$("#shName").value=me.shopName;$("#shRegion").value=me.region;$("#shBio").value=me.bio||"";if(me.role)$("#shRole").value=me.role;$("#shRegType").value=me.regType||"";$("#shRegNo").value=me.regNo||"";$("#shBiz").value=me.biz||"";const sc=shipCfg(S.uid);$("#shShipDry").value=sc.dry;$("#shShipFresh").value=sc.fresh;$("#shFreeOver").value=sc.free;$("#shIsland").value=sc.island}
@@ -2459,8 +2507,8 @@ function renderSeller(){renderSites();
   const myA=S.auctions.filter(a=>a.sellerId===S.uid);
   const aucDone=myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");
   const sales=myO.filter(o=>!["취소","환불"].includes(o.status)).reduce((s,o)=>s+o.total,0)+aucDone.reduce((s,o)=>s+o.x.winner.amount,0);
-  const pend=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+aucDone.filter(o=>dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
-  const done=myO.filter(o=>o.status==="정산완료").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+aucDone.filter(o=>o.a.deal==="정산완료").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
+  const pend=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o),o.ship||0).net,0)+aucDone.filter(o=>dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
+  const done=myO.filter(o=>o.status==="정산완료").reduce((s,o)=>s+shopNet(o.total,ordRate(o),o.ship||0).net,0)+aucDone.filter(o=>o.a.deal==="정산완료").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
   $("#sellerStats").innerHTML=`<div class="stat"><span class="meta">총 판매 (제안 판매 포함)</span><b class="num">${won(sales)}</b></div><div class="stat"><span class="meta">진행 중 제안 판매</span><b class="num">${myA.filter(a=>auc(a).phase==="진행중").length}건</b></div><div class="stat"><span class="meta">정산 예정 (수수료 제외)</span><b class="num">${won(pend)}</b></div><div class="stat"><span class="meta">정산 완료</span><b class="num">${won(done)}</b></div>`;
   $("#sellerAucs").innerHTML=S.uid?sellerAucHTML():`<div class="empty">로그인하면 내 제안 판매가 보입니다.</div>`;
   const myOs=[...myO].sort((a,b)=>(b.status==="결제완료")-(a.status==="결제완료")||(a.status==="결제완료"?shipBy(a)-shipBy(b):b.createdAt-a.createdAt));
@@ -2537,7 +2585,7 @@ function renderAdmin(){
   const aucDeals=S.auctions.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&o.a.deal&&o.a.deal!=="환불");
   const winIncome=aucDeals.reduce((s,o)=>s+winFee(o.x.winner.amount),0);
   const shopGmv=S.orders.filter(o=>!UNPAID.includes(o.status)).reduce((s,o)=>s+o.total,0);
-  $("#adminStats").innerHTML=`<div class="stat"><span class="meta">등록료 수입</span><b class="num">${won(listIncome)}</b></div><div class="stat"><span class="meta">판매 수수료 (부가세 제외)</span><b class="num">${won(winIncome)}</b></div><div class="stat"><span class="meta">마켓 수수료 (10%)</span><b class="num">${won(S.orders.filter(o=>!UNPAID.includes(o.status)).reduce((s,o)=>s+o.total*ordRate(o),0))}</b></div><div class="stat"><span class="meta">진행 중 제안 판매 / 판매자</span><b class="num">${liveAucs().length}건 / ${Object.keys(S.sellers).length}명</b></div>`;
+  $("#adminStats").innerHTML=`<div class="stat"><span class="meta">등록료 수입</span><b class="num">${won(listIncome)}</b></div><div class="stat"><span class="meta">판매 수수료 (부가세 포함)</span><b class="num">${won(winIncome)}</b></div><div class="stat"><span class="meta">마켓 수수료</span><b class="num">${won(S.orders.filter(o=>!UNPAID.includes(o.status)).reduce((s,o)=>s+o.total*ordRate(o),0))}</b></div><div class="stat"><span class="meta">진행 중 제안 판매 / 판매자</span><b class="num">${liveAucs().length}건 / ${Object.keys(S.sellers).length}명</b></div>`;
   $("#pendAuc").innerHTML=pendA.length?pendA.map(a=>{const flag=CLAIMS.filter(w=>(a.title+a.desc).includes(w));
     return `<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b><span class="meta">${esc(shopName(a.sellerId))}</span></div>
     ${a.photo?`<img src="${esc(a.photo)}" alt="상품 사진" style="max-height:160px;width:auto;border-radius:8px;justify-self:start">`:'<div class="meta">사진 없음 (예시 데이터)</div>'}
@@ -2555,8 +2603,15 @@ function renderAdmin(){
     <div class="actions"><span class="chip ok">${esc(p.permit)}</span>${p.proofNeed==="photo"?(p.proofOk?'<span class="chip solid">증빙 확인됨</span>':'<span class="chip hot">서류 확인 필요</span>'):""}${p.cert?`<span class="chip ok">인증 ${esc(p.cert)}</span>`:""}${flag.length?`<span class="chip hot">효능 표현 의심: ${esc(flag.join(", "))}</span>`:""}</div>
     ${aiNote(p.aiCheck)}${S.sample?`<div class="actions"><button class="btn sm" data-act="aiP" data-id="${p.id}">${p.aiCheck?"AI 다시 검수":"AI 1차 검수"}</button></div>`:""}
     <div class="actions"><button class="btn sm primary" data-act="approve" data-id="${p.id}">승인</button><input id="rj-${p.id}" placeholder="반려 사유" aria-label="반려 사유"><button class="btn sm danger" data-act="reject" data-id="${p.id}">반려</button></div></div>`}).join(""):`<div class="empty">검수할 상품이 없습니다.</div>`;
-  const payO=S.orders.filter(o=>ordEff(o)==="수령확인"),payA=aucDeals.filter(o=>dealEff(o.a)==="수령확인");
-  $("#payouts").innerHTML=(payA.length||payO.length)?payA.map(({a,x})=>{const n=aucNet(x.winner.amount);return `<div class="item win"><div class="itop"><b>${esc(shopName(a.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">제안 판매 · ${esc(a.title)} · 판매 확정 ${won(x.winner.amount)} · 판매 수수료 ${won(n.wf)} · 부가세 ${won(n.vat)} · 결제 ${won(n.pg)}</div><div class="actions"><button class="btn sm primary" data-act="payoutA" data-id="${a.id}">정산 완료 처리</button></div></div>`}).join("")+payO.map(o=>{const n=shopNet(o.total,ordRate(o));return `<div class="item sunk"><div class="itop"><b>${esc(shopName(o.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">마켓 · ${esc(o.productName)} · 주문 ${won(o.total)} · 수수료 ${won(n.f)} · 부가세 ${won(n.vat)} · 결제 ${won(n.pg)}</div><div class="actions"><button class="btn sm primary" data-act="payout" data-id="${o.id}">정산 완료 처리</button></div></div>`}).join(""):`<div class="empty">정산할 거래가 없습니다.</div>`;
+  {const dep=S.orders.filter(o=>["입금대기","환불요청"].includes(o.status)).sort((a,b)=>(a.payBy||0)-(b.payBy||0)),depA=S.auctions.filter(a=>a.deal==="입금대기");
+   $("#deposits").innerHTML=(dep.length||depA.length)?dep.map(o=>o.status==="환불요청"?`<div class="item sunk"><div class="itop"><b>환불 요청 · ${esc(o.productName)}</b><span class="price num">${won(o.total)}</span></div><div class="meta">${esc(S.names[o.buyerId]||"구매자")} · 입금자 ${esc(o.payer||"-")} · 요청 ${day(o.refundAskAt||Date.now())}</div><p class="meta" style="margin:4px 0">구매자에게 대화로 환불 계좌를 받아 보낸 뒤 눌러 주세요.</p><div class="actions"><button class="btn sm" type="button" data-chat="${esc(o.buyerId)}">구매자와 대화</button><button class="btn sm danger" data-act="refundDone" data-id="${o.id}">환불 보냄</button></div></div>`
+     :`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b><span class="price num">${won(o.total)}</span></div><div class="meta num">입금자명 <b>${esc(o.payer||"(아직 안 적음)")}</b> · 주문 ${day(o.createdAt)} · 기한 ${day(o.payBy||0)}${Date.now()>(o.payBy||0)?' <span class="chip hot">기한 지남</span>':""} · 판매 ${esc(shopName(o.sellerId))}</div><div class="actions"><button class="btn sm primary" data-act="depOk" data-id="${o.id}">입금 확인</button><button class="btn sm danger" data-act="depNo" data-id="${o.id}">주문 취소</button></div></div>`).join("")
+     +depA.map(a=>`<div class="item sunk"><div class="itop"><b>제안 판매 · ${esc(a.title)}</b><span class="price num">${won((a.hammer||0)+(a.ship||5000))}</span></div><div class="meta num">입금자명 <b>${esc(a.payer||"(아직 안 적음)")}</b> · 기한 ${day(a.payBy||0)}</div><div class="actions"><button class="btn sm primary" data-act="depOkA" data-id="${a.id}">입금 확인</button></div></div>`).join(""):`<div class="empty">확인할 입금이 없습니다.</div>`}
+  const payO=S.orders.filter(o=>ordEff(o)==="수령확인"&&Date.now()>=holdUntil(o)),payA=aucDeals.filter(o=>dealEff(o.a)==="수령확인"&&Date.now()>=holdUntil(o.a));
+  {const by={};payO.forEach(o=>{const n=shopNet(o.total,ordRate(o),o.ship||0);(by[o.sellerId]=by[o.sellerId]||{won:0,n:0}).won+=n.net;by[o.sellerId].n++});payA.forEach(({a,x})=>{const n=aucNet(x.winner.amount);(by[a.sellerId]=by[a.sellerId]||{won:0,n:0}).won+=n.net+(a.ship||5000);by[a.sellerId].n++});
+   const ids=Object.keys(by),pk=ids.sort().join();if(ids.length&&S.payAcctKey!==pk){S.payAcctKey=pk;Promise.all(ids.map(id=>S.db.doc("payacct/"+id).get().then(d=>[id,d.exists?d.data():null]).catch(()=>[id,null]))).then(r=>{S.payAcct=Object.fromEntries(r);renderAdmin()})}
+   S.paySum=ids.length?`<div class="notice"><b>이번 지급 예정 (${mdKo(isoDay(nextThu(Date.now())))} 목요일)</b>${ids.map(id=>{const b=(S.payAcct||{})[id];return `<div class="meta num">${esc(shopName(id))} · ${by[id].n}건 · <b>${won(by[id].won)}</b> · ${b?`${esc(b.bank)} ${esc(b.acct)} (${esc(b.holder)})`:'<span class="chip hot">정산 계좌 미등록</span>'} <button class="btn sm" data-act="payAll" data-id="${id}">이 판매자 모두 지급 완료</button></div>`}).join("")}</div>`:""}
+  $("#payouts").innerHTML=(S.paySum||"")+((payA.length||payO.length)?payA.map(({a,x})=>{const n=aucNet(x.winner.amount);return `<div class="item win"><div class="itop"><b>${esc(shopName(a.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">제안 판매 · ${esc(a.title)} · 판매 확정 ${won(x.winner.amount)} · 판매 수수료 ${won(n.wf)}</div><div class="actions"><button class="btn sm primary" data-act="payoutA" data-id="${a.id}">정산 완료 처리</button></div></div>`}).join("")+payO.map(o=>{const n=shopNet(o.total,ordRate(o),o.ship||0);return `<div class="item sunk"><div class="itop"><b>${esc(shopName(o.sellerId))}</b><span class="price num">${won(n.net)}</span></div><div class="meta num">마켓 · ${esc(o.productName)} · 주문 ${won(o.total)} · 수수료 ${won(n.f)}</div><div class="actions"><button class="btn sm primary" data-act="payout" data-id="${o.id}">정산 완료 처리</button></div></div>`}).join(""):`<div class="empty">정산할 거래가 없습니다.</div>`);
   const dA=S.auctions.filter(a=>a.deal==="분쟁"),dO=S.orders.filter(o=>o.status==="분쟁");
   $("#disputes").innerHTML=(dA.length||dO.length)?dA.map(a=>`<div class="item sunk"><div class="itop"><b>${esc(a.title)}</b><span class="meta">${esc(shopName(a.sellerId))}</span></div><div class="meta">신고: ${esc(a.disputeReason)} · ${day(a.disputeAt)}</div><div class="actions"><button class="btn sm" data-act="resolveA" data-id="${a.id}">문제 없음, 정산 진행</button><button class="btn sm danger" data-act="refundA" data-id="${a.id}">판매자 책임, 환불</button></div></div>`).join("")+dO.map(o=>`<div class="item sunk"><div class="itop"><b>${esc(o.productName)}</b><span class="meta">${esc(shopName(o.sellerId))}</span></div><div class="meta">신고: ${esc(o.disputeReason)} · ${day(o.disputeAt)}</div><div class="actions"><button class="btn sm" data-act="resolveO" data-id="${o.id}">문제 없음, 정산 진행</button><button class="btn sm danger" data-act="refundO" data-id="${o.id}">판매자 책임, 환불</button></div></div>`).join(""):`<div class="empty">신고된 거래가 없습니다.</div>`;
   $("#sellerTrust").innerHTML=Object.keys(S.sellers).length?Object.entries(S.sellers).map(([id,sl])=>{const t=trust(id);return `<div class="item sunk"><div class="itop"><b>${esc(sl.shopName)}</b>${t.cert?'<span class="chip ok">인증 판매자</span>':t.lost?'<span class="chip hot">환불 이력</span>':'<span class="chip">일반</span>'}</div><div class="meta num">${esc(sl.role||"")} · 완료 거래 ${t.done}건 · 판매자 책임 환불 ${t.lost}건</div>${sl.regNo?`<div class="meta">${esc(sl.regType||"경영체")} ${esc(sl.regNo)}${S.checks[id]?.regOk?" · 확인됨":" · 확인 대기"}</div>`:""}${sl.biz?`<div class="meta">${esc(sl.biz)}</div>`:""}<div class="actions"><button class="btn sm" data-act="verify" data-id="${esc(id)}">${S.checks[id]?.verified?"조합 확인 인증 해제":"조합·작목반 확인서로 인증"}</button><button class="btn sm ${S.checks[id]?.suspended?"":"danger"}" data-act="suspend" data-id="${esc(id)}">${S.checks[id]?.suspended?"판매 정지 해제":"판매 정지"}</button>${sl.regNo?`<button class="btn sm" data-act="regOk" data-id="${esc(id)}">${S.checks[id]?.regOk?"경영체 확인 해제":"경영체 번호 확인함"}</button>`:""}</div></div>`}).join(""):`<div class="empty">아직 판매자가 없습니다.</div>`;
@@ -2642,15 +2697,15 @@ function renderGuide(){
   if($("#rv1")){$("#rv1").textContent=`${man(videoWon())} 미만 (마켓 상품 포함)`;$("#rv2").textContent=`${man(videoWon())}~${man(reviewWon())}`;$("#rv3").textContent=`${man(reviewWon())} 이상`}
   $("#feeTable").innerHTML=`
    <tr><td>제안 판매 등록료</td><td>등록하는 판매자</td><td>시작가 10만 원 미만 ${won(3000)} · 10만~100만 원 ${won(5000)} · 100만 원 이상 ${won(20000)}(운영자 직접 확인 포함). 반려 시 환불, 미판매 시 1회 무료 재등록</td></tr>
-   <tr><td>제안 판매 수수료</td><td>판매가 확정된 판매자</td><td>확정가의 10% (부가세 별도)</td></tr>
-   <tr><td>마켓 판매 수수료</td><td>판매자</td><td>판매 금액의 10% (부가세 별도). 할인은 판매자가 상품 값으로 직접 정합니다</td></tr>
-   <tr><td>채취 의뢰 견적</td><td>판매자</td><td>견적 발송 무료. 성사되면 마켓와 같은 10%</td></tr>
-   <tr><td>결제 수수료</td><td>판매자</td><td>결제 금액의 약 3.4% (결제대행사 요율)</td></tr>
+   <tr><td>제안 판매 수수료</td><td>판매가 확정된 판매자</td><td>확정가의 ${Math.round(feeR()*1000)/10}% (부가세 포함)</td></tr>
+   <tr><td>마켓 판매 수수료</td><td>판매자</td><td>상품 금액의 ${Math.round(feeR()*1000)/10}% (부가세 포함, 배송비 제외). 할인은 판매자가 상품 값으로 직접 정합니다</td></tr>
+   <tr><td>채취 의뢰 견적</td><td>판매자</td><td>견적 발송 무료. 성사되면 마켓과 같은 수수료</td></tr>
+   <tr><td>결제 수수료</td><td>판매자</td><td>없음 (계좌이체로 받습니다)</td></tr>
    <tr><td>구매자 수수료</td><td>구매자</td><td>없음</td></tr>`;
   const ex=[["더덕 제안 판매, 시작가 5만 원",50000,80000,"auc"],["잔대 제안 판매, 시작가 20만 원",200000,350000,"auc"],["자연산 산삼 제안 판매, 시작가 100만 원",1000000,3000000,"auc"],["마켓 도라지 3kg",0,60000,"shop"]];
   $("#exTable").innerHTML=ex.map(([t,st,h,k])=>{let out,net;if(k==="auc"){const n=aucNet(h),lf=listFee(st);out=h-n.net+lf;net=n.net-lf;t+=`, 판매 확정 ${won(h)}`}else{const n=shopNet(h);out=h-n.net;net=n.net}return `<tr><td>${t}</td><td class="r num">${won(h)}</td><td class="r num">${won(out)} (${(out/h*100).toFixed(1)}%)</td><td class="r num"><b>${won(net)}</b></td></tr>`}).join("");
 }
-function render(){document.body.classList.toggle("noauc",!aucOn());document.body.classList.toggle("noreq",!reqOn());if(S.view==="request"&&!reqOn()){go("home");return}document.body.classList.toggle("nosub",!subOn());
+function render(){try{expireUnpaid()}catch(_){}document.body.classList.toggle("noauc",!aucOn());document.body.classList.toggle("noreq",!reqOn());if(S.view==="request"&&!reqOn()){go("home");return}document.body.classList.toggle("nosub",!subOn());
   {const bb=$("#betaBar");if(bb)bb.hidden=!BETA();}
   {const sv=document.querySelector('[data-view="seller"]'),g=$("#sellerGate");if(sv&&g){const guest=!S.uid&&!!window.nmAuth;sv.classList.toggle("guest",guest);g.hidden=!guest}}
   try{renderMgr()}catch(e){}
@@ -2744,9 +2799,10 @@ function openProduct(id){
   dlg.innerHTML=`<div class="dlg pview"><div class="ptop"><button class="close pback" aria-label="뒤로" type="button">←<span> 뒤로</span></button><b class="ptt">${esc(p.name)}</b><button class="btn sm" type="button" id="pShare">공유</button></div>
    ${backGift}<div class="thumb">${thumbHTML(p,"pid")}</div>
    <div class="dinfo">
-    <div class="meta">${esc(mcat(p.cat))} · ${esc(shopName(p.sellerId))}</div>
+    <div class="meta">${esc(mcat(p.cat))} · 생산자 ${esc(shopName(p.sellerId))}</div>
     <h2 style="font-size:24px">${esc(p.name)}</h2>
     ${sellerRow(p.sellerId,p.name+" 문의")}
+    <div class="meta" style="margin:-4px 0 4px">판매: 농마니 (생산자의 상품을 맡아 판매하는 위탁판매) · 계좌이체 결제</div>
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
     ${p.sellerId===S.uid?`<div class="mytools"><span class="meta">내 상품</span><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 고치기</button><button class="btn sm" type="button" data-xph="${p.id}">📷 사진</button><button class="btn sm danger" type="button" data-act="delP" data-id="${p.id}">삭제</button></div>`:""}
@@ -2787,12 +2843,13 @@ function openProduct(id){
       if(!S.uid){toast("로그인이 필요합니다");return}
       if($("#oAgree")&&!$("#oAgree").checked){toast("판매자에게 배송 정보 제공에 동의해 주세요");$("#oAgree").focus();return}
       if(BETA()){await betaStop((findHerb(p.item)||guessHerb(p.name)||{}).name||p.name,"market");return}
-      $("#buy").disabled=true;
+      if(!BANK()){toast("입금 계좌를 준비하고 있어요. 잠시 뒤 다시 시도해 주세요");return}
+      $("#buy").disabled=true;let newO=null;
       const ok=await guard(async()=>{const fresh=(await S.db.doc("products/"+p.id).get()).data();if(!fresh||fresh.stock<qty)throw{code:"stock"};
         const gf=$("#gOpt")?.open?{card:$("#gCard").value.trim().slice(0,60),date:$("#gDate").value||"",wrap:!!$("#gWrap")?.checked,wrapFee:wf(),hidePrice:$("#gHide").checked,prodCard:!!$("#gPc")?.checked}:null;
-        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:subOf(p,qty)+ship+wf(),...(qdPct(p,qty)?{qdPct:qdPct(p,qty),qdOff:p.price*qty-subOf(p,qty)}:{}),buyerId:S.uid,sellerId:p.sellerId,memo:$("#oMemo").value.slice(0,300),...(gf?{gift:gf}:{}),...(sc.island?{island:true}:{}),...(sc.bundle?{bundleWith:sc.bundle.bundleWith||sc.bundle.id}:{}),fresh:p.form==="생물",shipDue:shipDue(Date.now(),p.form==="생물"),status:"결제완료",createdAt:Date.now()});
-        await S.db.doc("products/"+p.id).update({stock:fresh.stock-qty})},"주문했습니다. 내 거래에서 진행 상황을 볼 수 있어요");
-      if(ok){dlg.close();go("my")}else $("#buy").disabled=false};
+        await S.db.collection("orders").add({productId:p.id,productName:p.name,unit:p.unit,qty,unitPrice:p.price,ship,total:subOf(p,qty)+ship+wf(),...(qdPct(p,qty)?{qdPct:qdPct(p,qty),qdOff:p.price*qty-subOf(p,qty)}:{}),buyerId:S.uid,sellerId:p.sellerId,memo:$("#oMemo").value.slice(0,300),...(gf?{gift:gf}:{}),...(sc.island?{island:true}:{}),...(sc.bundle?{bundleWith:sc.bundle.bundleWith||sc.bundle.id}:{}),fresh:p.form==="생물",shipDue:shipDue(Date.now(),p.form==="생물"),status:"입금대기",payBy:Date.now()+PAY_MS,feePct:Math.round(feeR()*1000)/10,createdAt:Date.now()}).then(r=>{newO=r});
+        await S.db.doc("products/"+p.id).update({stock:fresh.stock-qty})},"주문이 접수됐어요. 24시간 안에 입금해 주세요");
+      if(ok){const tot=subOf(p,qty)+ship+wf();bankDlg({id:newO?.id||"",kind:"o",amount:tot,payBy:Date.now()+PAY_MS})}else $("#buy").disabled=false};
   }
   applyWrite();if(!dlg.open)dlg.showModal();dlg.scrollTop=0;requestAnimationFrame(paintAll);xphGallery(p);
 }
@@ -2894,7 +2951,7 @@ const ACT={
     await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),suspended:v,suspendedAt:v?Date.now():0}),v?"판매를 정지했습니다":"판매 정지를 풀었습니다")},
   async verify(id){const v=!S.checks[id]?.verified;await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),verified:v,at:Date.now()}),v?"인증 판매자로 지정했습니다":"인증을 해제했습니다")},
   async regOk(id){const v=!S.checks[id]?.regOk;await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),regOk:v,regNo:S.sellers[id]?.regNo||"",at:Date.now()}),v?"경영체 등록을 확인했습니다. 인증 배지가 붙습니다":"경영체 확인을 해제했습니다")},
-  async payAuc(id){const a=A(id),x=auc(a);if(!x.winner||x.winner.bidderId!==S.uid||!x.accepted)return;await guard(()=>S.db.doc("auctions/"+id).update({deal:"결제완료",buyerId:S.uid,hammer:x.winner.amount,paidAt:Date.now()}),"테스트 결제를 마쳤습니다. 판매자가 발송을 준비합니다")},
+  async payAuc(id){const a=A(id),x=auc(a);if(!x.winner||x.winner.bidderId!==S.uid||!x.accepted)return;if(!BANK()){toast("입금 계좌를 준비하고 있어요");return}const pb=Date.now()+PAY_MS;if(await guard(()=>S.db.doc("auctions/"+id).update({deal:"입금대기",buyerId:S.uid,hammer:x.winner.amount,payBy:pb}),"24시간 안에 입금해 주세요"))bankDlg({id,kind:"a",amount:x.winner.amount+(a.ship||5000),payBy:pb})},
   async giveUp(id){const a=A(id),b=document.querySelector(`[data-act="giveUp"][data-id="${id}"]`);if(!b.dataset.armed){b.dataset.armed=1;b.textContent="한 번 더 누르면 포기";setTimeout(()=>{b.textContent="구매 포기";delete b.dataset.armed},3000);return}
     await guard(()=>S.db.doc("auctions/"+id).update({skip:[...(a.skip||[]),S.uid],offerAt:Date.now()}),"구매를 포기했습니다. 다음 순위 제안자에게 기회가 넘어갑니다")},
   async acceptOffer(id){const a=A(id),x=auc(a);if(!x.winner||a.sellerId!==S.uid)return;await guard(()=>S.db.doc("auctions/"+id).update({acceptFor:x.winner.bidderId,acceptAt:Date.now()}),`${won(x.winner.amount)}에 팔기로 했습니다. 손님이 24시간 안에 결제합니다`)},
@@ -2908,7 +2965,7 @@ const ACT={
   async approveA(id){const a=A(id),now=Date.now(),end=aucEnd(a,now);await guard(()=>S.db.doc("auctions/"+id).update({status:"진행중",startedAt:now,endsAt:end,reviewedAt:now}),`승인했습니다. 지금부터 ${satLabel(end)}까지 제안을 받습니다`)},
   async rejectA(id){const why=$("#rj-"+id).value.trim();if(!why){toast("반려 사유를 적어 주세요");return}await guard(()=>S.db.doc("auctions/"+id).update({status:"반려",rejectReason:why.slice(0,200)}),"반려했습니다. 등록료는 환불 처리됩니다")},
   async payoutA(id){if(proofMissing(A(id))){toast("채취 근거가 확인되지 않아 정산할 수 없습니다. 증빙을 확인하거나 환불해 주세요");return}await guard(()=>S.db.doc("auctions/"+id).update({deal:"정산완료",settledAt:Date.now()}),"정산 완료로 바꿨습니다")},
-  async cancel(id){const o=S.orders.find(x=>x.id===id);await guard(async()=>{await S.db.doc("orders/"+id).update({status:"취소"});const p=S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})},"주문을 취소했습니다")},
+  async cancel(id){const o=S.orders.find(x=>x.id===id);if(o&&o.status==="결제완료"){if(!confirm("이미 입금된 주문이에요. 환불을 요청할까요?"))return;await guard(()=>S.db.doc("orders/"+id).update({status:"환불요청",refundAskAt:Date.now()}),"환불을 요청했어요. 운영자가 곧 연락드립니다");return}await guard(async()=>{await S.db.doc("orders/"+id).update({status:"취소"});const p=S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})},"주문을 취소했습니다")},
   async receive(id){await guard(()=>S.db.doc("orders/"+id).update({status:"수령확인",receivedAt:Date.now()}),"수령을 확인했습니다")},
   review(id){openReview(S.orders.find(o=>o.id===id))},
   reviewA(id){const a=S.auctions.find(x=>x.id===id);if(a)openReview({auctionId:a.id,productName:a.title,sellerId:a.sellerId})},
@@ -2929,7 +2986,7 @@ const ACT={
       /* 대량·단체 주문은 견적을 고를 때 값이 정해지므로 바로 결제(3일 안). 판매자가 미리 만들어 두고 떼이는 일을 막습니다 */
       const bulk=!!r.bulk;
       await S.db.collection("orders").add({productId:null,requestId:r.id,fromQuote:true,...(bulk?{bulk:true,payBy:Date.now()+3*864e5}:{}),productName:bulk?`${r.item} × ${r.bulk.count}개`:`${r.item} (${r.form})`,unit:bulk?`${r.bulk.count}개`:`${r.qty}${r.unit}`,qty:1,unitPrice:q.price,ship:0,total:q.price,quoted:q.price,buyerId:S.uid,sellerId:q.sellerId,memo:r.memo||"",status:bulk?"결제대기":"채취중",createdAt:Date.now()})},
-      r.bulk?"견적을 골랐습니다. 3일 안에 결제하시면 판매자가 준비를 시작합니다. 돈은 결제대행사가 보관했다가 받으신 뒤 판매자에게 지급됩니다":"견적을 골랐습니다. 아직 돈은 나가지 않아요. 채취가 끝나 사진이 올라오면 그때 결제합니다");if(ok)go("my")},
+      r.bulk?"견적을 골랐습니다. 3일 안에 결제하시면 판매자가 준비를 시작합니다. 돈은 농마니가 보관했다가 받으신 뒤 판매자에게 정산됩니다":"견적을 골랐습니다. 아직 돈은 나가지 않아요. 채취가 끝나 사진이 올라오면 그때 결제합니다");if(ok)go("my")},
   async harvestDone(id){const o=S.orders.find(x=>x.id===id);if(!o||o.sellerId!==S.uid)return;
     const f=$("#hp-"+id)?.files?.[0];if(!f){toast("채취한 물건 사진을 한 장 올려 주세요");return}
     const price=Math.round(+$("#hv-"+id).value||0);if(price<1000){toast("최종 금액을 적어 주세요");return}
@@ -2940,7 +2997,8 @@ const ACT={
     await guard(async()=>{await S.db.doc("orders/"+id).update({status:"취소",cancelReason:"채취하지 못함"});if(o.requestId)await S.db.doc("requests/"+o.requestId).update({status:"모집중"})},"의뢰를 돌려 드렸습니다. 손님은 다른 견적을 고를 수 있어요")},
   async payQ(id){const o=S.orders.find(x=>x.id===id);if(!o||o.buyerId!==S.uid||o.status!=="결제대기")return;
     if(BETA()){toast("지금은 베타 기간이라 결제는 아직 받지 않습니다. 정식 오픈 후 다시 눌러 주세요");return}
-    await guard(()=>S.db.doc("orders/"+id).update({status:"결제완료",paidAt:Date.now()}),"테스트 결제를 마쳤습니다. 판매자가 발송을 준비합니다")},
+    if(!BANK()){toast("입금 계좌를 준비하고 있어요");return}
+    const pb=Date.now()+PAY_MS;if(await guard(()=>S.db.doc("orders/"+id).update({status:"입금대기",payBy:pb,feePct:Math.round(feeR()*1000)/10}),"24시간 안에 입금해 주세요"))bankDlg({id,kind:"o",amount:o.total,payBy:pb})},
   async closeReq(id){await guard(()=>S.db.doc("requests/"+id).update({status:"마감"}),"요청을 닫았습니다")},
   async stock(id){const v=Math.max(0,+$("#st-"+id).value||0);await guard(()=>S.db.doc("products/"+id).update({stock:v}),"재고를 바꿨습니다")},
   async subP(id){const on=!!$("#sbOn-"+id)?.checked,day=Math.min(28,Math.max(1,Math.floor(+$("#sbDay-"+id).value||10))),pct=Math.min(30,Math.max(0,Math.floor(+$("#sbPct-"+id).value||0)));
@@ -2972,6 +3030,13 @@ const ACT={
   delP(id){const bs=[...document.querySelectorAll(`[data-act="delP"][data-id="${id}"]`)],b=bs.find(x=>x.closest("dialog[open]"))||bs[0];if(b.dataset.armed){guard(()=>S.db.doc("products/"+id).delete(),"상품을 삭제했습니다").then(ok=>{if(ok&&b.closest("dialog[open]"))$("#dlg").close()})}else{b.dataset.armed=1;b.textContent="한 번 더 누르면 삭제";setTimeout(()=>{b.textContent="삭제";delete b.dataset.armed},3000)}},
   async approve(id){await guard(()=>S.db.doc("products/"+id).update({status:"판매중",reviewedAt:Date.now()}),"승인했습니다")},
   async reject(id){const why=$("#rj-"+id).value.trim();if(!why){toast("반려 사유를 적어 주세요");return}await guard(()=>S.db.doc("products/"+id).update({status:"반려",rejectReason:why.slice(0,200)}),"반려했습니다")},
+  async depOk(id){const o=S.orders.find(x=>x.id===id);if(!o)return;await guard(()=>S.db.doc("orders/"+id).update({status:"결제완료",paidAt:Date.now(),shipDue:shipDue(Date.now(),!!o.fresh)}),"입금 확인했습니다. 판매자에게 발송 요청이 갑니다")},
+  async depNo(id){const o=S.orders.find(x=>x.id===id);if(!o||!confirm("이 주문을 취소할까요?"))return;await guard(async()=>{await S.db.doc("orders/"+id).update({status:"취소",cancelReason:"입금 확인 안 됨"});const p=o.productId&&S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})},"주문을 취소했습니다")},
+  async depOkA(id){await guard(()=>S.db.doc("auctions/"+id).update({deal:"결제완료",paidAt:Date.now()}),"입금 확인했습니다")},
+  async refundDone(id){const o=S.orders.find(x=>x.id===id);if(!o||!confirm("환불을 보냈나요? 주문이 환불 완료로 바뀝니다"))return;await guard(async()=>{await S.db.doc("orders/"+id).update({status:"환불",refundedAt:Date.now()});const p=o.productId&&S.products.find(x=>x.id===o.productId);if(p)await S.db.doc("products/"+p.id).update({stock:p.stock+o.qty})},"환불 완료로 바꿨습니다")},
+  async payAll(sid){if(!confirm(`${shopName(sid)}에게 보낼 위탁 대금을 이체했나요? 이 판매자의 지급 대기 건이 모두 지급 완료로 바뀝니다`))return;
+    for(const o of S.orders.filter(o=>o.sellerId===sid&&ordEff(o)==="수령확인"&&Date.now()>=holdUntil(o)))await ACT.payout(o.id);
+    for(const a of S.auctions.filter(a=>a.sellerId===sid&&dealEff(a)==="수령확인"&&Date.now()>=holdUntil(a)))await ACT.payoutA(a.id)},
   async payout(id){const o=S.orders.find(x=>x.id===id),pp=o&&S.products.find(x=>x.id===o.productId);if(pp&&pp.cat==="가공품"&&!pp.bizOk){toast("가공품은 영업 신고 번호를 확인한 뒤 정산할 수 있습니다 (위 ‘새로 올라온 것’)");return}if(proofMissing(pp)){toast("채취 근거가 확인되지 않아 정산할 수 없습니다. 증빙을 확인하거나 환불해 주세요");return}await guard(()=>S.db.doc("orders/"+id).update({status:"정산완료",paidAt:Date.now()}),"정산 완료로 바꿨습니다")}
 };
 document.addEventListener("click",e=>{
@@ -3071,7 +3136,7 @@ function aucUI(){
   const guess=Math.max(st,bn||Math.round(st*1.5)),n=aucNet(guess);
   $("#aFee").innerHTML=`<div><span>등록료 (지금 결제)</span><b>${fl?`무료 (첫 등록 ${fl}번 남음)`:won(lf)}</b></div>
    <div class="meta" style="display:block">예: ${won(guess)}에 판매가 확정되면</div>
-   <div><span>판매 수수료</span><span>${won(n.wf)}</span></div><div><span>부가세</span><span>${won(n.vat)}</span></div><div><span>결제 수수료 약 3.4%</span><span>${won(n.pg)}</span></div>
+   <div><span>판매 수수료 (부가세 포함)</span><span>${won(n.wf)}</span></div>
    <div class="sum"><span>판매자 수령액</span><span>${won(n.net)}</span></div>`;
   $("#aTr").hidden=!S.sample;
   const tier=tierOf(st),cert=!!S.uid&&trust(S.uid).cert;
@@ -3181,7 +3246,7 @@ function renderCredits(){
   const sel=$("#cgSeller");if(sel){const ids=Object.keys(S.sellers),key=ids.join();if(sel.dataset.k!==key){const v=sel.value;sel.dataset.k=key;sel.innerHTML=ids.map(id=>`<option value="${esc(id)}">${esc(S.sellers[id].shopName||id)}</option>`).join("");if(ids.includes(v))sel.value=v}}}
 document.addEventListener("input",e=>{const t=e.target;if(!t.id||!t.id.startsWith("qp-"))return;const id=t.id.slice(3),el=$("#qe-"+id);if(!el)return;const v=+t.value||0;
   if(v<1000){el.textContent="총액을 적으면 손님이 골랐을 때 받는 돈이 보입니다";return}
-  const n=shopNet(v);el.textContent=`손님이 고르면 받는 돈 약 ${won(n.net)} (판매 수수료 ${won(n.f)}, 부가세 ${won(n.vat)}, 결제 수수료 ${won(n.pg)} 제외)${credCost()?` · 쓴 이용료 ${won(credCost())}은 돌려드립니다`:""}`});
+  const n=shopNet(v);el.textContent=`손님이 고르면 받는 돈 약 ${won(n.net)} (수수료 ${won(n.f)} 제외)${credCost()?` · 쓴 이용료 ${won(credCost())}은 돌려드립니다`:""}`});
 (function credInit(){
   const f=$("#credCfg");if(!f)return;
   ["ccCost","ccWelcome"].forEach(id=>$("#"+id).oninput=e=>{e.target.dataset.dirty=1});
@@ -3591,7 +3656,7 @@ function renderAucExtras(){
   if($("#aucExtra"))$("#aucExtra").innerHTML=row+upNextHTML()+(lv?winsHTML(5):"");
   if(S.owner&&$("#alertCounts")){const m={};(S.alerts||[]).filter(a=>a.kind==="auction").forEach(a=>m[a.key]=(m[a.key]||0)+1);const rows=Object.entries(m).sort((a,b)=>b[1]-a[1]);
     $("#alertCounts").innerHTML=rows.length?rows.map(([c,k])=>`<div class="item sunk"><div class="itop"><b>${esc(c)}</b><span class="num">${k}명 대기</span></div></div>`).join(""):`<div class="empty">아직 제안 판매 알림을 신청한 손님이 없습니다.</div>`;
-    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();$("#cfgAuc").checked=aucOn();$("#cfgReq").checked=reqOn();$("#cfgSub").checked=subOn();if(!["cfgVideo","cfgReview","cfgProof","cfgPhone","cfgHours","cfgGiftTitle","cfgGiftStart","cfgGiftEnd","cfgGiftCut"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon();$("#cfgPhone").value=S.site?.csPhone||"";$("#cfgHours").value=S.site?.csHours||"";giftCfgFill()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
+    const c=aucCfg();if(document.activeElement?.id!=="cfgCycle"&&document.activeElement?.id!=="cfgAnchor"){$("#cfgBeta").checked=BETA();$("#cfgAuc").checked=aucOn();$("#cfgReq").checked=reqOn();$("#cfgSub").checked=subOn();if(!["cfgVideo","cfgReview","cfgProof","cfgPhone","cfgHours","cfgBankName","cfgBankAcct","cfgBankHolder","cfgFee","cfgGiftTitle","cfgGiftStart","cfgGiftEnd","cfgGiftCut"].includes(document.activeElement?.id)){$("#cfgVideo").value=videoWon();$("#cfgReview").value=reviewWon();$("#cfgProof").value=proofWon();$("#cfgPhone").value=S.site?.csPhone||"";$("#cfgHours").value=S.site?.csHours||"";$("#cfgBankName").value=S.site?.bankName||"";$("#cfgBankAcct").value=S.site?.bankAcct||"";$("#cfgBankHolder").value=S.site?.bankHolder||"";$("#cfgFee").value=Math.round(feeR()*1000)/10;giftCfgFill()}$("#cfgCycle").value=c.cycle;$("#cfgAnchor").value=iso(new Date(c.anchor+9*3600e3)).slice(0,10)}
     $("#cfgNote").textContent="제안 판매는 승인된 날부터 판매자가 고른 3·5·7일 동안 열립니다"}
 }
 $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:00:00+09:00");if(!an||new Date(an+9*3600e3).getUTCDay()!==6){toast("기준 제안 판매일은 토요일로 골라 주세요");return}
@@ -3601,7 +3666,7 @@ $("#cfgSave").onclick=async()=>{const an=Date.parse($("#cfgAnchor").value+"T20:0
   const gS=$("#cfgGiftStart").value,gE=$("#cfgGiftEnd").value,gC=$("#cfgGiftCut").value;
   if($("#cfgGift").checked&&!(gS&&gE)){toast("선물 코너를 열려면 여는 날과 닫는 날을 골라 주세요");return}
   if(gS&&gE&&gS>gE){toast("선물 코너 닫는 날이 여는 날보다 빠릅니다");return}
-  const v={giftOn:$("#cfgGift").checked,giftTitle:$("#cfgGiftTitle").value.trim().slice(0,30),giftStart:gS,giftEnd:gE,giftCut:gC,aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,aucOn:$("#cfgAuc").checked,reqOn:$("#cfgReq").checked,subOn:$("#cfgSub").checked,videoWon:vw,reviewWon:rw,proofWon:pw,csPhone:$("#cfgPhone").value.trim().slice(0,20),csHours:$("#cfgHours").value.trim().slice(0,40),updatedAt:Date.now()};
+  const v={giftOn:$("#cfgGift").checked,giftTitle:$("#cfgGiftTitle").value.trim().slice(0,30),giftStart:gS,giftEnd:gE,giftCut:gC,aucCycle:$("#cfgCycle").value,aucAnchor:an,beta:$("#cfgBeta").checked,aucOn:$("#cfgAuc").checked,reqOn:$("#cfgReq").checked,subOn:$("#cfgSub").checked,videoWon:vw,reviewWon:rw,proofWon:pw,csPhone:$("#cfgPhone").value.trim().slice(0,20),csHours:$("#cfgHours").value.trim().slice(0,40),bankName:$("#cfgBankName").value.trim().slice(0,20),bankAcct:$("#cfgBankAcct").value.trim().slice(0,30),bankHolder:$("#cfgBankHolder").value.trim().slice(0,30),feePct:Math.min(30,Math.max(0,+$("#cfgFee").value||0)),updatedAt:Date.now()};
   if(await guard(()=>S.db.doc("settings/site").set({...(S.site||{}),...v}),"운영 설정을 저장했습니다. 제안 판매 주기는 새로 올라오는 제안 판매부터 적용됩니다")){S.site={...(S.site||{}),...v};render()}};
 
 /* ---------- 판매 마법사 (사진 → 품목 → 방식 → 값 → 확인) ---------- */
@@ -3851,7 +3916,7 @@ function todoData(){
   const rej=S.products.filter(p=>p.sellerId===S.uid&&p.status==="반려").length+myA.filter(a=>a.status==="반려").length;
   const out=S.products.filter(p=>p.sellerId===S.uid&&p.status==="판매중"&&p.stock<=0).length;
   const reqs=(S.requests||[]).filter(r=>r.status==="모집중"&&r.buyerId!==S.uid&&!(S.quotes||[]).some(q=>q.requestId===r.id&&q.sellerId===S.uid)).length;
-  const pay=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o)).net,0)+myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
+  const pay=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o),o.ship||0).net,0)+myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
   return {ship,liveA:liveA.length,bids,top,pend,rej,out,reqs,pay};
 }
 function renderTodo(){
