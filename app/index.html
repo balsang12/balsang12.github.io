@@ -2798,7 +2798,7 @@ function fillAuction(id,refresh){
      <dt>판매자</dt><dd>${esc(shopName(a.sellerId))}${S.sellers[a.sellerId]?.role?" · "+esc(S.sellers[a.sellerId].role):""}${trust(a.sellerId).cert?" · 인증 판매자 (완료 거래 "+trust(a.sellerId).done+"건)":""}</dd>
      ${a.video?`<dt>인증 영상</dt><dd><a href="${esc(a.video)}" target="_blank" rel="noopener">영상 보기</a></dd>`:""}
      ${a.apPhoto?`<dt>감정서</dt><dd><img src="${esc(a.apPhoto)}" alt="감정서 사진" style="max-height:140px;border-radius:6px"></dd>`:""}
-     <dt>배송</dt><dd>${a.form==="생물"?"아이스박스 · ":""}${won(aucShip(a,x.winner.amount))}</dd>
+     <dt>배송</dt><dd>${a.form==="생물"?"아이스박스 · ":""}${(()=>{const v=aucShip(a,x.winner?x.winner.amount:Math.max(x.cur||0,a.start||0));return v?won(v):"무료"})()}</dd>
     </dl>
     ${a.desc?`<p style="margin:0">${esc(a.desc)}</p>`:""}
     <div class="actions"><button class="btn sm" type="button" id="watchBtn">${watched?"★ 관심 해제":"☆ 관심 경매"}</button></div>
