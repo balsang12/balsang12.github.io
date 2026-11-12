@@ -949,7 +949,7 @@ label.btn{display:inline-block}
   <button class="reqcta hmob" data-go="request"><span><b>찾는 게 없나요? 채취 의뢰하세요</b><span>품목과 양만 알려 주면 농부·심마니가 무료로 견적을 보내요</span></span><span class="go">요청서 쓰기</span></button>
   <details class="more">
     <summary>농마니 더 알아보기 (판매자 · 산야초 사전)</summary>
-  <div class="sechead"><div><h2>활동 중인 농부·심마니</h2><div class="meta">프로필에서 후기와 거래 기록을 보고 1:1로 문의하세요</div></div></div>
+  <div class="sechead" id="homeSellersH"><div><h2>활동 중인 농부·심마니</h2><div class="meta">프로필에서 후기와 거래 기록을 보고 1:1로 문의하세요</div></div></div>
   <div class="plist" id="homeSellers"></div>
 
   <div class="sechead"><div><div class="eyebrow">고서 기록 · 최근 연구</div><h2>산야초 사전</h2><div class="meta">옛 의서와 요즘 논문에 약초·산나물이 어떻게 나오는지 읽어 보세요</div></div><button class="btn sm" data-go="herbs">전체 보기</button></div>
@@ -2356,7 +2356,7 @@ function renderHome(){renderSeason();
     const hh=$("#homeAucH");if(hh)hh.textContent="곧 마감되는 제안 판매"+(n?(n<=5?` · 단 ${n}점`:` · ${n}점`):"");}
   {const dm=$("details.more");if(dm&&!dm.dataset.touched)dm.open=live().length<12}
   const sl=Object.keys(S.sellers).map(id=>({id,t:trust(id),r:sellerRating(id)})).sort((a,b)=>(b.t.cert-a.t.cert)||(respFast(b.id)-respFast(a.id))||(b.t.done-a.t.done)||(b.r.n-a.r.n)).slice(0,6);
-  $("#homeSellers").innerHTML=sl.length?sl.map(({id,t,r})=>{const s=S.sellers[id];return `<button class="prow" type="button" data-profile="${esc(id)}">${avaHTML(id)}<div><b>${esc(s.shopName)}</b>${t.cert?' <span class="chip ok">인증</span>':""}<div class="meta">${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div><div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} 후기 ${r.n} · `:""}완료 거래 ${t.done}건</div></div><span class="meta">›</span></button>`}).join(""):emptyBox("아직 상점을 연 농부·심마니가 없습니다.",'<button class="btn" data-go="seller">내 상점 열기</button>');
+  {const act=new Set(live().filter(p=>p.stock>0).map(p=>p.sellerId)),few=Object.keys(S.sellers).filter(id=>act.has(id)).length<3;$("#homeSellers").style.display=few?"none":"";if($("#homeSellersH"))$("#homeSellersH").style.display=few?"none":""}/* 상품 파는 판매자가 3명 미만이면 숨김 */$("#homeSellers").innerHTML=sl.length?sl.map(({id,t,r})=>{const s=S.sellers[id];return `<button class="prow" type="button" data-profile="${esc(id)}">${avaHTML(id)}<div><b>${esc(s.shopName)}</b>${t.cert?' <span class="chip ok">인증</span>':""}<div class="meta">${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div><div class="meta num">${r.n?`<span class="star">★</span> ${r.avg.toFixed(1)} 후기 ${r.n} · `:""}완료 거래 ${t.done}건</div></div><span class="meta">›</span></button>`}).join(""):emptyBox("아직 상점을 연 농부·심마니가 없습니다.",'<button class="btn" data-go="seller">내 상점 열기</button>');
   const la=liveAucs().sort((a,b)=>proofFirst(a,b)||auc(a).end-auc(b).end).slice(0,4);
   $("#homeAuc").innerHTML=la.length?la.map(aucRow).join(""):emptyBox(`지금 제안을 받는 물건이 아직 없습니다. 제안 판매는 운영자 확인을 마치면 바로 열리고, 3~7일 동안 제안을 받습니다. 첫 등록 3번은 등록료가 무료입니다.`,'<button class="btn gold" data-go="seller">제안 판매 등록 신청</button>');
   {const e=soonEnd(),sl=$("#sideLeft");if(sl){sl.dataset.end=e;sl.textContent=e?left(e-Date.now()):"—";$("#sideAuc").textContent=liveAucs().length;$("#sideShop").textContent=live().filter(p=>p.stock>0).length}}
