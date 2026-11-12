@@ -15,6 +15,7 @@
 .chip.gold.badge{background:linear-gradient(135deg,#E0B04A,#A8721A)!important;color:#fff!important;font-weight:800;border:1px solid #F6DC9A!important;letter-spacing:.06em;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .chip.tag{font-size:15px;padding:6px 13px;font-weight:800;border-radius:999px}.chip.wtag{background:rgba(255,255,255,.94)!important;color:#1D2B22!important;border:1px solid rgba(0,0,0,.08)!important;box-shadow:0 2px 8px rgba(0,0,0,.2)}.chip.gold.badge.tag{font-size:16px;padding:7px 15px}
 .reqcta.big{margin-top:26px;padding:22px 24px;border-radius:18px;background:linear-gradient(135deg,#1E6B43,#16824A);box-shadow:0 8px 24px rgba(22,130,74,.22)}.reqcta.big b{font-size:22px;margin-bottom:4px}.reqcta.big span span{font-size:14px}.reqcta.big .go{font-size:16px;padding:10px 18px}@media (max-width:640px){.reqcta.big{flex-direction:column;align-items:flex-start}.reqcta.big b{font-size:19px}}
+.dictbtn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:10px 0;padding:14px 16px;border:1px solid color-mix(in srgb,var(--pine) 28%,transparent);border-radius:14px;background:color-mix(in srgb,var(--pine) 8%,var(--surface));color:var(--ink);cursor:pointer;font:inherit}.dictbtn i{font-style:normal;font-size:24px}.dictbtn b{font-size:15px}.dictbtn span span{font-size:13px;color:var(--muted,#5b6b60)}.dictbtn em{margin-left:auto;flex:none;font-style:normal;font-weight:700;color:var(--pine);font-size:14px}.dictbtn:hover{background:color-mix(in srgb,var(--pine) 14%,var(--surface))}.dictbtn.sm{margin:8px 0 4px;padding:10px 12px}
 </style><meta name="description" content="농마니 · 농부와 심마니가 직접 판매하는 산야초. 귀한 분께 자연과 정성으로 키운 건강한 우리 산야초를 선물하세요. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 제안 판매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
@@ -2822,6 +2823,7 @@ function openProduct(id){
     <div class="meta" style="margin:-4px 0 4px">판매: 농마니 (생산자의 상품을 맡아 판매하는 위탁판매) · 계좌이체 결제</div>
     ${(()=>{const h=findHerb(p.item)||guessHerb(p.name);return h&&h.st==="caution"&&h.note?`<div class="notice">${esc(h.name)} 먹을 때 주의: ${esc(h.note)}</div>`:""})()}
     ${medNote(p.item,p.cat)}
+    ${dictBtn(p.item||guessHerb(p.name)?.name)}
     ${p.sellerId===S.uid?`<div class="mytools"><span class="meta">내 상품</span><button class="btn sm primary" type="button" data-act="editP" data-id="${p.id}">✏️ 고치기</button><button class="btn sm" type="button" data-xph="${p.id}">📷 사진</button><button class="btn sm danger" type="button" data-act="delP" data-id="${p.id}">삭제</button></div>`:""}
     ${S.owner?`<div class="actions"><button class="btn sm gold" type="button" id="gPick">${inGift(p)?"🎁 선물 코너에서 빼기":"🎁 선물 코너에 넣기"}</button></div>`:""}
     ${p.stock>0&&!own?`<div class="field"><label for="oMemo">배송 메모</label><input id="oMemo" placeholder="받는 분과 요청 사항 (실제 주소는 넣지 마세요)"></div>`+shipOptHTML(p)+giftOptHTML(p)+subOptHTML(p)+`<label class="meta" style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13.5px;line-height:1.5;cursor:pointer"><input type="checkbox" id="oAgree"><span>[필수] 배송을 위해 이 상품의 판매자(${esc(shopName(p.sellerId))})에게 받는 분 이름·연락처·주소·요청 사항을 제공하는 데 동의합니다. 거래 완료 후 3개월 보관 · <a href="https://nongmani.com/privacy/" target="_blank" rel="noopener">자세히</a></span></label>`:own?'<div class="notice">내가 올린 상품입니다.</div>':'<div class="notice">품절입니다. 채취 의뢰로 같은 품목을 요청할 수 있습니다.</div>'}
@@ -2888,6 +2890,7 @@ function qnaHTML(p){
 }
 function qnaBind(p){
   const box=$("#qnaBox");if(!box)return;
+  {const t=$("#qnaQ"),hb=document.createElement("div");hb.id="qnaDict";if(t){t.after(hb);t.addEventListener("input",()=>{const v=t.value;hb.innerHTML=(EFFQ.test(v)||healthQ(v).hit)?dictBtn(p.item||guessHerb(p.name)?.name,1)||`<button type="button" class="dictbtn sm" data-go="herbs"><i aria-hidden="true">📖</i><span><b>효능이 궁금하세요?</b><br><span>판매자는 법에 따라 효능을 말씀드릴 수 없어요. 산야초 사전에서 읽어 보세요</span></span><em aria-hidden="true">산야초 사전 ›</em></button>`:""})}}
   const f=$("#qnaForm");if(f)f.onsubmit=async e=>{e.preventDefault();if(!S.uid){toast("로그인하면 문의할 수 있어요");window.nmAuth?.open?.();return}
     const q=$("#qnaQ").value.trim();if(q.length<2){toast("문의 내용을 적어 주세요");return}
     let secret=$("#qnaSecret").checked;if(!secret&&QNA_PII.test(q)){secret=true;toast("주소·전화번호 같은 개인정보가 있어 비밀글로 올렸어요")}
@@ -3294,6 +3297,10 @@ function healthQ(q){
 const MED_ITEMS=["산삼","산양삼","장뇌삼","인삼","천마","하수오","백수오","영지","상황","상황버섯","차가버섯","동충하초","복령","겨우살이","당귀","황기","감초","천궁","익모초","삼지구엽초","오가피","엄나무","헛개","꾸지뽕"];
 function medNote(item,cat){const h=findHerb(item||""),c=mcat(cat||"");
   return (["뿌리 약초","말린 약초·차"].includes(c)||MED_ITEMS.includes(item)||(h&&["check","limit","hanyak"].includes(h.st)))?'<div class="medn">임신·수유 중이거나 약을 드시는 분은 드시기 전에 의사·한의사와 상의하세요.</div>':""}
+/* 효능 궁금할 때 → 산야초 사전 (판매자는 효능을 말할 수 없음) */
+function dictBtn(item,small){const h=item&&findHerb(item);if(!h)return "";
+  return `<button type="button" class="dictbtn${small?" sm":""}" data-dict="${esc(h.name)}" data-dsec="cl"><i aria-hidden="true">📖</i><span><b>${esc(h.name)}의 효능이 궁금하세요?</b><br><span>판매자는 법에 따라 효능을 말씀드릴 수 없어요. 옛 의서 기록과 요즘 연구를 산야초 사전에서 읽어 보세요</span></span><em aria-hidden="true">산야초 사전 ›</em></button>`}
+const EFFQ=/효능|효과|약효|효험|좋[아은나을다지]|도움|낫[나는게]|치료|성분|영양|몸에|당뇨|혈압|혈당|고지혈|콜레스테롤|암|면역|기관지|기침|가래|천식|폐|관절|간[에이]|피로|염증|다이어트|변비|불면|갱년기/;
 function healthCard(hq){
   return `<div class="hnote" role="note"><b>몸 상태에 맞는 약초는 골라 드릴 수 없어요</b>
     <p>농마니에서 파는 약초와 산나물은 식품이라서, 어떤 증상에 좋은지 알려 드리거나 몸 상태에 맞춰 추천해 드릴 수 없습니다. 증상이 있으시면 의사나 한의사와 먼저 상담해 주세요.</p>
