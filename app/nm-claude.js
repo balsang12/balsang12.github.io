@@ -337,7 +337,7 @@
     el.innerHTML = '<div class="box"><h2 id="nmAuthH"></h2><p id="nmAuthP"></p>' + consent +
       '<div id="nmMain" style="display:flex;flex-direction:column;gap:12px">' +
       '<button type="button" class="nm-kakao" id="nmKakao"></button>' +
-      '<button type="button" class="nm-close" id="nmMore" aria-expanded="false" style="text-decoration:underline;font-size:15px"></button>' +
+      '<button type="button" class="nm-close" id="nmMore" aria-expanded="false" style="font-size:16px;font-weight:700;min-height:52px;border:1.5px solid var(--pine,#2B5B41);border-radius:12px;color:var(--pine,#2B5B41);background:transparent"></button>' +
       '<div id="nmEmailBox" hidden style="display:flex;flex-direction:column;gap:12px">' +
       '<div class="nm-or" id="nmPwH"></div>' +
       '<form id="nmPwForm" style="display:flex;flex-direction:column;gap:8px">' +
@@ -355,7 +355,7 @@
     [["#nmAuthH", t.h], ["#nmAuthP", t.p], ["#nmKakao", t.kakao], ["#nmPwH", t.pwH], ["#nmPwMailL", t.lbl], ["#nmPwL", t.pwLbl], ["#nmPwShow", t.show], ["#nmPwIn", t.pin], ["#nmPwUp", t.up], ["#nmForgot", t.forgot],
      ["#nmLinkH", t.linkH], ["#nmMailL", t.lbl], ["#nmSend", t.send], ["#nmNewL", t.newH], ["#nmNewSave", t.newSave], ["#nmClose", t.close]].forEach(function (x) { el.querySelector(x[0]).textContent = x[1]; });
     el.querySelector("#nmMail").placeholder = t.ph; el.querySelector("#nmPwMail").placeholder = t.ph; el.querySelector("#nmPw").placeholder = t.pwPh; el.querySelector("#nmNewPw").placeholder = t.pwPh;
-    el.querySelector("#nmMore").textContent = ko ? "카카오가 없으면 이메일로 ›" : t.pwH + " ›";
+    el.querySelector("#nmMore").textContent = ko ? "📧 카카오가 없으세요? 이메일로 가입·로그인" : t.pwH + " ›";
     el.querySelector("#nmMore").onclick = function () { showMail(true); var i = el.querySelector("#nmPwMail"); setTimeout(function () { i.scrollIntoView({ block: "nearest" }); }, 30); };
     document.body.appendChild(el);
     var cs = [].slice.call(el.querySelectorAll(".nmC")), call = el.querySelector("#nmCAll");
