@@ -2346,7 +2346,7 @@ function seasonRowHTML(){const z=seasonNow();return `<span>${z[1]} <b>${z[2]}</b
 function renderSeason(){}
 function renderHome(){renderSeason();
   {const cnt=c=>live().filter(p=>p.stock>0&&mcat(p.cat)===c).length,ord=[...MKT_ICONS].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();
-    const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;
+    const has=ord.filter(c=>cnt(c)),show=has.length?has:ord;{const mg=document.querySelector(".hgroup.mkt");if(mg)mg.style.display=has.length<3?"none":""}/* 분류가 3개 미만이면 마켓 장보기 상자 숨김 */
     if($("#homeIcons").dataset.k!==key){$("#homeIcons").dataset.k=key;$("#homeIcons").innerHTML=show.map(c=>soonIco(icoBtn(c,"shop"),!cnt(c))).join("");$("#homeIcons").style.setProperty("--cols",Math.min(show.length,4));requestAnimationFrame(paintAll)}}
   {const la_=liveAucs(),cnt=c=>la_.filter(a=>a.cat===c).length,ai=AUC_ICONS(),ord=[...ai].sort((a,b)=>(!cnt(a))-(!cnt(b))),key=ord.map(c=>c+(cnt(c)?1:0)).join();$("#aucKinds").textContent=`${ai.length}가지 · 옆으로 넘겨 보기`;const live_=ord.filter(c=>cnt(c));$("#aucKinds").textContent=`${live_.length}가지 진행 중`;$("#homeAucKinds").hidden=true;if($("#homeAucIcons").dataset.k!==key){$("#homeAucIcons").dataset.k=key;$("#homeAucIcons").innerHTML=live_.map(c=>icoBtn(c,"auction",ASEASON[c]?"제철":"")).join("");requestAnimationFrame(paintAll)}}
   renderUses();renderAlertHome();renderGiftBan();
