@@ -2399,7 +2399,10 @@ function renderHome(){renderSeason();
   {const all=live().filter(p=>p.stock>0),wild=all.filter(p=>p.grow===GROWS[0]).length;
     if($("#sideShop2"))$("#sideShop2").textContent=all.length;
     if($("#sideShopMix"))$("#sideShopMix").textContent=all.length?`심마니 채취 ${wild} · 농부 재배 ${all.length-wild}`:"첫 상품을 기다리고 있습니다";
-    if($("#mktSub"))$("#mktSub").textContent=all.length?`${all.length}개 판매 중`:"";
+    if($("#mktSub"))$("#mktSub").textContent=all.length?`${all.length}개 판매 중`:"";{const few=all.length<30,c2=$("#sideShop2");/* 상품이 적을 땐 숫자 대신 문구 */
+      if(c2&&few&&all.length){c2.textContent="제철";const sm=c2.nextElementSibling;if(sm)sm.textContent=" 산야초 판매 중";$("#sideShopMix").textContent="심마니가 캔 자연산 · 농부가 기른 재배"}
+      else if(c2){const sm=c2.nextElementSibling;if(sm)sm.textContent="개 판매 중"}
+      const hn=document.querySelector(".hcard.auc .hnums");if(hn)hn.style.display=few?"none":""}
     const shown=new Set(ps.map(p=>p.id)),nw=all.filter(p=>!shown.has(p.id)).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8);
     $("#homeNewH").hidden=!nw.length;$("#homeNew").classList.toggle("hrow",nw.length>0);$("#homeNew").innerHTML=nw.map(card).join("")}
   {const gm=gifts.length>=2;$("#popH").textContent=gm?"선물 코너":"마켓 인기 상품";$("#popE").hidden=true;$("#popS").hidden=!gm;$("#popP").hidden=!gm;$("#popWrap").classList.toggle("giftmode",gm)}
