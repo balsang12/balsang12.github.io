@@ -2706,7 +2706,7 @@ function renderGuide(){
   $("#exTable").innerHTML=ex.map(([t,st,h,k])=>{let out,net;if(k==="auc"){const n=aucNet(h),lf=listFee(st);out=h-n.net+lf;net=n.net-lf;t+=`, 판매 확정 ${won(h)}`}else{const n=shopNet(h);out=h-n.net;net=n.net}return `<tr><td>${t}</td><td class="r num">${won(h)}</td><td class="r num">${won(out)} (${(out/h*100).toFixed(1)}%)</td><td class="r num"><b>${won(net)}</b></td></tr>`}).join("");
 }
 function render(){try{expireUnpaid()}catch(_){}document.body.classList.toggle("noauc",!aucOn());document.body.classList.toggle("noreq",!reqOn());if(S.view==="request"&&!reqOn()){go("home");return}document.body.classList.toggle("nosub",!subOn());
-  {const bb=$("#betaBar");if(bb)bb.hidden=!BETA();}
+  {const bb=$("#betaBar");if(bb)bb.hidden=true;}/* 베타 띠는 숨김(주문 막힘은 그대로) */
   {const sv=document.querySelector('[data-view="seller"]'),g=$("#sellerGate");if(sv&&g){const guest=!S.uid&&!!window.nmAuth;sv.classList.toggle("guest",guest);g.hidden=!guest}}
   try{renderMgr()}catch(e){}
   S.bidMap={};S.bids.forEach(b=>(S.bidMap[b.auctionId]=S.bidMap[b.auctionId]||[]).push(b));
