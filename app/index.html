@@ -13,6 +13,7 @@
 #popWrap.giftmode .card{border-color:rgba(217,182,106,.35);color:var(--ink)}
 @media (max-width:640px){#popWrap.giftmode{margin-inline:-6px;padding:20px 16px 16px}#popWrap.giftmode h2{font-size:24px}}
 .chip.gold.badge{background:linear-gradient(135deg,#E0B04A,#A8721A)!important;color:#fff!important;font-weight:800;border:1px solid #F6DC9A!important;letter-spacing:.06em;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.chip.tag{font-size:15px;padding:6px 13px;font-weight:800;border-radius:999px}.chip.wtag{background:rgba(255,255,255,.94)!important;color:#1D2B22!important;border:1px solid rgba(0,0,0,.08)!important;box-shadow:0 2px 8px rgba(0,0,0,.2)}.chip.gold.badge.tag{font-size:16px;padding:7px 15px}
 </style><meta name="description" content="농마니 · 농부와 심마니가 직접 판매하는 산야초. 귀한 분께 자연과 정성으로 키운 건강한 우리 산야초를 선물하세요. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 제안 판매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
@@ -2090,7 +2091,7 @@ function ratingOf(pid){const r=S.reviews.filter(x=>x.productId===pid);return r.l
 function card(p){
   const r=ratingOf(p.id);
   return `<button class="card" data-pid="${esc(p.id)}">
-   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${isCert(p)?'<span class="chip ok">인증 재배</span>':""}${p.badge?`<span class="chip gold badge">${esc(p.badge)}</span>`:""}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.qd?.length?'<span class="chip">수량 할인</span>':""}${subOn()&&p.sub?.on?'<span class="chip ok">정기배송</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
+   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${isCert(p)?'<span class="chip ok">인증 재배</span>':""}${p.badge?`<span class="chip gold badge tag">★ ${esc(p.badge)}</span>`:p.unit&&!isProc(p)?`<span class="chip wtag tag">${esc(p.unit)}</span>`:""}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.qd?.length?'<span class="chip">수량 할인</span>':""}${subOn()&&p.sub?.on?'<span class="chip ok">정기배송</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
    <div class="cbody">
     <div class="meta">${esc(p.region)} · ${esc(p.form)}</div>
     <h3>${esc(p.name)}</h3>
