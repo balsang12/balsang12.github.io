@@ -1,4 +1,18 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="description" content="농마니 · 농부와 심마니가 직접 판매하는 산야초. 귀한 분께 자연과 정성으로 키운 건강한 우리 산야초를 선물하세요. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 제안 판매로.">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* 선물 코너 */
+#popWrap.giftmode{position:relative;margin-top:26px;padding:24px 20px 20px;border-radius:20px;background:radial-gradient(120% 90% at 100% 0%,#2C5A3C 0%,rgba(44,90,60,0) 60%),linear-gradient(165deg,#173A27 0%,#0E2619 100%);color:#F3EBD8;box-shadow:0 10px 30px rgba(14,38,25,.18)}
+#popWrap.giftmode::before{content:"";position:absolute;inset:7px;border:1px solid rgba(217,182,106,.45);border-radius:15px;pointer-events:none}
+#popWrap.giftmode>.sechead{margin-top:0!important;position:relative}
+#popWrap.giftmode .pope{color:#D9B66A!important;font-weight:700;letter-spacing:.12em}
+#popWrap.giftmode h2{color:#FBF4E4;font-size:28px;letter-spacing:-.02em}
+#popWrap .gsub{margin:4px 0 0;color:rgba(243,235,216,.82);font-size:14px}
+#popWrap .gsub[hidden],#popWrap .gperks[hidden]{display:none}
+#popWrap.giftmode .sechead .btn{background:transparent;color:#F3EBD8;border-color:rgba(217,182,106,.6)}
+#popWrap .gperks{position:relative;display:flex;flex-wrap:wrap;gap:6px 14px;margin:2px 0 14px;font-size:13px;color:#E8D5A6}
+#popWrap.giftmode .grid{position:relative}
+#popWrap.giftmode .card{border-color:rgba(217,182,106,.35);color:var(--ink)}
+@media (max-width:640px){#popWrap.giftmode{margin-inline:-6px;padding:20px 16px 16px}#popWrap.giftmode h2{font-size:24px}}
+</style><meta name="description" content="농마니 · 농부와 심마니가 직접 판매하는 산야초. 귀한 분께 자연과 정성으로 키운 건강한 우리 산야초를 선물하세요. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 제안 판매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
 <link rel="alternate" hreflang="ja" href="https://nongmani.com/app/global.html?lang=ja">
@@ -916,7 +930,7 @@ label.btn{display:inline-block}
   <div class="hgroup auc hauclist" hidden><div class="hg-head"><b id="homeAucH">곧 마감되는 제안 판매</b><span class="nextSat"></span></div>
    <div id="homeAuc" class="alist"></div><div id="homeWins"></div>
    <button class="hmore" type="button" data-go="auction">제안 판매 전체 보기 ›</button></div>
-  <div id="popWrap"><div class="sechead" style="margin-top:26px"><div><div class="eyebrow pope" id="popE" hidden>심마니와 농부가 이름을 걸고 보내는</div><h2 id="popH">마켓 인기 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
+  <div id="popWrap"><div class="sechead" style="margin-top:26px"><div><div class="eyebrow pope" id="popE" hidden>농마니 선물 코너</div><h2 id="popH">마켓 인기 상품</h2><p class="gsub" id="popS" hidden>심마니와 농부가 이름을 걸고 보내는 귀한 산야초</p></div><button class="btn sm" data-go="shop">전체 보기</button></div><div class="gperks" id="popP" hidden><span>✦ 산에서 캔 자연산 · 정성 들인 재배</span><span>✦ 생산자 카드 무료</span><span>✦ 받으신 뒤 정산되는 안전결제</span></div>
   <div class="grid" id="homeShop"></div></div>
   <div class="sechead" id="homeNewH" hidden><div><div class="eyebrow">산지에서 막 올라온</div><h2>새로 들어온 상품</h2></div><button class="btn sm" data-go="shop">전체 보기</button></div>
   <div class="grid" id="homeNew"></div>
@@ -2367,7 +2381,7 @@ function renderHome(){renderSeason();
     if($("#mktSub"))$("#mktSub").textContent=all.length?`${all.length}개 판매 중`:"";
     const shown=new Set(ps.map(p=>p.id)),nw=all.filter(p=>!shown.has(p.id)).sort((a,b)=>b.createdAt-a.createdAt).slice(0,8);
     $("#homeNewH").hidden=!nw.length;$("#homeNew").classList.toggle("hrow",nw.length>0);$("#homeNew").innerHTML=nw.map(card).join("")}
-  {const gm=gifts.length>=2;$("#popH").textContent=gm?"귀한 분께 드리는 선물":"마켓 인기 상품";$("#popE").hidden=!gm;$("#popWrap").classList.toggle("giftmode",gm)}
+  {const gm=gifts.length>=2;$("#popH").textContent=gm?"귀한 분께 드리는 선물":"마켓 인기 상품";$("#popE").hidden=!gm;$("#popS").hidden=!gm;$("#popP").hidden=!gm;$("#popWrap").classList.toggle("giftmode",gm)}
   $("#homeShop").classList.toggle("hrow",ps.length>0);$("#homeShop").innerHTML=ps.length?ps.map(card).join(""):emptyBox("아직 판매 중인 마켓 상품이 없습니다.",'<button class="btn" data-go="seller">상품 올리기</button><button class="btn" data-go="request">채취 의뢰하기</button>');
   /* 판매 중인 상품이 4개 이상이면 '마켓 인기 상품'을 '마켓 장보기'(분류 아이콘) 위로. 적을 땐 빈 칸이 먼저 보이지 않게 아래에 둠 */
   {const pw=$("#popWrap"),mk=document.querySelector(".hgroup.mkt");if(pw&&mk){const many=false;/* 선물·인기 상품은 늘 마켓 장보기(분류) 아래 */
