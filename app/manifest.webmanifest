@@ -5,7 +5,8 @@
   "lang": "ko",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "minimal-ui",
+  "display_override": ["minimal-ui"],
   "background_color": "#FFFFFF",
   "theme_color": "#FFFFFF",
   "icons": [
