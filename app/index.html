@@ -3915,7 +3915,7 @@ function todoData(){
   const pend=S.products.filter(p=>p.sellerId===S.uid&&p.status==="검수대기").length+myA.filter(a=>a.status==="검수대기").length;
   const rej=S.products.filter(p=>p.sellerId===S.uid&&p.status==="반려").length+myA.filter(a=>a.status==="반려").length;
   const out=S.products.filter(p=>p.sellerId===S.uid&&p.status==="판매중"&&p.stock<=0).length;
-  const reqs=(S.requests||[]).filter(r=>r.status==="모집중"&&r.buyerId!==S.uid&&!(S.quotes||[]).some(q=>q.requestId===r.id&&q.sellerId===S.uid)).length;
+  const reqs=!reqOn()?0:(S.requests||[]).filter(r=>r.status==="모집중"&&r.buyerId!==S.uid&&!(S.quotes||[]).some(q=>q.requestId===r.id&&q.sellerId===S.uid)).length;
   const pay=myO.filter(o=>ordEff(o)==="수령확인").reduce((s,o)=>s+shopNet(o.total,ordRate(o),o.ship||0).net,0)+myA.map(a=>({a,x:auc(a)})).filter(o=>o.x.winner&&dealEff(o.a)==="수령확인").reduce((s,o)=>s+aucNet(o.x.winner.amount).net,0);
   return {ship,liveA:liveA.length,bids,top,pend,rej,out,reqs,pay};
 }
