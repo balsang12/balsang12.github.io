@@ -2799,7 +2799,7 @@ function openProduct(id){
   dlg.innerHTML=`<div class="dlg pview"><div class="ptop"><button class="close pback" aria-label="뒤로" type="button">←<span> 뒤로</span></button><b class="ptt">${esc(p.name)}</b><button class="btn sm" type="button" id="pShare">공유</button></div>
    ${backGift}<div class="thumb">${thumbHTML(p,"pid")}</div>
    <div class="dinfo">
-    <div class="meta">${esc(mcat(p.cat))} · 생산자 ${esc(shopName(p.sellerId))}</div>
+    <div class="meta">${esc(mcat(p.cat))} · 생산자 ${esc(p.maker||shopName(p.sellerId))}</div>
     <h2 style="font-size:24px">${esc(p.name)}</h2>
     ${sellerRow(p.sellerId,p.name+" 문의")}
     <div class="meta" style="margin:-4px 0 4px">판매: 농마니 (생산자의 상품을 맡아 판매하는 위탁판매) · 계좌이체 결제</div>
