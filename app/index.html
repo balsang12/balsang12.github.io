@@ -2420,7 +2420,7 @@ function renderHome(){renderSeason();
     if(many){if(pw.nextElementSibling!==mk)mk.before(pw)}else if(home.nextElementSibling!==pw)home.after(pw)}}
 }
 function renderAuctions(){
-  $("#aucCats").innerHTML=(aucOpen(S.acat)?0:(S.acat="전체"),openACATS()).map(c=>`<button class="cat" aria-pressed="${c===S.acat}" data-acat="${c}">${ASEASON[c]?'<span class="chip gold" style="margin-right:4px;padding:0 6px">제철</span>':""}${c}</button>`).join("");{const nc=new Set(liveAucs().map(a=>a.cat)).size;$("#aucCats").style.display=(nc>1||S.acat!=="전체")?"":"none"}/* 경매 분류가 2개 미만이면 분류 버튼 숨김 */
+  $("#aucCats").innerHTML=(aucOpen(S.acat)?0:(S.acat="전체"),openACATS()).map(c=>`<button class="cat" aria-pressed="${c===S.acat}" data-acat="${c}">${ASEASON[c]?'<span class="chip gold" style="margin-right:4px;padding:0 6px">제철</span>':""}${c}</button>`).join("");{const nc=new Set(liveAucs().map(a=>a.cat)).size;$("#aucCats").style.display=(nc>1||S.acat!=="전체")?"":"none"}/* 경매 분류가 2개 미만이면 분류 버튼 숨김 */{const sb=$("#aucSortBar");if(sb)sb.style.display=liveAucs().length<8?"none":""}/* 경매가 8건 미만이면 정렬 숨김 (기본: 마감 임박순) */
   const q=$("#aucQ").value.trim(),st=$("#aucState").value,so=S.aucSort;sortBar($("#aucSortBar"),AUC_SORTS,so,"a");setTimeout(renderAucExtras,0);
   let list=S.auctions.filter(a=>a.status==="진행중").filter(a=>{const x=auc(a);return st==="live"?!x.ended:x.ended}).filter(a=>(S.acat==="전체"||a.cat===S.acat)&&matchQ(q,(a.item||"")+a.title+a.region+a.cat+shopName(a.sellerId)));
   const k=a=>auc(a);
