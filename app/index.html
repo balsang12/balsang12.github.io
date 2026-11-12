@@ -2090,7 +2090,7 @@ function ratingOf(pid){const r=S.reviews.filter(x=>x.productId===pid);return r.l
 function card(p){
   const r=ratingOf(p.id);
   return `<button class="card" data-pid="${esc(p.id)}">
-   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${(p.grow||"").startsWith("자연산")?'<span class="chip solid">심마니 채취</span>':isCert(p)?'<span class="chip ok">인증 재배</span>':'<span class="chip ok">농부 재배</span>'}${p.badge?`<span class="chip gold badge">${esc(p.badge)}</span>`:""}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.qd?.length?'<span class="chip">수량 할인</span>':""}${subOn()&&p.sub?.on?'<span class="chip ok">정기배송</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
+   <div class="thumb">${thumbHTML(p,"pid")}<div class="tl">${p.stock<=0?'<span class="chip">품절</span>':""}${isCert(p)?'<span class="chip ok">인증 재배</span>':""}${p.badge?`<span class="chip gold badge">${esc(p.badge)}</span>`:""}${isProc(p)?'<span class="chip gold">농가 가공</span>':""}${p.set?'<span class="chip gold">선물세트</span>':""}${p.qd?.length?'<span class="chip">수량 할인</span>':""}${subOn()&&p.sub?.on?'<span class="chip ok">정기배송</span>':""}${p.demo?'<span class="chip">예시</span>':""}</div></div>
    <div class="cbody">
     <div class="meta">${esc(p.region)} · ${esc(p.form)}</div>
     <h3>${esc(p.name)}</h3>
