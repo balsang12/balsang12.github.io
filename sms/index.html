@@ -32,7 +32,7 @@ h1{margin:0;font-size:21px}h1 b{color:#17A356}h1 i{font-style:normal;color:#C890
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);white-space:nowrap;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 .hint{font-size:14px;color:var(--muted);margin:6px 0 0}
 </style></head><body>
-<header><h1><b>농</b><i>마니</i> 판매자 문자함</h1></header>
+<header><h1><b>농</b><i>마니</i> 문자함</h1></header>
 <div class="wrap">
   <p class="hint">아래 칸을 채우면 모든 문자의 [ ] 자리에 바로 들어갑니다. 빈 칸은 [ ] 그대로 남으니 보내기 전에 확인하세요.</p>
   <div class="fill">
@@ -181,17 +181,92 @@ ${APP}`],
 올리는 건 제가 도와드릴게요.`],
 ["시범 기간","주문·결제가 열렸을 때",`[이름]님, 기다리시던 농마니 주문·결제가 [날짜]부터 열렸습니다!
 주문이 들어오면 판매자 화면 ‘받은 주문’에 뜨고, 문자로도 알려 드립니다.
-돈은 결제대행사가 안전하게 보관했다가 손님이 받으시면 보내 드립니다.
+손님 입금은 KB국민은행 에스크로로 안전하게 받고, 손님이 물건을 받으신 뒤 판매 대금을 보내 드립니다.
 ${APP}`],
 ["시범 기간","감사 인사",`[이름]님, 농마니와 함께해 주셔서 고맙습니다.
 처음 열어 가는 장터라 불편하신 점이 있으면 언제든 말씀해 주세요.
-좋은 물건 제값 받으실 수 있도록 열심히 뛰겠습니다.`]];
+좋은 물건 제값 받으실 수 있도록 열심히 뛰겠습니다.`],
+["손님 · 소개","농마니 소개 (아는 분께)",`[이름]님, 안녕하세요. 농마니 권영철입니다.
+제가 심마니와 농부가 직접 캐고 기른 산야초를 파는 ‘농마니’를 열었습니다.
+산에서 캔 자연산 산도라지, 산삼처럼 귀한 것들을 중간 상인 없이 산지에서 바로 보내 드려요.
+5만 원 이상은 무료 배송이고, 선물하실 때는 보자기로 싸서 생산자 카드를 달아 보내 드립니다.
+한번 구경해 보세요.
+
+▶ ${APP}
+${TIP}`],
+["손님 · 소개","선물 추천 (명절·감사 인사)",`[이름]님, 농마니입니다.
+귀한 분께 드릴 선물 찾으시면 산에서 캔 자연산 산야초는 어떠세요?
+· 심마니가 직접 캔 자연산 산도라지 (200g · 500g · 1kg)
+· 보자기 선물 포장과 생산자 카드는 무료
+· 5만 원 이상 무료 배송, 받는 분 주소로 바로 보내 드려요
+[날짜]까지 받으셔야 하면 미리 말씀해 주세요.
+
+▶ ${APP} 첫 화면 ‘선물 코너’
+${TIP}
+문의 010-8167-8040`],
+["손님 · 소개","산삼 경매 안내 (귀한 손님께)",`[이름]님, 농마니 권영철입니다.
+강원도 깊은 산에서 심마니가 캔 자연산 산삼 14뿌리(2냥 4돈)가 농마니 경매에 올라왔습니다.
+· 마감: [날짜] 저녁 8시
+· 입찰할 때는 돈이 나가지 않고, 낙찰되면 그때 입금하시면 됩니다
+· 감정서는 발급 예정이며, 원하시면 실물 사진·영상을 더 보여 드리거나 직접 보실 수 있게 안내해 드립니다
+
+▶ ${APP} 첫 화면 ‘농마니 경매’
+${TIP}
+궁금하신 점은 편하게 전화 주세요. 010-8167-8040`],
+["손님 · 소개","링크가 걱정되는 손님께",`[이름]님, 농마니입니다.
+요즘 문자 링크 사기가 많아 걱정되시죠. 링크는 누르지 않으셔도 됩니다.
+인터넷 창 맨 위 주소칸에 직접 ${APP} 이라고 쳐서 들어오세요.
+농마니는 심마니와 농부가 직접 캐고 기른 산야초를 파는 곳이고, 입금은 KB국민은행 에스크로로 안전하게 받습니다.
+농마니 운영자 010-8167-8040`],
+["손님 · 주문","입금 안내",`[이름]님, 농마니에 주문해 주셔서 고맙습니다.
+아래 계좌로 24시간 안에 입금해 주세요.
+
+· 상품: [품목]
+· 입금할 돈: [금액]원
+· 계좌: KB국민은행 631001-04-338715 (예금주 권영철(농마니))
+· 주문하신 분 이름으로 입금해 주세요. 다른 이름이면 답장으로 알려 주세요.
+
+입금이 확인되면 바로 문자 드리고 보내 드리겠습니다.`],
+["손님 · 주문","입금 확인",`[이름]님, [금액]원 입금 확인했습니다. 고맙습니다.
+[품목]은(는) [날짜]에 보내 드릴게요.
+생물은 신선하게 받으시도록 월~목에만 보내 드립니다.
+보내면 송장 번호를 문자로 알려 드리겠습니다.`],
+["손님 · 주문","보냈습니다 (송장 번호)",`[이름]님, 주문하신 [품목] 오늘 보냈습니다.
+· 택배: [택배사]
+· 송장 번호: [송장번호]
+보통 1~2일 안에 도착합니다.
+받으시면 바로 상자를 열어 신문지에 싼 채로 냉장 보관해 주세요.`],
+["손님 · 주문","잘 받으셨나요 (후기 부탁)",`[이름]님, [품목] 잘 받으셨나요?
+혹시 상한 곳이 있거나 생각과 다르면 사진과 함께 답장 주세요. 바로 해결해 드리겠습니다.
+괜찮으셨다면 농마니 ‘내 거래’에서 [받았어요]를 눌러 주시고, 짧게 후기 한 줄 남겨 주시면 캐신 분께 큰 힘이 됩니다.
+${APP}`],
+["손님 · 주문","입금 기한이 지났을 때",`[이름]님, 농마니입니다.
+주문하신 [품목]의 입금 기한이 지나 주문이 자동으로 취소되었습니다.
+아직 필요하시면 다시 주문해 주시거나, 답장 주시면 다시 열어 드릴게요.`],
+["손님 · 주문","환불해 드릴 때",`[이름]님, 불편을 드려 죄송합니다.
+[품목] 주문은 [금액]원 환불해 드리기로 했습니다.
+환불받으실 계좌(은행·계좌번호·예금주)를 답장으로 알려 주시면 [날짜]까지 보내 드리겠습니다.`],
+["손님 · 경매","낙찰 축하 · 입금 안내",`[이름]님, 축하드립니다! [품목] 경매에 [금액]원으로 낙찰되셨습니다.
+아래 계좌로 24시간 안에 입금해 주세요.
+
+· 입금할 돈: [금액]원 (5만 원 이상이라 배송비 없음)
+· 계좌: KB국민은행 631001-04-338715 (예금주 권영철(농마니))
+
+입금이 확인되면 정성껏 포장해서 바로 보내 드리겠습니다.
+궁금하신 점은 010-8167-8040`],
+["손님 · 경매","마감 하루 전 알림",`[이름]님, 관심 두신 [품목] 경매가 내일([날짜]) 저녁 8시에 마감됩니다.
+입찰할 때는 돈이 나가지 않고, 낙찰되면 그때 입금하시면 됩니다.
+▶ ${APP} 첫 화면 ‘농마니 경매’`],
+["손님 · 의뢰","견적 보냈을 때",`[이름]님, 맡겨 주신 [품목] 채취 의뢰에 견적을 보냈습니다.
+농마니 ‘내 거래’ → 채취 의뢰에서 값과 보낼 수 있는 날짜를 확인해 주세요.
+견적을 고를 때는 돈이 나가지 않고, 다 캔 뒤 사진을 보시고 입금하시면 됩니다.
+${APP}`]];
 const KEYS=["이름","품목","날짜","단체명"],CATS=["전체",...new Set(T.map(t=>t[0]))];
 let cat="전체";const $=s=>document.querySelector(s);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 function filled(t){let s=t;KEYS.forEach(k=>{const v=$("#f_"+k).value.trim();if(v)s=s.split("["+k+"]").join(v)});
   if($("#adOn").checked)s="(광고) "+s+"\n무료수신거부 010-8167-8040 (‘거부’라고 문자 주세요)";return s}
-function show(t){return esc(t).replace(/\[(이름|품목|양|날짜|금액|단체명|명절|제철 품목)\]/g,'<mark>[$1]</mark>').replace(/https:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`)}
+function show(t){return esc(t).replace(/\[(이름|품목|양|날짜|금액|단체명|명절|제철 품목|택배사|송장번호)\]/g,'<mark>[$1]</mark>').replace(/https:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`)}
 function render(){
   $("#tabs").innerHTML=CATS.map(c=>`<button type="button" role="tab" aria-pressed="${c===cat}" data-c="${c}">${c}</button>`).join("");
   $("#list").innerHTML=T.map((t,i)=>[t,i]).filter(([t])=>cat==="전체"||t[0]===cat).map(([t,i])=>{const s=filled(t[2]);
@@ -202,7 +277,7 @@ function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clea
 async function copy(s){try{await navigator.clipboard.writeText(s);return true}catch(e){const a=document.createElement("textarea");a.value=s;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}a.remove();return ok}}
 document.addEventListener("click",async e=>{const c=e.target.closest("[data-c]");if(c){cat=c.dataset.c;render();return}
   const m=e.target.closest("[data-more]");if(m){const card=$("#c"+m.dataset.more);card.classList.toggle("open");m.textContent=card.classList.contains("open")?"접기 ▴":"전체 보기 ▾";return}
-  const b=e.target.closest("[data-copy]");if(b){const s=filled(T[+b.dataset.copy][2]);if(/\[(이름|품목|양|날짜|금액|단체명|명절|제철 품목)\]/.test(s))toast("복사했어요. [ ] 칸을 꼭 바꿔 주세요");else toast("복사했어요. 문자에 붙여 넣으세요");await copy(s)}});
+  const b=e.target.closest("[data-copy]");if(b){const s=filled(T[+b.dataset.copy][2]);if(/\[(이름|품목|양|날짜|금액|단체명|명절|제철 품목|택배사|송장번호)\]/.test(s))toast("복사했어요. [ ] 칸을 꼭 바꿔 주세요");else toast("복사했어요. 문자에 붙여 넣으세요");await copy(s)}});
 KEYS.forEach(k=>{const i=$("#f_"+k);try{i.value=localStorage.getItem("sms_"+k)||""}catch(e){}i.addEventListener("input",()=>{try{localStorage.setItem("sms_"+k,i.value)}catch(e){}render()})});
 $("#adOn").addEventListener("change",render);render();
 </script>
