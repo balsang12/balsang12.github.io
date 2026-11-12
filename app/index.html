@@ -29,6 +29,7 @@
 .af-go{margin-top:auto;align-self:flex-start;background:linear-gradient(135deg,#C89434,#9A6714);color:#fff;border-radius:999px;padding:10px 18px;font-weight:800;font-size:15px}
 .af-more{position:relative;margin-top:10px}.af-all{position:relative;display:block;margin:10px 0 0 auto;background:none;border:0;color:#E8D5A6;font:inherit;font-weight:700;cursor:pointer}
 @media (max-width:720px){.af-card{grid-template-columns:1fr}.af-ph{min-height:0;aspect-ratio:4/3}.af-head h2{font-size:28px}.aucfeat{padding:20px 16px 14px}}
+.reqbox{padding:18px 20px;margin-bottom:12px;border-radius:16px;background:color-mix(in srgb,var(--pine) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--pine) 30%,transparent)}.reqbox b{display:block;font-size:18px;margin-bottom:4px}.reqbox p{margin:0 0 12px;font-size:14.5px;line-height:1.6}.reqbox .rqa{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
 </style><meta name="description" content="농마니 · 농부와 심마니가 직접 판매하는 산야초. 귀한 분께 자연과 정성으로 키운 건강한 우리 산야초를 선물하세요. 농부가 밭에서 키운 산나물, 심마니가 산에서 캔 약초를 직접 사고팝니다. 귀한 산삼·송이는 경매로.">
 <link rel="canonical" href="https://nongmani.com/app/">
 <link rel="alternate" hreflang="en" href="https://nongmani.com/app/global.html?lang=en">
@@ -2128,7 +2129,10 @@ function fewHTML(q,list){
   const sim=names.map(n=>({n,ps:has(n)})).filter(o=>o.ps.length).slice(0,3);
   const proc=live().filter(p=>av(p)&&isProc(p)&&matchQ(key,(p.item||"")+p.name+(p.proc?.ingr||""))).slice(0,4);
   const simCards=[...new Map(sim.flatMap(o=>o.ps.slice(0,2)).map(p=>[p.id,p])).values()].slice(0,4);
-  return `<div class="fewbox" style="grid-column:1/-1"><div class="fewalert"><span>‘${esc(key)}’ 상품이 더 들어오면 바로 알려 드릴게요.</span>${alertBtn(key,"shop","새 상품이 올라오면 알려 주세요")}</div>${sim.length?`<h4 class="fewh">비슷한 품목도 둘러보세요</h4><div class="fewchips">${sim.map(o=>`<button type="button" class="chip" data-simq="${esc(o.n)}">${esc(o.n)} <span class="num">${o.ps.length}개</span></button>`).join("")}</div>`:""}</div>`
+  let rqb="";if(!list.length&&reqOn()&&key){const si=seasonInfo(key,"생물");
+    const msg=si?(si.now?`지금이 ${esc(key)} 제철(${esc(si.label)})이에요. 채취를 맡기시면 심마니·농부가 언제까지 보낼 수 있는지 견적을 보내 드려요.`:`${esc(key)} 제철은 ${esc(si.label)}이에요. 지금 의뢰해 두시면 제철에 캐서 보내 드리는 ‘제철 예약’으로 받을 수 있어요.`):`채취를 맡기시면 심마니·농부가 구할 수 있는지, 언제까지 보낼 수 있는지 견적을 보내 드려요.`;
+    rqb=`<div class="reqbox"><b>지금은 ‘${esc(key)}’ 판매 상품이 없어요</b><p>${msg}</p><div class="rqa"><button type="button" class="btn primary" data-reqitem="${esc(key)}">‘${esc(key)}’ 채취 의뢰하기 →</button><span class="meta">견적을 고를 때는 돈이 나가지 않아요</span></div></div>`}
+  return `<div class="fewbox" style="grid-column:1/-1">${rqb}<div class="fewalert"><span>‘${esc(key)}’ 상품이 ${list.length?"더 ":""}들어오면 바로 알려 드릴게요.</span>${alertBtn(key,"shop","새 상품이 올라오면 알려 주세요")}</div>${sim.length?`<h4 class="fewh">비슷한 품목도 둘러보세요</h4><div class="fewchips">${sim.map(o=>`<button type="button" class="chip" data-simq="${esc(o.n)}">${esc(o.n)} <span class="num">${o.ps.length}개</span></button>`).join("")}</div>`:""}</div>`
    +simCards.map(card).join("")
    +(proc.length?`<h4 class="fewh" style="grid-column:1/-1">‘${esc(key)}’ 가공품</h4>`+proc.map(card).join(""):"");
 }
@@ -2441,7 +2445,7 @@ function renderShop(){
   $("#shopCount").innerHTML=(list.length?`상품 ${list.length}개${s==="unit"?" · 단위가 다른 상품은 1kg 기준으로 바꿔 비교":""}${s==="pop"?" · 판매량과 후기로 정렬":""} · `:"")+`<button type="button" class="helplink" data-reco="1">🧺 뭘 살지 모르겠다면 쇼핑도우미</button>`;
   $("#cats").innerHTML=CATS.map(c=>`<button class="cat" aria-pressed="${c===S.cat}" data-cat="${c}">${c}</button>`).join("");
   const ak=q||(S.cat!=="전체"?S.cat:"");
-  $("#shopGrid").innerHTML=list.length?list.map(card).join(""):hq.hit?"":emptyBox(q?`"${esc(q)}"에 맞는 상품이 아직 없습니다. 들어오면 알려 드리거나, 채취 의뢰를 올리면 농부·심마니가 견적을 보냅니다.`:uf&&S.cat==="전체"?`‘${esc(uf.t)}’에 맞는 상품을 준비하고 있습니다. 다른 방법도 둘러보세요.`:"이 분류에 판매 중인 상품이 아직 없습니다. 들어오면 알려 드릴까요?",alertBtn(ak,"shop")+(q?'<button class="btn" type="button" data-askgo="1">이름이 맞는지 모르겠으면 생김새로 찾기</button>':"")+'<button class="btn" data-go="request">채취 의뢰하기</button>');
+  $("#shopGrid").innerHTML=list.length?list.map(card).join(""):hq.hit?"":(q&&reqOn())?fewHTML(q,[]):emptyBox(q?`"${esc(q)}"에 맞는 상품이 아직 없습니다. 들어오면 알려 드리거나, 채취 의뢰를 올리면 농부·심마니가 견적을 보냅니다.`:uf&&S.cat==="전체"?`‘${esc(uf.t)}’에 맞는 상품을 준비하고 있습니다. 다른 방법도 둘러보세요.`:"이 분류에 판매 중인 상품이 아직 없습니다. 들어오면 알려 드릴까요?",alertBtn(ak,"shop")+(q?'<button class="btn" type="button" data-askgo="1">이름이 맞는지 모르겠으면 생김새로 찾기</button>':"")+'<button class="btn" data-go="request">채취 의뢰하기</button>');
   if(list.length&&q&&!hq.hit)$("#shopGrid").insertAdjacentHTML("beforeend",fewHTML(q,list));
 }
 function renderRequests(){
@@ -3097,6 +3101,7 @@ document.addEventListener("click",e=>{
   const xp=e.target.closest("[data-xp]");if(xp){openProduct(xp.dataset.xp);return}
   const ss=e.target.closest("[data-sorts]");if(ss){S.shopSort=ss.dataset.sorts;saveSort();renderShop();requestAnimationFrame(paintAll);return}
   const sa=e.target.closest("[data-sorta]");if(sa){S.aucSort=sa.dataset.sorta;saveSort();renderAuctions();requestAnimationFrame(paintAll);return}
+  {const rq=e.target.closest("[data-reqitem]");if(rq){W.item=rq.dataset.reqitem;W.step=0;go("request");renderWiz();return}}
   const dc=e.target.closest("[data-dict]");if(dc){openDict(dc.dataset.dict);if(dc.dataset.dsec)dictJump(dc.dataset.dsec);return}
   const pf=e.target.closest("[data-profile]");if(pf){openProfile(pf.dataset.profile);return}
   const ch=e.target.closest("[data-chat]");if(ch){if($("#dlg").open)$("#dlg").close();openThread(ch.dataset.chat,ch.dataset.ctx||"");return}
