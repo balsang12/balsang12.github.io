@@ -2815,11 +2815,11 @@ function fillAuction(id,refresh){
     if(keep){if(+keep.v>=x.minNext)inp.value=keep.v;if(keep.f)inp.focus()}
     dlg.querySelectorAll("[data-bump]").forEach(b=>b.onclick=()=>{inp.value=Math.max(+inp.value||0,x.minNext-inc(x.cur))+inc(x.cur)*+b.dataset.bump;armed=null;setBidBtn()});
     inp.oninput=()=>{armed=null;setBidBtn()};
-    const setBidBtn=()=>{const v=+inp.value;$("#bidBtn").textContent=BETA()?"정식 오픈 알림 받기":armed===v?`${won(v)} 입찰 확정`:"입찰하기"};
+    const setBidBtn=()=>{const v=+inp.value;$("#bidBtn").textContent=armed===v?`${won(v)} 입찰 확정`:"입찰하기"};
     setBidBtn();
     $("#bidBtn").onclick=async()=>{
       if(!S.uid){toast("로그인이 필요합니다");return}
-      if(BETA()){const a0=S.auctions.find(q=>q.id===id);await betaStop((findHerb(a0?.item||a0?.cat)||guessHerb(a0?.title)||{}).name||a0?.cat||a0?.title,"auction");return}
+      if(0){}
       const v=Math.round(+inp.value),y=auc(S.auctions.find(q=>q.id===id));
       if(y.ended){toast("이미 마감된 경매입니다");return}
       if(!(v>=y.minNext)){toast(`최소 ${won(y.minNext)}부터 입찰할 수 있습니다`);return}
@@ -2996,7 +2996,7 @@ const ACT={
     await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),suspended:v,suspendedAt:v?Date.now():0}),v?"판매를 정지했습니다":"판매 정지를 풀었습니다")},
   async verify(id){const v=!S.checks[id]?.verified;await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),verified:v,at:Date.now()}),v?"인증 판매자로 지정했습니다":"인증을 해제했습니다")},
   async regOk(id){const v=!S.checks[id]?.regOk;await guard(()=>S.db.doc("sellerchecks/"+id).set({...(S.checks[id]||{}),regOk:v,regNo:S.sellers[id]?.regNo||"",at:Date.now()}),v?"경영체 등록을 확인했습니다. 인증 배지가 붙습니다":"경영체 확인을 해제했습니다")},
-  async payAuc(id){const a=A(id),x=auc(a);if(!x.winner||x.winner.bidderId!==S.uid||!x.accepted)return;if(!BANK()){toast("입금 계좌를 준비하고 있어요");return}const pb=Date.now()+PAY_MS;if(await guard(()=>S.db.doc("auctions/"+id).update({deal:"입금대기",buyerId:S.uid,hammer:x.winner.amount,payBy:pb}),"24시간 안에 입금해 주세요"))bankDlg({id,kind:"a",amount:x.winner.amount+(a.ship||5000),payBy:pb})},
+  async payAuc(id){const a=A(id),x=auc(a);if(!x.winner||x.winner.bidderId!==S.uid||!x.accepted)return;if(BETA()){toast("정식 오픈 준비 중이라 입금은 조금만 기다려 주세요. 운영자가 연락드려요");return}if(!BANK()){toast("입금 계좌를 준비하고 있어요");return}const pb=Date.now()+PAY_MS;if(await guard(()=>S.db.doc("auctions/"+id).update({deal:"입금대기",buyerId:S.uid,hammer:x.winner.amount,payBy:pb}),"24시간 안에 입금해 주세요"))bankDlg({id,kind:"a",amount:x.winner.amount+(a.ship||5000),payBy:pb})},
   async giveUp(id){const a=A(id),b=document.querySelector(`[data-act="giveUp"][data-id="${id}"]`);if(!b.dataset.armed){b.dataset.armed=1;b.textContent="한 번 더 누르면 포기";setTimeout(()=>{b.textContent="구매 포기";delete b.dataset.armed},3000);return}
     await guard(()=>S.db.doc("auctions/"+id).update({skip:[...(a.skip||[]),S.uid],offerAt:Date.now()}),"구매를 포기했습니다. 다음 순위 입찰자에게 기회가 넘어갑니다")},
   async acceptOffer(id){const a=A(id),x=auc(a);if(!x.winner||a.sellerId!==S.uid)return;await guard(()=>S.db.doc("auctions/"+id).update({acceptFor:x.winner.bidderId,acceptAt:Date.now()}),`${won(x.winner.amount)}에 팔기로 했습니다. 손님이 24시간 안에 결제합니다`)},
