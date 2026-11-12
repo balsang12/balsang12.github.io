@@ -2357,8 +2357,8 @@ function openProdCard(oid){const o=S.orders.find(x=>x.id===oid)||(S.subs||[]).fi
    <p class="meta noprint" style="margin:0 0 8px">상자에 넣을 생산자 카드예요. 인쇄하거나 화면을 캡처해서 출력해 주세요. (명함 두 장 크기)</p>
    <div class="pcard" id="pcard">
     <div class="pc-top"><span class="pc-logo">농<b>마니</b></span><span class="pc-sub">${GIFT_SLOGAN}</span></div>
-    <div class="pc-who">${avaHTML(o.sellerId,"big")}<div><b class="pc-name">${esc(s.shopName||"")}</b><div>${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div></div></div>
-    ${s.bio?`<p class="pc-bio">“${esc(s.bio)}”</p>`:""}
+    ${pp.maker?`<div class="pc-who"><div><b class="pc-name">${esc(pp.maker)}</b><div>${(pp.grow||"").startsWith("자연산")?"산에서 직접 캔 심마니":"정성껏 기른 농부"} · ${esc(pp.region||"")}</div></div></div>`:`<div class="pc-who">${avaHTML(o.sellerId,"big")}<div><b class="pc-name">${esc(s.shopName||"")}</b><div>${esc((s.role||"").replace(/ \(.*\)/,""))} · ${esc(s.region||"")}</div></div></div>
+    ${s.bio?`<p class="pc-bio">“${esc(s.bio)}”</p>`:""}`}
     <dl class="pc-dl"><dt>보내는 것</dt><dd>${esc(o.productName)}</dd>${pp.faq?.harv?`<dt>캔 날</dt><dd>${esc(pp.faq.harv)}</dd>`:""}${pp.region?`<dt>산지</dt><dd>${esc(pp.region)}</dd>`:""}${pp.faq?.keep?`<dt>보관</dt><dd>${esc(pp.faq.keep)}</dd>`:""}</dl>
     ${badges.length?`<div class="pc-badges">${badges.map(b=>`<span>✔ ${esc(b)}</span>`).join("")}</div>`:""}
     ${o.gift?.card?`<p class="pc-msg">${esc(o.gift.card)}</p>`:""}
