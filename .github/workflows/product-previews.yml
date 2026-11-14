@@ -17,7 +17,7 @@ jobs:
       - run: |
           git config user.name "nongmani-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add -A p sitemap-products.xml
+          git add -A p sitemap-products.xml sitemap.xml
           if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "상품 미리보기 갱신"
           git pull --rebase -q && git push

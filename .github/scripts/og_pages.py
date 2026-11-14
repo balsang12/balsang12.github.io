@@ -92,4 +92,13 @@ h1{{font-size:24px;line-height:1.35;margin:16px 0 6px}}.price{{font-size:26px;fo
     urls.append((url, img))
 sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' + "".join(f"<url><loc>{u}</loc><image:image><image:loc>{html.escape(i)}</image:loc></image:image></url>\n" for u, i in urls) + "</urlset>\n"
 write("sitemap-products.xml", sm)
+# 이미 제출된 sitemap.xml 에도 상품 주소를 넣어 두면 따로 제출하지 않아도 됨
+if os.path.exists("sitemap.xml"):
+    main = open("sitemap.xml", encoding="utf-8").read()
+    main = re.sub(r"<url><loc>https://nongmani\.com/p/[^\n]*</url>\n?", "", main)
+    add = "".join(f"<url><loc>{u}</loc><image:image><image:loc>{html.escape(i)}</image:loc></image:image></url>\n" for u, i in urls)
+    if "xmlns:image" not in main:
+        main = main.replace('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"', 1)
+    main = main.replace("</urlset>", add + "</urlset>", 1)
+    write("sitemap.xml", main)
 print(f"{len(products)} product pages")
