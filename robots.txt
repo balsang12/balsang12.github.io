@@ -5,3 +5,4 @@ Disallow: /sms/
 
 Sitemap: https://nongmani.com/sitemap.xml
 Sitemap: https://nongmani.com/nongmani-yakcho/sitemap.xml
+Sitemap: https://nongmani.com/sitemap-products.xml
