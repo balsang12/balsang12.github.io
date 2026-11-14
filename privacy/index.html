@@ -27,12 +27,12 @@ footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-si
 <div class="tw"><table>
 <tr><th>구분</th><th>항목</th><th>목적</th><th>근거</th></tr>
 <tr><td>회원가입·로그인</td><td>(카카오) 카카오 회원번호, 닉네임, 이메일<br>(이메일) 이메일 주소</td><td>본인 식별, 로그인, 공지 전달</td><td>정보주체 동의</td></tr>
-<tr><td>구매</td><td>받는 분 이름, 휴대전화번호, 배송지 주소, 요청 사항, 주문·결제 기록</td><td>상품 배송, 결제·환불, 고객 상담</td><td>계약 이행, 법령상 의무(전자상거래법)</td></tr>
+<tr><td>구매</td><td>받는 분 이름, 휴대전화번호, 배송지 주소, 요청 사항, 주문·결제 기록</td><td>상품 배송, 입금 확인·환불, 고객 상담</td><td>계약 이행, 법령상 의무(전자상거래법)</td></tr>
 <tr><td>판매자</td><td>상점 이름, 성명(대표자), 지역, 휴대전화번호, 이메일, 정산 계좌(은행·계좌번호·예금주), 사업자등록번호·통신판매업 신고번호(있을 때), 농업·임업경영체 등록번호(있을 때), 채취 근거 자료</td><td>판매자 확인, 정산, 법령에 따른 판매자 정보 확인·제공</td><td>계약 이행, 법령상 의무(전자상거래법 제20조)</td></tr>
 <tr><td>서비스 이용</td><td>대화 내용, 후기와 사진, 제안 기록, 문의·신고 내용</td><td>거래 진행, 분쟁 조정, 부정 이용 방지</td><td>계약 이행, 정당한 이익</td></tr>
 <tr><td>자동 수집</td><td>접속 IP, 접속 일시, 브라우저 정보, 기기에 저장되는 설정값(로컬 저장소)</td><td>보안, 오류 확인, 이용 환경 유지</td><td>법령상 의무(통신비밀보호법), 정당한 이익</td></tr>
 </table></div>
-<p>결제 카드 번호 등 결제 정보는 회사가 저장하지 않으며, 결제대행사가 직접 처리합니다.</p>
+<p>대금은 계좌이체로 받으므로 카드 정보는 받지 않습니다. 입금 확인에 필요한 입금자명과, 환불할 때에만 환불 받을 계좌를 받습니다.</p>
 
 <h2>2. 보유 기간</h2>
 <p>회원 탈퇴 시 바로 지웁니다. 다만 아래 정보는 법령에 따라 정해진 기간 동안 따로 보관한 뒤 지웁니다.</p>
@@ -50,18 +50,18 @@ footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-si
 <p>회사는 회원의 동의나 법령의 근거 없이 개인정보를 다른 곳에 주지 않습니다. 거래를 위해 아래와 같이 제공합니다.</p>
 <div class="tw"><table>
 <tr><th>받는 곳</th><th>항목</th><th>목적</th><th>보유 기간</th><th>근거</th></tr>
-<tr><td>주문한 상품의 판매자</td><td>받는 분 이름, 휴대전화번호, 배송지 주소, 요청 사항</td><td>상품 발송, 배송 문의 응대</td><td>거래 완료 후 3개월</td><td>주문할 때 받는 별도 동의</td></tr>
+<tr><td>주문한 상품을 보내는 생산자 (농마니를 대신해 발송)</td><td>받는 분 이름, 휴대전화번호, 배송지 주소, 요청 사항</td><td>상품 발송, 배송 문의 응대</td><td>거래 완료 후 3개월</td><td>주문할 때 받는 별도 동의</td></tr>
 <tr><td>구매자 (화면 표시·요청 시)</td><td>(사업자 판매자) 상호, 대표자 성명, 주소, 전화번호, 이메일, 사업자등록번호<br>(개인 판매자) 성명, 전화번호, 이메일</td><td>판매자 정보 제공</td><td>거래 관련 분쟁 해결 시까지</td><td>전자상거래법 제20조</td></tr>
 </table></div>
-<p>판매자에게 배송 정보를 주는 데 동의하지 않을 수 있습니다. 다만 동의하지 않으면 배송이 필요한 상품은 주문할 수 없습니다.</p>
+<p>생산자에게 배송 정보를 주는 데 동의하지 않을 수 있습니다. 다만 동의하지 않으면 배송이 필요한 상품은 주문할 수 없습니다.</p>
 
 <h2>4. 처리 위탁</h2>
 <div class="tw"><table>
 <tr><th>받는 곳</th><th>맡기는 일</th></tr>
 <tr><td>Supabase Inc.</td><td>회원·거래 자료 저장, 로그인 처리, 로그인 메일 발송 (자료 저장 위치: 대한민국 서울)</td></tr>
 <tr><td>GitHub, Inc.</td><td>웹사이트 제공</td></tr>
-<tr><td>토스페이먼츠(주) 등 결제대행사</td><td>결제 처리, 판매자 본인·계좌 확인, 대금 지급대행 (결제대행사와 계약한 뒤부터)</td></tr>
-<tr><td>택배사 (판매자가 선택)</td><td>상품 배송</td></tr>
+<tr><td>(주)KB국민은행</td><td>구매안전서비스(결제대금예치, 에스크로이체)</td></tr>
+<tr><td>택배사 (생산자가 선택)</td><td>상품 배송</td></tr>
 </table></div>
 <p>위탁 업체가 바뀌면 이 방침에 알립니다.</p>
 
@@ -84,7 +84,7 @@ footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-si
 <ul>
 <li>개인정보에 접근할 수 있는 사람을 운영자로 한정하고, 데이터베이스에 행 단위 접근 제한을 적용합니다.</li>
 <li>모든 통신은 암호화(HTTPS)합니다.</li>
-<li>정산 계좌 정보는 결제대행사의 지급대행 시스템에 등록해 처리하며, 회사 서버에 저장할 때에는 암호화합니다.</li>
+<li>생산자의 정산 계좌 정보는 회사 서버(서울)에 보관하며, 운영자와 본인만 볼 수 있도록 접근을 제한합니다.</li>
 <li>관리자 접속 기록을 보관하고 정기적으로 점검합니다.</li>
 </ul>
 
@@ -110,5 +110,5 @@ footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-si
 <h2>13. 방침의 변경</h2>
 <p>이 방침을 바꿀 때에는 시행 7일 전부터 서비스에 알립니다. 회원에게 불리하게 바뀌는 경우 30일 전부터 알립니다. 이 방침은 2026년 10월 27일부터 시행합니다.</p>
 
-<footer><a href="/terms/">이용약관</a> · <b><a href="/privacy/">개인정보처리방침</a></b> · <a href="/refund/">교환·환불 정책</a><br>상호 농마니 · 대표 권영철 · 사업자등록번호 854-67-00792 · 통신판매업 신고 제2026-경북구미-0977호 · 구매안전서비스: KB국민은행 에스크로이체 <a href="https://okbfex.kbstar.com/quics?page=C021590&amp;cc=b034066:b035526&amp;mHValue=a05d0a3a2f79979a143f32ae363d428c" target="_blank" rel="noopener" onclick="window.open(this.href,'KB_AUTHMARK','height=604,width=648,status=yes,toolbar=no,menubar=no,location=no');return false" title="구매안전서비스 가입 사실 확인" style="color:inherit">가입 확인 <img src="https://img1.kbstar.com/img/escrow/escrowmark.gif" alt="KB에스크로이체 인증마크" width="36" height="36" style="vertical-align:middle;border:0"></a><br>주소 경북 구미시 형곡동로8길 14, 대경파크빌 802호 · 전화 010-8167-8040 · 이메일 balsang12@naver.com<br>농마니는 통신판매중개자로서 거래 당사자가 아니며, 판매자가 올린 상품 정보와 거래에 대한 책임은 각 판매자에게 있습니다.</footer>
+<footer><a href="/terms/">이용약관</a> · <b><a href="/privacy/">개인정보처리방침</a></b> · <a href="/refund/">교환·환불 정책</a><br>상호 농마니 · 대표 권영철 · 사업자등록번호 854-67-00792 · 통신판매업 신고 제2026-경북구미-0977호 · 구매안전서비스: KB국민은행 에스크로이체 <a href="https://okbfex.kbstar.com/quics?page=C021590&amp;cc=b034066:b035526&amp;mHValue=a05d0a3a2f79979a143f32ae363d428c" target="_blank" rel="noopener" onclick="window.open(this.href,'KB_AUTHMARK','height=604,width=648,status=yes,toolbar=no,menubar=no,location=no');return false" title="구매안전서비스 가입 사실 확인" style="color:inherit">가입 확인 <img src="https://img1.kbstar.com/img/escrow/escrowmark.gif" alt="KB에스크로이체 인증마크" width="36" height="36" style="vertical-align:middle;border:0"></a><br>주소 경북 구미시 형곡동로8길 14, 대경파크빌 802호 · 전화 010-8167-8040 · 이메일 balsang12@naver.com<br>농마니는 농부와 심마니(생산자)의 상품을 맡아 판매합니다(위탁판매). 상품과 거래에 대한 책임은 판매자인 농마니가 집니다.</footer>
 </main></body></html>
